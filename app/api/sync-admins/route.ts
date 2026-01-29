@@ -3,6 +3,10 @@ import { prisma } from "@/lib/prisma";
 
 
 export async function POST(request: Request) {
+  const secret = request.headers.get("x-admin-sync-secret");
+  if (secret !== process.env.ADMIN_SYNC_SECRET) {
+    return NextResponse.json({ ok: false, error: "Unauthorized" }, { status: 401 });
+  }
   const data = await request.json();
   const emails: string[] = data.emails;
 
