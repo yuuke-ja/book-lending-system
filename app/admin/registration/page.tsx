@@ -105,7 +105,7 @@ const QRCodeReader: FC = () => {
       controlsRef.current = null;
     };
   }, [isActive]);
-  function pendingdelete(id: number) {
+  function pendingdelete(id: string) {
     fetch('/api/book/pendingbook', {
       method: 'DELETE',
       headers: {
