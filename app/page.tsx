@@ -2,6 +2,7 @@ import { auth } from "@/lib/auth";
 import { Admin } from "@/lib/admin";
 import LoginButton from "./_components/LoginButton";
 import SignOutButton from "./_components/SignOutButton";
+import Link from "next/link";
 
 
 export default async function Home() {
@@ -27,7 +28,12 @@ export default async function Home() {
       <h1 className="text-2xl font-semibold text-zinc-900">
         ようこそ{session.user?.name ? `、${session.user.name}` : ""}
       </h1>
-      {admin && (<p>あなたは管理者です</p>)}
+      {admin && (<Link href="/admin" className="mt-4 inline-flex items-center rounded-md bg-black px-4 py-2 text-white hover:bg-zinc-800">
+        管理者はこちら
+      </Link>)}
+      <Link href="/book-list" className="mt-4 ml-4 inline-flex items-center rounded-md bg-black px-4 py-2 text-white hover:bg-zinc-800">
+        本一覧
+      </Link>
 
     </main>
   );

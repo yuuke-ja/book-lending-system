@@ -22,3 +22,25 @@ model User{
 model Admin{
   email     String   @id
 }
+
+model Book{
+  id           String   @id @default(uuid())
+  googleBookId String?
+  isbn13       String   @unique
+  title        String
+  authors      String[]
+  description  String?
+  thumbnail    String?
+  createdAt    DateTime @default(now())
+}
+
+model PendingBook{
+  id           String   @id @default(uuid())
+  googleBookId String?
+  isbn13       String   @unique
+  title        String
+  authors      String[]
+  description  String?
+  thumbnail    String?
+  createdAt    DateTime @default(now())
+}
