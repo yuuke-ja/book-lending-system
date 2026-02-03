@@ -2,6 +2,14 @@
 
 import { BrowserMultiFormatReader, IScannerControls } from "@zxing/browser";
 import { FC, useEffect, useRef, useState } from "react";
+type PendingBook = {
+  id: string;
+  title: string;
+  authors: string[];
+  isbn13: string;
+  thumbnail?: string | null;
+  description?: string | null;
+};
 
 const QRCodeReader: FC = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
