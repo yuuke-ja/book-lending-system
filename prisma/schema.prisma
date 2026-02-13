@@ -12,18 +12,30 @@ datasource db {
   provider = "postgresql"
 }
 
-model User{
+model User {
   id        String   @id @default(uuid())
   email     String   @unique
   name      String?
   createdAt DateTime @default(now())
 }
 
-model Admin{
-  email     String   @id
+model Admin {
+  email String @id
 }
 
-model Book{
+model Book {
+  id           String   @id @default(uuid())
+  googleBookId String?
+  isbn13       String   @unique
+  title        String
+  authors      String[]
+  description  String?
+  thumbnail    String?
+  createdAt    DateTime @default(now())
+  loans        Loan[]
+}
+
+model PendingBook {
   id           String   @id @default(uuid())
   googleBookId String?
   isbn13       String   @unique
@@ -34,13 +46,37 @@ model Book{
   createdAt    DateTime @default(now())
 }
 
-model PendingBook{
-  id           String   @id @default(uuid())
-  googleBookId String?
-  isbn13       String   @unique
-  title        String
-  authors      String[]
-  description  String?
-  thumbnail    String?
-  createdAt    DateTime @default(now())
+model Loan {
+  id         String    @id @default(uuid())
+  userEmail  String
+  bookId     String
+  book       Book      @relation(fields: [bookId], references: [id])
+  loanedAt   DateTime  @default(now())
+  returnedAt DateTime?
+
+  @@index([bookId, returnedAt])
+  @@index([userEmail, returnedAt])
+}
+
+model LoanSettings {
+  id             String           @id @default(uuid())
+  fridayOnly     Boolean          @default(true)
+  loanPeriodDays Int              @default(2)
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  openPeriods    LoanOpenPeriod[]
+}
+
+model LoanOpenPeriod {
+  id             String       @id @default(uuid())
+  loanSettingsId String
+  loanSettings   LoanSettings @relation(fields: [loanSettingsId], references: [id])
+  startDate      DateTime
+  endDate        DateTime
+  enabled        Boolean      @default(true)
+  note           String?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  @@index([startDate, endDate, enabled])
 }
