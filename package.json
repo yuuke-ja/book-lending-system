@@ -21,7 +21,8 @@
     "next-auth": "^5.0.0-beta.30",
     "pg": "^8.13.3",
     "react": "19.2.3",
-    "react-dom": "19.2.3"
+    "react-dom": "19.2.3",
+    "web-push": "^3.6.7"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
@@ -29,6 +30,7 @@
     "@types/pg": "^8.10.11",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@types/web-push": "^3.6.4",
     "eslint": "^9",
     "eslint-config-next": "16.1.4",
     "prisma": "^7.3.0",

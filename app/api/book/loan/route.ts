@@ -21,13 +21,14 @@ export async function POST(request: Request) {
       orderBy: { createdAt: 'asc' },
       select: {
         fridayOnly: true,
+        loanPeriodDays: true,
         openPeriods: {
           where: {
             enabled: true,
             startDate: { lte: now },
             endDate: { gte: now },
           },
-          select: { id: true },
+          select: { id: true, loanPeriodDays: true },
           take: 1,
         },
       },
@@ -52,10 +53,14 @@ export async function POST(request: Request) {
     if (alreadyLoaned) {
       return new Response('すでに貸出中です', { status: 409 });
     }
+    const normalDays = settings?.loanPeriodDays ?? 2;
+    const exceptionDays = settings?.openPeriods?.[0]?.loanPeriodDays;
+    const periodDays = exceptionDays ?? normalDays;
     await prisma.loan.create({
       data: {
         userEmail,
         bookId,
+        dueAt: new Date(now.getTime() + periodDays * 24 * 60 * 60 * 1000),
       },
     });
     return new Response('貸出が完了しました', { status: 200 });
@@ -88,6 +93,7 @@ export async function GET() {
           id: loan.id,
           bookId: loan.bookId,
           loanedAt: loan.loanedAt,
+          dueAt: loan.dueAt,
           book: loan.book,
         }))
       ),

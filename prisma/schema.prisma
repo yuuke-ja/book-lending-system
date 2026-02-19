@@ -53,6 +53,7 @@ model Loan {
   book       Book      @relation(fields: [bookId], references: [id])
   loanedAt   DateTime  @default(now())
   returnedAt DateTime?
+  dueAt   DateTime?
 
   @@index([bookId, returnedAt])
   @@index([userEmail, returnedAt])
@@ -74,9 +75,22 @@ model LoanOpenPeriod {
   startDate      DateTime
   endDate        DateTime
   enabled        Boolean      @default(true)
+  loanPeriodDays Int              @default(2)
   note           String?
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @updatedAt
 
   @@index([startDate, endDate, enabled])
+}
+
+model PushSubscription {
+  id        String   @id @default(uuid())
+  userEmail String
+  endpoint  String   @unique
+  p256dh    String
+  auth      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userEmail])
 }

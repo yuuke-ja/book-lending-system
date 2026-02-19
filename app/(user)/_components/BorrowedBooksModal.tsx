@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 type Loan = {
   id: string;
   loanedAt: string;
+  dueAt?: string | null;
   returnedAt?: string | null;
   book: {
     title: string;
@@ -55,6 +56,21 @@ export default function BorrowedBooksModal() {
                     <p className="text-xs text-zinc-500">
                       ISBN: {loan.book.isbn13}
                     </p>
+                    <p className="text-xs text-zinc-500">
+                      借りた日: {new Date(loan.loanedAt).toLocaleDateString()}
+                    </p>
+                    {loan.dueAt ? (
+                      <p className="text-xs text-zinc-500">
+                        返却日: {new Date(loan.dueAt).toLocaleDateString()}
+                      </p>
+                    ) : (
+                      <p className="text-xs text-red-500">未返却</p>
+                    )}
+                    {loan.dueAt && (
+                      <p className="text-xs text-red-500">
+                        あと {Math.ceil((new Date(loan.dueAt).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))} 日
+                      </p>
+                    )}
                   </div>
                 </div>
               ))}
