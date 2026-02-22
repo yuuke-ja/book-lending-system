@@ -1,5 +1,6 @@
 import { auth } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
+import { db } from "@/lib/db";
+import { randomUUID } from "crypto";
 
 type SubscriptionBody = {
   subscription?: {
@@ -28,20 +29,17 @@ export async function POST(request: Request) {
     return new Response("Invalid subscription", { status: 400 });
   }
 
-  await prisma.pushSubscription.upsert({
-    where: { endpoint },
-    create: {
-      userEmail: email,
-      endpoint,
-      p256dh,
-      auth: authKey,
-    },
-    update: {
-      userEmail: email,
-      p256dh,
-      auth: authKey,
-    },
-  });
+  await db.query(
+    `INSERT INTO "PushSubscription" (id, "userEmail", endpoint, p256dh, auth, "updatedAt")
+     VALUES ($1, $2, $3, $4, $5, NOW())
+     ON CONFLICT (endpoint)
+     DO UPDATE SET
+       "userEmail" = EXCLUDED."userEmail",
+       p256dh = EXCLUDED.p256dh,
+       auth = EXCLUDED.auth,
+       "updatedAt" = NOW()`,
+    [randomUUID(), email, endpoint, p256dh, authKey]
+  );
 
   return Response.json({ ok: true }, { status: 200 });
 }

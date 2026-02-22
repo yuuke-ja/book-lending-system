@@ -1,6 +1,6 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { auth } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
+import { db } from "@/lib/db";
 export async function GET() {
   const session = await auth();
   if (!session) {
@@ -16,34 +16,30 @@ export async function GET() {
     const todayEnd = new Date(todayStart);
     todayEnd.setHours(23, 59, 59, 999);
 
-    const data = await prisma.loan.findMany({
-      where: {
-        userEmail: email,
-        returnedAt: null,
-        dueAt: {
-          lte: todayEnd,
-        },
-      },
-      include: {
-        book: true,
-      },
-      orderBy: {
-        dueAt: 'asc',
-      },
-    });
+    const data = await db.query(
+      `SELECT l."dueAt", b.title
+       FROM "Loan" l
+       INNER JOIN "Book" b ON b.id = l."bookId"
+       WHERE l."userEmail" = $1
+         AND l."returnedAt" IS NULL
+         AND l."dueAt" IS NOT NULL
+         AND l."dueAt" <= $2
+       ORDER BY l."dueAt" ASC`,
+      [email, todayEnd]
+    );
 
     const dueToday: { bookTitle: string; dueDate: string }[] = [];
     const overdue: { bookTitle: string; dueDate: string }[] = [];
-    for (const loan of data) {
+    for (const loan of data.rows) {
       if (!loan.dueAt) continue;
       if (loan.dueAt < todayStart) {
         overdue.push({
-          bookTitle: loan.book.title,
+          bookTitle: loan.title,
           dueDate: loan.dueAt.toISOString(),
         });
       } else {
         dueToday.push({
-          bookTitle: loan.book.title,
+          bookTitle: loan.title,
           dueDate: loan.dueAt.toISOString(),
         });
       }

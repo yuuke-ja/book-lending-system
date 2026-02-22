@@ -1,5 +1,5 @@
 import { auth } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
+import { db } from "@/lib/db";
 
 type UnsubscribeBody = {
   endpoint?: string;
@@ -19,12 +19,10 @@ export async function POST(request: Request) {
     return new Response("Invalid endpoint", { status: 400 });
   }
 
-  await prisma.pushSubscription.deleteMany({
-    where: {
-      userEmail: email,
-      endpoint,
-    },
-  });
+  await db.query(
+    `DELETE FROM "PushSubscription" WHERE "userEmail" = $1 AND endpoint = $2`,
+    [email, endpoint]
+  );
 
   return Response.json({ ok: true }, { status: 200 });
 }

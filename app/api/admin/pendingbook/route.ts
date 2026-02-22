@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { db } from "@/lib/db";
 import { auth } from "@/lib/auth";
 import { Admin } from "@/lib/admin";
+import { randomUUID } from "crypto";
 
 const ISBN13_REGEX = /^97[89]\d{10}$/;
 
@@ -17,11 +18,11 @@ export async function GET() {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    const pendingBooks = await prisma.pendingBook.findMany({
-      orderBy: { createdAt: "desc" },
-    });
+    const pendingBooks = await db.query(
+      `SELECT * FROM "PendingBook" ORDER BY "createdAt" DESC`
+    );
 
-    return NextResponse.json(pendingBooks, { status: 200 });
+    return NextResponse.json(pendingBooks.rows, { status: 200 });
   } catch (error) {
     console.error(error);
     return NextResponse.json(
@@ -62,32 +63,36 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Invalid title" }, { status: 400 });
     }
 
-    const existing = await prisma.pendingBook.findUnique({
-      where: { isbn13 },
-      select: { id: true },
-    });
+    const existing = await db.query(
+      `SELECT id FROM "PendingBook" WHERE isbn13 = $1 LIMIT 1`,
+      [isbn13]
+    );
 
-    const pendingBook = await prisma.pendingBook.upsert({
-      where: { isbn13 },
-      create: {
+    const pendingBook = await db.query(
+      `INSERT INTO "PendingBook" (id, "googleBookId", isbn13, title, authors, description, thumbnail)
+       VALUES ($1, $2, $3, $4, $5, $6, $7)
+       ON CONFLICT (isbn13)
+       DO UPDATE SET
+         "googleBookId" = EXCLUDED."googleBookId",
+         title = EXCLUDED.title,
+         authors = EXCLUDED.authors,
+         description = EXCLUDED.description,
+         thumbnail = EXCLUDED.thumbnail
+       RETURNING *`,
+      [
+        randomUUID(),
         googleBookId,
         isbn13,
         title,
         authors,
         description,
         thumbnail,
-      },
-      update: {
-        googleBookId,
-        title,
-        authors,
-        description,
-        thumbnail,
-      },
-    });
+      ]
+    );
 
-    return NextResponse.json(pendingBook, {
-      status: existing ? 200 : 201,
+
+    return NextResponse.json(pendingBook.rows[0], {
+      status: (existing.rowCount ?? 0) > 0 ? 200 : 201,
     });
   } catch (error) {
     console.error(error);
@@ -111,14 +116,18 @@ export async function DELETE(request: NextRequest) {
 
     const { id } = await request.json();
 
-    if (!id) {
+    if (!id || typeof id !== "string") {
       return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
     }
 
-    const deleted = await prisma.pendingBook.delete({
-      where: { id: id },
-    });
-    console.log("Deleted pending book:", deleted);
+
+    const deleted = await db.query(
+      `DELETE FROM "PendingBook" WHERE id = $1 RETURNING id`,
+      [id]
+    );
+    if ((deleted.rowCount ?? 0) === 0) {
+      return NextResponse.json({ error: "Pending book not found" }, { status: 404 });
+    }
 
     return NextResponse.json({ message: "Pending book deleted" }, { status: 200 });
   } catch (error) {

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { db } from "@/lib/db";
 
 
 export async function POST(request: Request) {
@@ -10,13 +10,18 @@ export async function POST(request: Request) {
   const data = await request.json();
   const emails: string[] = data.emails;
 
-  await prisma.$transaction([
-    prisma.admin.deleteMany(),
-    prisma.admin.createMany({
-      data: emails.map((email) => ({ email })),
-      skipDuplicates: true,
-    }),
-  ]);
+  await db.transaction(async (tx) => {
+    await tx.query(`DELETE FROM "Admin"`);
+    if (emails.length > 0) {
+      await tx.query(
+        `INSERT INTO "Admin" (email)
+         SELECT DISTINCT t.email
+         FROM UNNEST($1::text[]) AS t(email)
+         ON CONFLICT (email) DO NOTHING`,
+        [emails]
+      );
+    }
+  });
 
 
   return NextResponse.json({ ok: true, count: emails.length });

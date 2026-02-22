@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from "@/lib/prisma";
+import { db } from "@/lib/db";
 import { auth } from "@/lib/auth";
 import { Admin } from "@/lib/admin";
+import { randomUUID } from "crypto";
 export async function POST(_request: NextRequest) {
   const session = await auth();
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -10,31 +11,35 @@ export async function POST(_request: NextRequest) {
   if (!isAdmin) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
   try {
-    const pending = await prisma.pendingBook.findMany();
+    const pending = await db.query(
+      `SELECT * FROM "PendingBook"`
+    );
 
-    await prisma.$transaction(async (tx: any) => {
-      for (const pb of pending) {
+    await db.transaction(async (tx) => {
+      for (const pb of pending.rows) {
         //PendingBookをBookに登録または更新
-        await tx.book.upsert({
-          where: { isbn13: pb.isbn13 },
-          create: {
-            googleBookId: pb.googleBookId,
-            isbn13: pb.isbn13,
-            title: pb.title,
-            authors: pb.authors,
-            description: pb.description,
-            thumbnail: pb.thumbnail,
-          },
-          update: {
-            googleBookId: pb.googleBookId,
-            title: pb.title,
-            authors: pb.authors,
-            description: pb.description,
-            thumbnail: pb.thumbnail,
-          },
-        });
+        await tx.query(
+          `INSERT INTO "Book" (id, "googleBookId", isbn13, title, authors, description, thumbnail)
+           VALUES ($1, $2, $3, $4, $5, $6, $7)
+           ON CONFLICT (isbn13)
+           DO UPDATE SET
+             "googleBookId" = EXCLUDED."googleBookId",
+             title = EXCLUDED.title,
+             authors = EXCLUDED.authors,
+             description = EXCLUDED.description,
+             thumbnail = EXCLUDED.thumbnail`,
+          [
+            randomUUID(),
+            pb.googleBookId,
+            pb.isbn13,
+            pb.title,
+            pb.authors,
+            pb.description,
+            pb.thumbnail,
+          ]
+        );
       }
-      await tx.pendingBook.deleteMany();
+      await tx.query(`DELETE FROM "PendingBook"`);
     });
 
     return NextResponse.json(

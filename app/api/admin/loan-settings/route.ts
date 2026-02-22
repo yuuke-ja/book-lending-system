@@ -1,6 +1,7 @@
 import { auth } from "@/lib/auth";
 import { Admin } from "@/lib/admin";
-import { prisma } from "@/lib/prisma";
+import { db } from "@/lib/db";
+import { randomUUID } from "crypto";
 
 const DATE_ONLY_REGEX = /^\d{4}-\d{2}-\d{2}$/;
 const DEFAULT_LOAN_PERIOD_DAYS = 2;
@@ -237,20 +238,21 @@ async function requireAdmin(): Promise<RequireAdminResult> {
 }
 
 async function getOrCreateLoanSettingsId(): Promise<string> {
-  const existing = await prisma.loanSettings.findFirst({
-    orderBy: { createdAt: "asc" },
-    select: { id: true },
-  });
-  if (existing) return existing.id;
+  const existing = await db.query(
+    `SELECT id
+     FROM "LoanSettings"
+     ORDER BY "createdAt" ASC
+     LIMIT 1`
+  );
+  if ((existing.rowCount ?? 0) > 0) return existing.rows[0].id;
 
-  const created = await prisma.loanSettings.create({
-    data: {
-      fridayOnly: true,
-      loanPeriodDays: DEFAULT_LOAN_PERIOD_DAYS,
-    },
-    select: { id: true },
-  });
-  return created.id;
+  const created = await db.query(
+    `INSERT INTO "LoanSettings" (id, "fridayOnly", "loanPeriodDays", "updatedAt")
+     VALUES ($1, $2, $3, NOW())
+     RETURNING id`,
+    [randomUUID(), true, DEFAULT_LOAN_PERIOD_DAYS]
+  );
+  return created.rows[0].id;
 }
 
 export async function GET() {
@@ -258,15 +260,13 @@ export async function GET() {
   if (!authResult.ok) return authResult.response;
 
   try {
-    const settings = await prisma.loanSettings.findFirst({
-      orderBy: { createdAt: "asc" },
-      include: {
-        openPeriods: {
-          where: { enabled: true },
-          orderBy: { startDate: "asc" },
-        },
-      },
-    });
+    const settingsResult = await db.query(
+      `SELECT id, "fridayOnly", "loanPeriodDays"
+       FROM "LoanSettings"
+       ORDER BY "createdAt" ASC
+       LIMIT 1`
+    );
+    const settings = settingsResult.rows[0] ?? null;
 
     if (!settings) {
       return Response.json(
@@ -282,8 +282,18 @@ export async function GET() {
       );
     }
 
-    const firstRule = settings.openPeriods[0] ?? null;
-    const exceptionRules = settings.openPeriods.map((period) => ({
+    const openPeriodsResult = await db.query(
+      `SELECT "startDate", "endDate", "loanPeriodDays"
+       FROM "LoanOpenPeriod"
+       WHERE "loanSettingsId" = $1
+         AND enabled = true
+       ORDER BY "startDate" ASC`,
+      [settings.id]
+    );
+    const openPeriods = openPeriodsResult.rows;
+
+    const firstRule = openPeriods[0] ?? null;
+    const exceptionRules = openPeriods.map((period) => ({
       startDate: toDateOnly(period.startDate),
       endDate: toDateOnly(period.endDate),
       loanPeriodDays: period.loanPeriodDays,
@@ -321,27 +331,40 @@ export async function PUT(request: Request) {
     const { fridayOnly, loanPeriodDays, exceptionRules } = parseResult.parsed;
     const settingsId = await getOrCreateLoanSettingsId();
 
-    await prisma.$transaction(async (tx) => {
-      await tx.loanSettings.update({
-        where: { id: settingsId },
-        data: { fridayOnly, loanPeriodDays },
-      });
+    await db.transaction(async (tx) => {
+      await tx.query(
+        `UPDATE "LoanSettings"
+         SET "fridayOnly" = $1,
+             "loanPeriodDays" = $2,
+             "updatedAt" = NOW()
+         WHERE id = $3`,
+        [fridayOnly, loanPeriodDays, settingsId]
+      );
 
-      await tx.loanOpenPeriod.updateMany({
-        where: { loanSettingsId: settingsId, enabled: true },
-        data: { enabled: false },
-      });
+      await tx.query(
+        `UPDATE "LoanOpenPeriod"
+         SET enabled = false,
+             "updatedAt" = NOW()
+         WHERE "loanSettingsId" = $1
+           AND enabled = true`,
+        [settingsId]
+      );
 
       if (exceptionRules.length > 0) {
-        await tx.loanOpenPeriod.createMany({
-          data: exceptionRules.map((rule) => ({
-            loanSettingsId: settingsId,
-            startDate: rule.startDate,
-            endDate: rule.endDate,
-            loanPeriodDays: rule.loanPeriodDays,
-            enabled: true,
-          })),
-        });
+        for (const rule of exceptionRules) {
+          await tx.query(
+            `INSERT INTO "LoanOpenPeriod"
+              (id, "loanSettingsId", "startDate", "endDate", "loanPeriodDays", enabled, "updatedAt")
+             VALUES ($1, $2, $3, $4, $5, true, NOW())`,
+            [
+              randomUUID(),
+              settingsId,
+              rule.startDate,
+              rule.endDate,
+              rule.loanPeriodDays,
+            ]
+          );
+        }
       }
     });
 

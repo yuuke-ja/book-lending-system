@@ -107,7 +107,7 @@ export default function AdminPage() {
   function updateLoanSettings(key: string, value: any) {
     setSettings((prev: any) => {
       const next = { ...prev, [key]: value };
-      void onLoanSettingsChanged(next);
+      //void onLoanSettingsChanged(next);
       return next;
     });
   }
@@ -132,14 +132,10 @@ export default function AdminPage() {
   }
 
   function removeExceptionRule(id: string) {
-    setSettings((prev: any) => {
-      const next = {
-        ...prev,
-        exceptionRules: prev.exceptionRules.filter((rule: any) => rule.id !== id),
-      };
-      void onLoanSettingsChanged(next);
-      return next;
-    });
+    setSettings((prev: any) => ({
+      ...prev,
+      exceptionRules: prev.exceptionRules.filter((rule: any) => rule.id !== id),
+    }));
   }
 
   useEffect(() => {
@@ -165,6 +161,9 @@ export default function AdminPage() {
       <section className="mt-8 max-w-xl rounded-lg border border-zinc-200 bg-zinc-50 p-5">
         <h2 className="text-lg font-semibold text-zinc-900">通常貸出ルール</h2>
         <div className="mt-4 space-y-4">
+          <button onClick={() => onLoanSettingsChanged(settings)} className="rounded bg-blue-500 px-2 py-1 text-xs text-white hover:bg-blue-400 disabled:cursor-not-allowed disabled:bg-blue-300">
+            保存
+          </button>
           <div>
             <p className="mb-2 text-sm font-medium text-zinc-800">金曜日のみ貸出</p>
             <label className="inline-flex cursor-pointer items-center">

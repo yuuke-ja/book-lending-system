@@ -1,5 +1,5 @@
 import { auth } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
+import { db } from "@/lib/db";
 
 const ISBN13_REGEX = /^97[89]\d{10}$/;
 
@@ -16,17 +16,14 @@ export async function GET(request: Request) {
   }
 
   try {
-    const book = await prisma.book.findUnique({
-      where: { isbn13 },
-      select: {
-        id: true,
-        title: true,
-        authors: true,
-        isbn13: true,
-        description: true,
-        thumbnail: true,
-      },
-    });
+    const bookResult = await db.query(
+      `SELECT id, title, authors, isbn13, description, thumbnail
+       FROM "Book"
+       WHERE isbn13 = $1
+       LIMIT 1`,
+      [isbn13]
+    );
+    const book = bookResult.rows[0];
 
     if (!book) {
       return new Response("この本は未登録です", { status: 404 });

@@ -1,5 +1,5 @@
 import { auth } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
+import { db } from "@/lib/db";
 
 export async function POST(request: Request) {
   const session = await auth();
@@ -16,17 +16,15 @@ export async function POST(request: Request) {
     if (!bookId || typeof bookId !== "string") {
       return new Response("bookIdが不正です", { status: 400 });
     }
-    const updated = await prisma.loan.updateMany({
-      where: {
-        bookId,
-        userEmail: session.user.email,
-        returnedAt: null,
-      },
-      data: {
-        returnedAt: new Date(),
-      },
-    });
-    if (updated.count === 0) {
+    const updated = await db.query(
+      `UPDATE "Loan"
+       SET "returnedAt" = $1
+       WHERE "bookId" = $2
+         AND "userEmail" = $3
+         AND "returnedAt" IS NULL`,
+      [new Date(), bookId, session.user.email]
+    );
+    if ((updated.rowCount ?? 0) === 0) {
       return new Response("返却する貸出が見つかりません", { status: 404 });
     }
 

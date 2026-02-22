@@ -1,4 +1,4 @@
-import { prisma } from "@/lib/prisma";
+import { db } from "@/lib/db";
 import webpush from "web-push";
 
 type NotificationResult = {
@@ -12,6 +12,19 @@ type NotificationResult = {
 const JST_OFFSET_MS = 9 * 60 * 60 * 1000;
 //同時に送る通知の数20件まで。
 const CONCURRENCY = 20;
+
+type DueCountRow = {
+  userEmail: string;
+  dueCount: number;
+};
+
+type PushSubscriptionRow = {
+  id: string;
+  userEmail: string;
+  endpoint: string;
+  p256dh: string;
+  auth: string;
+};
 
 function getJstTodayRange() {
   const now = new Date();
@@ -43,41 +56,34 @@ export async function notifications(): Promise<NotificationResult> {
   );
 
   const { start, end } = getJstTodayRange();
-  const grouped = await prisma.loan.groupBy({
-    by: ["userEmail"],
-    where: {
-      returnedAt: null,
-      dueAt: {
-        gte: start,
-        lte: end,
-      },
-    },
-    _count: {
-      _all: true,
-    },
-  });
+
+  const groupedResult = await db.query<DueCountRow>(
+    `SELECT "userEmail", COUNT(*)::int AS "dueCount"
+     FROM "Loan"
+     WHERE "returnedAt" IS NULL
+       AND "dueAt" >= $1
+       AND "dueAt" <= $2
+     GROUP BY "userEmail"`,
+    [start, end]
+  );
+  const grouped = groupedResult.rows;
 
   if (grouped.length === 0) {
     return { targetedUsers: 0, subscriptions: 0, sent: 0, failed: 0, removed: 0 };
   }
 
   const dueCountByEmail = new Map<string, number>(
-    grouped.map((g) => [g.userEmail, g._count._all])
+    grouped.map((g) => [g.userEmail, g.dueCount])
   );
   const targetEmails = grouped.map((g) => g.userEmail);
 
-  const subscriptions = await prisma.pushSubscription.findMany({
-    where: {
-      userEmail: { in: targetEmails },
-    },
-    select: {
-      id: true,
-      userEmail: true,
-      endpoint: true,
-      p256dh: true,
-      auth: true,
-    },
-  });
+  const subscriptionsResult = await db.query<PushSubscriptionRow>(
+    `SELECT id, "userEmail", endpoint, p256dh, auth
+     FROM "PushSubscription"
+     WHERE "userEmail" = ANY($1)`,
+    [targetEmails]
+  );
+  const subscriptions = subscriptionsResult.rows;
 
   let sent = 0;
   let failed = 0;
@@ -121,9 +127,10 @@ export async function notifications(): Promise<NotificationResult> {
   }
 
   if (invalidIds.length > 0) {
-    await prisma.pushSubscription.deleteMany({
-      where: { id: { in: invalidIds } },
-    });
+    await db.query(
+      `DELETE FROM "PushSubscription" WHERE id = ANY($1)`,
+      [invalidIds]
+    );
   }
 
   return {

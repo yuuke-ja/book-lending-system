@@ -1,7 +1,19 @@
 import axios from "axios";
+import { auth } from "@/lib/auth";
+import { Admin } from "@/lib/admin";
 
 export async function GET(request: Request) {
   try {
+    const session = await auth();
+    const email = session?.user?.email;
+    if (!email) {
+      return new Response("Unauthorized", { status: 401 });
+    }
+    const isAdmin = await Admin(email);
+    if (!isAdmin) {
+      return new Response("Forbidden", { status: 403 });
+    }
+
     const searchParams = new URL(request.url).searchParams;
     const isbn = searchParams.get("isbn");
 
