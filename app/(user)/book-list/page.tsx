@@ -83,11 +83,23 @@ export default function BookListPage() {
     fetchBooks();
   }, []);
 
-  if (loading) return <p>読み込み中...</p>;
-  if (error) return <p>エラー: {error}</p>;
+  if (loading) {
+    return (
+      <div className="rounded-2xl border border-zinc-200 bg-white p-6 text-sm text-zinc-600">
+        読み込み中...
+      </div>
+    );
+  }
+  if (error) {
+    return (
+      <div className="rounded-2xl border border-red-200 bg-red-50 p-6 text-sm text-red-700">
+        エラー: {error}
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-zinc-50 p-6">
+    <section className="space-y-5">
       {selectedBook && (
         <BookDetailsModal
           isOpen={true}
@@ -121,7 +133,12 @@ export default function BookListPage() {
           </div>
         </BookDetailsModal>
       )}
-      <h1 className="mb-6 text-2xl font-bold text-zinc-900">本一覧</h1>
+      <div className="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm">
+        <h1 className="text-2xl font-bold text-zinc-900">本一覧</h1>
+        <p className="mt-1 text-sm text-zinc-600">
+          登録済みの本を一覧表示します。カードを押すと詳細を確認できます。
+        </p>
+      </div>
       <div className="grid gap-4 [grid-template-columns:repeat(auto-fill,minmax(190px,1fr))]">
         {books.map((book) => (
           <div
@@ -129,7 +146,7 @@ export default function BookListPage() {
             className="flex h-full flex-col rounded-md border border-zinc-200 bg-white p-3 shadow-sm"
             onClick={() => setSelectedBook(book)}
           >
-            <div className="flex h-56 items-center justify-center overflow-hidden rounded bg-zinc-100">
+            <div className="flex h-56 w-full items-center justify-center overflow-hidden rounded bg-zinc-100">
               {book.thumbnail ? (
                 <img
                   src={book.thumbnail}
@@ -141,10 +158,10 @@ export default function BookListPage() {
               )}
             </div>
             <div className="mt-3 flex flex-1 flex-col gap-1">
-              <h2 className="text-sm font-semibold text-zinc-900">
+              <h2 className="line-clamp-2 text-sm font-semibold text-zinc-900">
                 {book.title}
               </h2>
-              <p className="text-xs text-zinc-600">
+              <p className="line-clamp-1 text-xs text-zinc-600">
                 {book.authors?.join(", ")}
               </p>
               {loanedSet.has(book.id) && (
@@ -152,13 +169,13 @@ export default function BookListPage() {
                   貸出中
                 </span>
               )}
-              <p className="mt-auto text-[11px] text-zinc-500">
+              <p className="mt-auto pt-2 text-[11px] text-zinc-500">
                 ISBN: {book.isbn13}
               </p>
             </div>
           </div>
         ))}
       </div>
-    </div>
+    </section>
   );
 }

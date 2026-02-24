@@ -3,6 +3,7 @@
 import { BrowserMultiFormatReader } from "@zxing/browser";
 import { BarcodeFormat, DecodeHintType } from "@zxing/library";
 import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 
 type ScanRect = {
   sourceX: number;
@@ -106,7 +107,6 @@ export default function ISBNImportModal({
     if (!open || !videoRef.current) return;
 
     detectingRef.current = false;
-    setCameraError(null);
     let active = true;
     let stream: MediaStream | null = null;
     let timerId: ReturnType<typeof setTimeout> | null = null;
@@ -201,6 +201,7 @@ export default function ISBNImportModal({
 
     // 背面カメラ優先で起動して、準備できたら読み取り開始。
     const startCamera = async () => {
+      setCameraError(null);
       try {
         stream = await navigator.mediaDevices.getUserMedia({
           video: {
@@ -235,10 +236,11 @@ export default function ISBNImportModal({
   }, [open]);
 
   if (!open) return null;
+  if (typeof document === "undefined") return null;
 
-  return (
+  return createPortal(
     <div className="fixed inset-0 z-50 bg-black">
-      <video ref={videoRef} className="h-full w-full " />
+      <video ref={videoRef} className="h-full w-full object-cover" />
       {overlayRect && (
         <div
           className="pointer-events-none absolute rounded border-2 border-emerald-400 shadow-[0_0_0_9999px_rgba(0,0,0,0.35)]"
@@ -261,6 +263,7 @@ export default function ISBNImportModal({
           閉じる
         </button>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

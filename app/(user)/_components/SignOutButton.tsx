@@ -1,6 +1,10 @@
 import { signOut } from "@/lib/auth";
 
-export default function SignOutButton() {
+type SignOutButtonProps = {
+  className?: string;
+};
+
+export default function SignOutButton({ className }: SignOutButtonProps) {
   return (
     <form
       action={async () => {
@@ -8,7 +12,9 @@ export default function SignOutButton() {
         await signOut({ redirectTo: "/" });
       }}
     >
-      <button type="submit">ログアウト</button>
+      <button type="submit" className={className}>
+        ログアウト
+      </button>
     </form>
   );
 }

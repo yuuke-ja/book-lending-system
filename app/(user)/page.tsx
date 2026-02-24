@@ -1,48 +1,63 @@
-import { auth } from "@/lib/auth";
-import { Admin } from "@/lib/admin";
-import LoginButton from "@/app/(user)/_components/LoginButton";
-import SignOutButton from "@/app/(user)/_components/SignOutButton";
 import ReturnStatus from "@/app/(user)/_components/ReturnStatus";
-import BorrowedBooksModal from "@/app/(user)/_components/BorrowedBooksModal";
+import BorrowedBooksList from "@/app/(user)/_components/BorrowedBooksList";
+import BorrowedList from "@/app/(user)/_components/BorrowedList";
 import Link from "next/link";
 
 export default async function Home() {
-
-  const session = await auth();
-  if (!session) {
-    return (
-      <main className="grid min-h-screen place-items-center bg-zinc-50 p-6">
-        <div className="space-y-4 text-center">
-          <h1 className="text-2xl font-semibold text-zinc-900">
-            ログインしてください
-          </h1>
-          <LoginButton />
-        </div>
-      </main>
-    );
-  }
-  const email = session.user?.email;
-  const admin = email ? await Admin(email) : false;
-
   return (
-    <main className="min-h-screen bg-white p-6">
+    <section className="space-y-6">
+      <div className="rounded-2xl border border-sky-100 bg-[linear-gradient(135deg,#eff6ff_0%,#ffffff_70%,#fef9c3_100%)] p-4 shadow-sm sm:p-6">
+        <p className="text-xs font-semibold tracking-[0.16em] text-sky-700">
+          HOME
+        </p>
+        <h2 className="mt-2 text-xl font-semibold text-zinc-900 sm:text-2xl">
+          図書貸出ホーム
+        </h2>
+        <p className="mt-2 text-sm text-zinc-600">
+          PCは左サイドバー、スマホは下部タブから画面を切り替えます。中央エリアに各ページの内容が表示されます。
+        </p>
+      </div>
+
       <ReturnStatus />
-      <SignOutButton />
 
-      {admin && (<Link href="/admin" className="mt-4 inline-flex items-center rounded-md bg-black px-4 py-2 text-white hover:bg-zinc-800">
-        管理者はこちら
-      </Link>)}
-      <Link href="/setting" className="mt-4 ml-4 inline-flex items-center rounded-md bg-black px-4 py-2 text-white hover:bg-zinc-800">
-        設定
-      </Link>
-      <Link href="/book-list" className="mt-4 ml-4 inline-flex items-center rounded-md bg-black px-4 py-2 text-white hover:bg-zinc-800">
-        本一覧
-      </Link>
-      <BorrowedBooksModal />
-      <Link href="/loan/qr" className="mt-4 ml-4 inline-flex items-center rounded-md bg-black px-4 py-2 text-white hover:bg-zinc-800">
-        本を借りる
-      </Link>
+      <BorrowedBooksList />
 
-    </main>
+      <BorrowedList />
+
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+        <Link
+          href="/book-list"
+          className="rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
+        >
+          <p className="text-xs font-semibold tracking-[0.14em] text-zinc-500">
+            BOOKS
+          </p>
+          <p className="mt-2 text-lg font-semibold text-zinc-900">本一覧</p>
+          <p className="mt-1 text-sm text-zinc-600">登録済みの本を確認</p>
+        </Link>
+
+        <Link
+          href="/loan/qr"
+          className="rounded-2xl border border-emerald-100 bg-emerald-50/70 p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
+        >
+          <p className="text-xs font-semibold tracking-[0.14em] text-emerald-700">
+            LOAN
+          </p>
+          <p className="mt-2 text-lg font-semibold text-zinc-900">本を借りる</p>
+          <p className="mt-1 text-sm text-zinc-600">ISBNを読み取って貸出</p>
+        </Link>
+
+        <Link
+          href="/return"
+          className="rounded-2xl border border-amber-100 bg-amber-50/70 p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
+        >
+          <p className="text-xs font-semibold tracking-[0.14em] text-amber-700">
+            RETURN
+          </p>
+          <p className="mt-2 text-lg font-semibold text-zinc-900">返却する</p>
+          <p className="mt-1 text-sm text-zinc-600">ISBNを読み取って返却</p>
+        </Link>
+      </div>
+    </section>
   );
 }

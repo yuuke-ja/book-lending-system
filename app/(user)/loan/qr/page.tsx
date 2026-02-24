@@ -1,7 +1,6 @@
 "use client";
 
 import ISBNImportModal from "@/app/_components/ISBNImportModal";
-import Link from "next/link";
 import { useCallback, useState } from "react";
 
 type Book = {
@@ -77,9 +76,9 @@ export default function LoanQrPage() {
   };
 
   return (
-    <main className="min-h-screen bg-zinc-50 p-6">
-      <div className="mx-auto max-w-3xl space-y-4">
-        <h1 className="text-2xl font-semibold text-zinc-900">QRコードで貸出</h1>
+    <>
+      <section className="mx-auto max-w-3xl space-y-4">
+        <h1 className="text-xl font-semibold text-zinc-900 sm:text-2xl">QRコードで貸出</h1>
         <p className="text-sm text-zinc-600">
           ISBNバーコードを読み取って本を確認し、貸出を確定します。
         </p>
@@ -97,7 +96,7 @@ export default function LoanQrPage() {
         {book && (
           <div className="space-y-3 rounded-lg border bg-white p-4">
             <p className="text-sm font-semibold text-zinc-900">この本を貸し出しますか？</p>
-            <div className="flex gap-4">
+            <div className="flex flex-col gap-4 sm:flex-row">
               {book.thumbnail && (
                 <img
                   src={book.thumbnail}
@@ -114,7 +113,7 @@ export default function LoanQrPage() {
                 )}
               </div>
             </div>
-            <div className="flex gap-2">
+            <div className="flex flex-col gap-2 sm:flex-row">
               <button
                 type="button"
                 onClick={borrowBook}
@@ -149,20 +148,13 @@ export default function LoanQrPage() {
         )}
 
         {error && <p className="text-sm text-red-600">{error}</p>}
-
-        <Link
-          href="/"
-          className="inline-flex items-center rounded-md bg-zinc-200 px-4 py-2 text-zinc-900 hover:bg-zinc-300"
-        >
-          戻る
-        </Link>
-      </div>
+      </section>
 
       <ISBNImportModal
         open={isScannerOpen}
         onClose={() => setIsScannerOpen(false)}
         onDetected={onDetected}
       />
-    </main>
+    </>
   );
 }
