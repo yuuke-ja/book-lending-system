@@ -1,6 +1,14 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
 import SignOutButton from "@/app/(user)/_components/SignOutButton";
+import MobileTabBar from "@/app/(user)/_components/MobileTabBar";
+import {
+  BookListIcon,
+  BorrowIcon,
+  ReturnIcon,
+  SettingIcon,
+  AdminIcon,
+} from "@/app/(user)/_components/LibraryNavIcons";
 
 type UserSidebarLayoutProps = {
   children: ReactNode;
@@ -16,7 +24,7 @@ export default function UserSidebarLayout({
   userEmail,
 }: UserSidebarLayoutProps) {
   const navLinkClass =
-    "flex w-full items-center rounded-xl bg-transparent px-4 py-3 text-sm font-medium text-slate-600 transition hover:bg-white/70 hover:text-slate-800";
+    "flex w-full items-center gap-3 rounded-xl bg-transparent px-4 py-3 text-sm font-medium text-slate-600 transition hover:bg-white/70 hover:text-slate-800";
 
   return (
     <div className="min-h-screen bg-[#edf0f7]">
@@ -32,21 +40,26 @@ export default function UserSidebarLayout({
 
             <nav className="space-y-1 p-2">
               <Link href="/setting" className={navLinkClass}>
+                <SettingIcon className="h-[18px] w-[18px] shrink-0 text-current" />
                 設定
               </Link>
               {isAdmin && (
                 <Link href="/admin" className={navLinkClass}>
+                  <AdminIcon className="h-[18px] w-[18px] shrink-0 text-current" />
                   管理者はこちら
                 </Link>
               )}
               <Link href="/book-list" className={navLinkClass}>
+                <BookListIcon className="h-[18px] w-[18px] shrink-0 text-current" />
                 本一覧
               </Link>
 
               <Link href="/loan/qr" className={navLinkClass}>
+                <BorrowIcon className="h-[18px] w-[18px] shrink-0 text-current" />
                 本を借りる
               </Link>
               <Link href="/return" className={navLinkClass}>
+                <ReturnIcon className="h-[18px] w-[18px] shrink-0 text-current" />
                 返却する
               </Link>
             </nav>
@@ -65,37 +78,15 @@ export default function UserSidebarLayout({
         </aside>
 
         <div className="min-w-0 space-y-4 p-4 pb-24 sm:p-5 sm:pb-24 lg:p-6 lg:pb-6">
-          <div className="rounded-2xl border border-white/70 bg-white/85 px-4 py-3 shadow-sm backdrop-blur lg:hidden">
-            <p className="text-xs font-semibold tracking-[0.16em] text-sky-700">
-              PROCLA LIBRARY
-            </p>
-            <p className="mt-1 text-sm font-semibold text-zinc-900">
-              スマホ版（下部タブで移動）
-            </p>
-          </div>
 
-          <main className="min-w-0 rounded-2xl border border-white/70 bg-white/90 p-4 shadow-xl shadow-slate-200/50 backdrop-blur sm:rounded-3xl sm:p-6">
+
+          <main className="min-w-0 rounded-md border border-white/70 bg-white/90 p-4 shadow-xl shadow-slate-200/50 backdrop-blur sm:rounded-lg sm:p-6 lg:h-[calc(100vh-3rem)] lg:overflow-y-auto">
             {children}
           </main>
         </div>
       </div>
 
-      <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-zinc-200/80 bg-white/95 p-2 backdrop-blur lg:hidden">
-        <div className="mx-auto grid max-w-md grid-cols-2 gap-2">
-          <Link
-            href="/book-list"
-            className="rounded-xl border border-zinc-200 bg-white px-4 py-3 text-center text-sm font-medium text-zinc-800 shadow-sm"
-          >
-            本一覧
-          </Link>
-          <Link
-            href="/loan/qr"
-            className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-center text-sm font-medium text-emerald-700 shadow-sm"
-          >
-            本を借りる
-          </Link>
-        </div>
-      </nav>
+      <MobileTabBar />
     </div>
   );
 }

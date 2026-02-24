@@ -25,7 +25,7 @@ type PushSubscriptionRow = {
   p256dh: string;
   auth: string;
 };
-
+// JSTの今日の0:00から23:59:59までの範囲を取得する。
 function getJstTodayRange() {
   const now = new Date();
   const jst = new Date(now.getTime() + JST_OFFSET_MS);
@@ -56,7 +56,7 @@ export async function notifications(): Promise<NotificationResult> {
   );
 
   const { start, end } = getJstTodayRange();
-
+  // 今日期限の未返却本をユーザー単位で集計
   const groupedResult = await db.query<DueCountRow>(
     `SELECT "userEmail", COUNT(*)::int AS "dueCount"
      FROM "Loan"
