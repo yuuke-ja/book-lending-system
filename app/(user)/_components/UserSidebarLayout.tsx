@@ -16,23 +16,21 @@ export default function UserSidebarLayout({
   userEmail,
 }: UserSidebarLayoutProps) {
   const navLinkClass =
-    "flex w-full items-center rounded-xl border border-transparent bg-white/80 px-4 py-3 text-sm font-medium text-zinc-700 shadow-sm transition hover:border-zinc-200 hover:bg-white";
+    "flex w-full items-center rounded-xl bg-transparent px-4 py-3 text-sm font-medium text-slate-600 transition hover:bg-white/70 hover:text-slate-800";
 
   return (
-    <div className="min-h-screen bg-[radial-gradient(circle_at_top_left,_#dbeafe,_transparent_50%),radial-gradient(circle_at_bottom_right,_#fde68a,_transparent_45%),#f3f6fb]">
+    <div className="min-h-screen bg-[#edf0f7]">
       <div className="grid min-h-screen grid-cols-1 lg:grid-cols-[280px_minmax(0,1fr)]">
-        <aside className="hidden lg:sticky lg:top-0 lg:block lg:h-screen lg:border-r lg:border-white/70 lg:bg-white/85 lg:p-4 lg:shadow-xl lg:shadow-slate-200/40 lg:backdrop-blur">
+        <aside className="hidden lg:sticky lg:top-0 lg:block lg:h-screen lg:border-r lg:border-[#e0e6f0] lg:bg-[#edf0f7] lg:p-4">
           <div className="flex h-full flex-col">
             <Link
               href="/"
-              className="mb-5 rounded-2xl border border-sky-100 bg-white p-4 shadow-sm"
+              className="mb-5 rounded-2xl px-4 py-3"
             >
-
               <h1 className="mt-2 text-xl font-semibold text-zinc-900">プロクラ図書</h1>
-
             </Link>
 
-            <nav className="space-y-2">
+            <nav className="space-y-1 p-2">
               <Link href="/setting" className={navLinkClass}>
                 設定
               </Link>
@@ -53,15 +51,15 @@ export default function UserSidebarLayout({
               </Link>
             </nav>
 
-            <div className="mt-auto rounded-2xl border border-white/70 bg-white/85 p-4 shadow-sm">
-              <p className="text-xs font-semibold tracking-[0.16em] text-zinc-500">
+            <div className="mt-auto rounded-2xl border border-[#e3e8f2] bg-[#f4f6fb] p-4">
+              <p className="text-xs font-semibold tracking-[0.16em] text-slate-500">
                 ACCOUNT
               </p>
-              <p className="mt-2 text-sm font-semibold text-zinc-900">
+              <p className="mt-2 text-sm font-semibold text-slate-800">
                 {userName || "ユーザー"}
               </p>
-              {userEmail && <p className="text-xs text-zinc-500">{userEmail}</p>}
-              <SignOutButton className="mt-4 w-full rounded-xl bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-700" />
+              {userEmail && <p className="text-xs text-slate-500">{userEmail}</p>}
+              <SignOutButton className="mt-4 w-full rounded-xl bg-[#4a5977] px-4 py-2.5 text-sm font-medium text-white transition hover:bg-[#42506b]" />
             </div>
           </div>
         </aside>

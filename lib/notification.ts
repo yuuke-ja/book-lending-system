@@ -88,7 +88,7 @@ export async function notifications(): Promise<NotificationResult> {
   let sent = 0;
   let failed = 0;
   const invalidIds: string[] = [];
-
+  // 20件ずつ並列で通知を送る。 
   for (let i = 0; i < subscriptions.length; i += CONCURRENCY) {
     const batch = subscriptions.slice(i, i + CONCURRENCY);
     const results = await Promise.allSettled(

@@ -15,7 +15,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       if (user.email && user.email.endsWith("@nnn.ed.jp")) {
         return true;
       }
-      return false;
+      return "/banpage";
     },
   },
   // Vercel などプロキシ環境向け
