@@ -13,7 +13,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   //nnn.ed.jpドメインのメールアドレスのみサインインを許可する。違ったらbanpageにリダイレクトする。
   callbacks: {
     async signIn({ user }) {
-      if (user.email && user.email.endsWith("@nnn.ed.jp")) {
+      if (user.email && (user.email.endsWith("@nnn.ed.jp") || user.email.endsWith("@nnn.ac.jp"))) {
         return true;
       }
       return "/banpage";
