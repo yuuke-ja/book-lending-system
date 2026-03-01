@@ -9,7 +9,21 @@ export async function GET() {
   }
   try {
     const books = await db.query(
-      'SELECT * FROM "Book" ORDER BY "createdAt" DESC'
+      `SELECT
+        b.id,
+        b.isbn13,
+        b.title,
+        b.authors,
+        b.description,
+        b.thumbnail,
+        b."createdAt",
+        COALESCE(AVG(br.rating), 0)::float AS "averageRating",
+        COUNT(br.id)::int AS "ratingCount"
+      FROM "Book" b
+      LEFT JOIN "BookReview" br ON br."bookId" = b.id
+      GROUP BY b.id, b.isbn13, b.title, b.authors, b.description, b.thumbnail, b."createdAt"
+      ORDER BY b."createdAt" DESC`
+
     );
     return NextResponse.json(books.rows, { status: 200 });
   } catch (error) {

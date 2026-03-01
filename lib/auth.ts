@@ -10,10 +10,12 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       authorization: { params: { prompt: "select_account" } },
     }),
   ],
-  //nnn.ed.jpドメインのメールアドレスのみサインインを許可する。違ったらbanpageにリダイレクトする。
   callbacks: {
     async signIn({ user }) {
-      if (user.email && (user.email.endsWith("@nnn.ed.jp") || user.email.endsWith("@nnn.ac.jp"))) {
+      if (
+        user.email &&
+        (user.email.endsWith("@nnn.ed.jp") || user.email.endsWith("@nnn.ac.jp"))
+      ) {
         return true;
       }
       return "/banpage";

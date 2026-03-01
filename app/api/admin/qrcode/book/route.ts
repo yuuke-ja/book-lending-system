@@ -1,23 +1,26 @@
 import axios from "axios";
 import { auth } from "@/lib/auth";
 import { Admin } from "@/lib/admin";
+import { NextResponse } from "next/server";
 
 export async function GET(request: Request) {
   try {
     const session = await auth();
     const email = session?.user?.email;
     if (!email) {
-      return new Response("Unauthorized", { status: 401 });
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
     const isAdmin = await Admin(email);
     if (!isAdmin) {
-      return new Response("Forbidden", { status: 403 });
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
     const searchParams = new URL(request.url).searchParams;
     const isbn = searchParams.get("isbn");
 
-    if (!isbn || !/^\d{13}$/.test(isbn)) return new Response("ISBNが不正です", { status: 400 });
+    if (!isbn || !/^\d{13}$/.test(isbn)) {
+      return NextResponse.json({ error: "ISBNが不正です" }, { status: 400 });
+    }
 
 
     const res = await axios.get(
@@ -26,10 +29,10 @@ export async function GET(request: Request) {
 
     const item = res.data.items?.[0];
     if (!item) {
-      return new Response("本が見つかりません", { status: 404 });
+      return NextResponse.json({ error: "本が見つかりません" }, { status: 404 });
     }
 
-    return Response.json({
+    return NextResponse.json({
       googleBookId: item.id,
       isbn13: isbn,
       title: item.volumeInfo.title,
@@ -39,7 +42,7 @@ export async function GET(request: Request) {
     });
   } catch (error) {
     console.error(error);
-    return new Response("サーバー側でエラーが発生しました", {
+    return NextResponse.json({ error: "サーバー側でエラーが発生しました" }, {
       status: 500,
     });
   }

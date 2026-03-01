@@ -1,7 +1,7 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { db } from "@/lib/db";
 import { auth } from "@/lib/auth";
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     const session = await auth();
     if (!session) {
@@ -32,25 +32,23 @@ export async function GET(request: NextRequest) {
 
       [userEmail]
     );
-    return new Response(
-      JSON.stringify(
-        borrowedList.rows.map((loan) => ({
-          id: loan.id,
-          bookId: loan.bookId,
-          loanedAt: loan.loanedAt,
-          dueAt: loan.dueAt,
-          book: {
-            id: loan.book_id,
-            googleBookId: loan.book_googleBookId,
-            isbn13: loan.book_isbn13,
-            title: loan.book_title,
-            authors: loan.book_authors,
-            description: loan.book_description,
-            thumbnail: loan.book_thumbnail,
-            createdAt: loan.book_createdAt,
-          },
-        }))
-      ),
+    return NextResponse.json(
+      borrowedList.rows.map((loan) => ({
+        id: loan.id,
+        bookId: loan.bookId,
+        loanedAt: loan.loanedAt,
+        dueAt: loan.dueAt,
+        book: {
+          id: loan.book_id,
+          googleBookId: loan.book_googleBookId,
+          isbn13: loan.book_isbn13,
+          title: loan.book_title,
+          authors: loan.book_authors,
+          description: loan.book_description,
+          thumbnail: loan.book_thumbnail,
+          createdAt: loan.book_createdAt,
+        },
+      })),
       { status: 200 }
     );
   } catch (error) {

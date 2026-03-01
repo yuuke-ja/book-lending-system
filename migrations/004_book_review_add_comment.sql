@@ -1,0 +1,2 @@
+ALTER TABLE "BookReview"
+ADD COLUMN IF NOT EXISTS comment TEXT;

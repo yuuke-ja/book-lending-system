@@ -2,11 +2,13 @@ import { auth } from "@/lib/auth";
 import { Admin } from "@/lib/admin";
 import { db } from "@/lib/db";
 import { randomUUID } from "crypto";
+import { NextResponse } from "next/server";
 
 const DATE_ONLY_REGEX = /^\d{4}-\d{2}-\d{2}$/;
 const DEFAULT_LOAN_PERIOD_DAYS = 2;
 const MIN_LOAN_PERIOD_DAYS = 1;
 const MAX_LOAN_PERIOD_DAYS = 365;
+const LOAN_SETTINGS_SINGLETON_KEY = "default";
 
 type ParsedExceptionRule = {
   startDate: Date;
@@ -51,7 +53,7 @@ function isValidDate(value: Date): boolean {
 }
 
 function errorJson(message: string, status: number): Response {
-  return Response.json({ message }, { status });
+  return NextResponse.json({ message }, { status });
 }
 
 function parseLoanDays(value: unknown): number | null {
@@ -225,34 +227,33 @@ async function requireAdmin(): Promise<RequireAdminResult> {
   if (!session?.user?.email) {
     return {
       ok: false,
-      response: new Response("Unauthorized", { status: 401 }),
+      response: NextResponse.json({ error: "Unauthorized" }, { status: 401 }),
     };
   }
 
   const isAdmin = await Admin(session.user.email);
   if (!isAdmin) {
-    return { ok: false, response: new Response("Forbidden", { status: 403 }) };
+    return { ok: false, response: NextResponse.json({ error: "Forbidden" }, { status: 403 }) };
   }
 
   return { ok: true };
 }
 
 async function getOrCreateLoanSettingsId(): Promise<string> {
-  const existing = await db.query(
-    `SELECT id
-     FROM "LoanSettings"
-     ORDER BY "createdAt" ASC
-     LIMIT 1`
-  );
-  if ((existing.rowCount ?? 0) > 0) return existing.rows[0].id;
-
-  const created = await db.query(
-    `INSERT INTO "LoanSettings" (id, "fridayOnly", "loanPeriodDays", "updatedAt")
-     VALUES ($1, $2, $3, NOW())
+  const result = await db.query(
+    `INSERT INTO "LoanSettings" ("settingKey", id, "fridayOnly", "loanPeriodDays", "updatedAt")
+     VALUES ($1, $2, $3, $4, NOW())
+     ON CONFLICT ("settingKey")
+     DO UPDATE SET "settingKey" = EXCLUDED."settingKey"
      RETURNING id`,
-    [randomUUID(), true, DEFAULT_LOAN_PERIOD_DAYS]
+    [
+      LOAN_SETTINGS_SINGLETON_KEY,
+      randomUUID(),
+      true,
+      DEFAULT_LOAN_PERIOD_DAYS,
+    ]
   );
-  return created.rows[0].id;
+  return result.rows[0].id;
 }
 
 export async function GET() {
@@ -269,7 +270,7 @@ export async function GET() {
     const settings = settingsResult.rows[0] ?? null;
 
     if (!settings) {
-      return Response.json(
+      return NextResponse.json(
         {
           fridayOnly: true,
           loanPeriodDays: DEFAULT_LOAN_PERIOD_DAYS,
@@ -299,7 +300,7 @@ export async function GET() {
       loanPeriodDays: period.loanPeriodDays,
     }));
 
-    return Response.json(
+    return NextResponse.json(
       {
         fridayOnly: settings.fridayOnly,
         loanPeriodDays: settings.loanPeriodDays,
@@ -368,7 +369,7 @@ export async function PUT(request: Request) {
       }
     });
 
-    return Response.json({ ok: true }, { status: 200 });
+    return NextResponse.json({ ok: true }, { status: 200 });
   } catch (error) {
     console.error("貸出設定の保存に失敗:", error);
     return errorJson("貸出設定の保存に失敗しました", 500);

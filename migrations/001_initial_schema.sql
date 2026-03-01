@@ -48,6 +48,7 @@ CREATE TABLE IF NOT EXISTS "Loan" (
 );
 
 CREATE TABLE IF NOT EXISTS "LoanSettings" (
+  "settingKey" TEXT NOT NULL UNIQUE,
   id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
   "fridayOnly" BOOLEAN NOT NULL DEFAULT true,
   "loanPeriodDays" INTEGER NOT NULL DEFAULT 2,

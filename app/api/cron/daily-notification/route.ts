@@ -1,4 +1,5 @@
 import { notifications } from "@/lib/notification";
+import { NextResponse } from "next/server";
 
 function isAuthorized(request: Request): boolean {
   const secret = process.env.CRON_SECRET;
@@ -15,11 +16,11 @@ function isAuthorized(request: Request): boolean {
 
 export async function GET(request: Request) {
   if (!isAuthorized(request)) {
-    return new Response("Unauthorized", { status: 401 });
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   const result = await notifications();
-  return Response.json(
+  return NextResponse.json(
     { ok: true, message: "Daily notifications sent", ...result },
     { status: 200 }
   );

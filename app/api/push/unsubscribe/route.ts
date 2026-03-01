@@ -1,5 +1,6 @@
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
+import { NextResponse } from "next/server";
 
 type UnsubscribeBody = {
   endpoint?: string;
@@ -9,14 +10,14 @@ export async function POST(request: Request) {
   const session = await auth();
   const email = session?.user?.email;
   if (!email) {
-    return new Response("Unauthorized", { status: 401 });
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   const body = (await request.json()) as UnsubscribeBody;
   const endpoint = body.endpoint;
 
   if (!endpoint) {
-    return new Response("Invalid endpoint", { status: 400 });
+    return NextResponse.json({ error: "Invalid endpoint" }, { status: 400 });
   }
 
   await db.query(
@@ -24,5 +25,5 @@ export async function POST(request: Request) {
     [email, endpoint]
   );
 
-  return Response.json({ ok: true }, { status: 200 });
+  return NextResponse.json({ ok: true }, { status: 200 });
 }

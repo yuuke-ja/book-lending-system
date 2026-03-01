@@ -1,6 +1,7 @@
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { randomUUID } from "crypto";
+import { NextResponse } from "next/server";
 
 type SubscriptionBody = {
   subscription?: {
@@ -16,7 +17,7 @@ export async function POST(request: Request) {
   const session = await auth();
   const email = session?.user?.email;
   if (!email) {
-    return new Response("Unauthorized", { status: 401 });
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   const body = (await request.json()) as SubscriptionBody;
@@ -26,7 +27,7 @@ export async function POST(request: Request) {
   const authKey = subscription?.keys?.auth;
 
   if (!endpoint || !p256dh || !authKey) {
-    return new Response("Invalid subscription", { status: 400 });
+    return NextResponse.json({ error: "Invalid subscription" }, { status: 400 });
   }
 
   await db.query(
@@ -41,5 +42,5 @@ export async function POST(request: Request) {
     [randomUUID(), email, endpoint, p256dh, authKey]
   );
 
-  return Response.json({ ok: true }, { status: 200 });
+  return NextResponse.json({ ok: true }, { status: 200 });
 }
