@@ -18,9 +18,14 @@ export async function GET() {
         b.thumbnail,
         b."createdAt",
         COALESCE(AVG(br.rating), 0)::float AS "averageRating",
-        COUNT(br.id)::int AS "ratingCount"
+        COALESCE(
+          jsonb_agg(DISTINCT jsonb_build_object('id', tl.id, 'tag', tl.tag)) FILTER (WHERE tl.id IS NOT NULL),
+          '[]'::jsonb
+        ) AS "tags"
       FROM "Book" b
       LEFT JOIN "BookReview" br ON br."bookId" = b.id
+      LEFT JOIN "BookTag" bt ON bt."bookId" = b.id
+      LEFT JOIN "TagList" tl ON tl.id = bt."tagId"
       GROUP BY b.id, b.isbn13, b.title, b.authors, b.description, b.thumbnail, b."createdAt"
       ORDER BY b."createdAt" DESC`
 

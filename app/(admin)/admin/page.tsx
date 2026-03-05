@@ -3,12 +3,23 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
-function createExceptionRule(partial = {}) {
-  const p = partial as {
-    startDate?: string;
-    endDate?: string;
-    loanPeriodDays?: number;
-  };
+type ExceptionRule = {
+  id: string;
+  startDate: string;
+  endDate: string;
+  loanPeriodDays: number;
+};
+
+type LoanSettings = {
+  fridayOnly: boolean;
+  loanPeriodDays: number;
+  exceptionRules: ExceptionRule[];
+};
+
+type ExceptionRulePartial = Partial<Omit<ExceptionRule, "id">>;
+
+function createExceptionRule(partial: ExceptionRulePartial = {}): ExceptionRule {
+  const p = partial;
   return {
     id: `rule-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
     startDate: p.startDate ?? "",
@@ -17,52 +28,25 @@ function createExceptionRule(partial = {}) {
   };
 }
 
+type TagItem = {
+  id: string;
+  tag: string;
+};
+
 export default function AdminPage() {
-  const [settings, setSettings] = useState<any>({
+  const [settings, setSettings] = useState<LoanSettings>({
     fridayOnly: true,
     loanPeriodDays: 2,
     exceptionRules: [],
   });
   const [isLoadingSettings, setIsLoadingSettings] = useState(true);
   const [statusMessage, setStatusMessage] = useState("");
+  const [tagInput, setTagInput] = useState("");
+  const [taglist, setTaglist] = useState<TagItem[]>([]);
+  const [isLoadingTags, setIsLoadingTags] = useState(true);
+  const [tagStatusMessage, setTagStatusMessage] = useState("");
 
-  async function fetchLoanSettings() {
-    setStatusMessage("設定を取得中...");
-    try {
-      const res = await fetch("/api/admin/loan-settings", { cache: "no-store" });
-      if (!res.ok) throw new Error();
-      const data = await res.json();
-
-      const exceptionRules = Array.isArray(data.exceptionRules)
-        ? data.exceptionRules.map((rule: any) =>
-          createExceptionRule({
-            startDate: typeof rule?.startDate === "string" ? rule.startDate : "",
-            endDate: typeof rule?.endDate === "string" ? rule.endDate : "",
-            loanPeriodDays:
-              Number.isInteger(rule?.loanPeriodDays) && rule.loanPeriodDays > 0
-                ? rule.loanPeriodDays
-                : 2,
-          })
-        )
-        : [];
-      //stateに入れる
-      setSettings({
-        fridayOnly: Boolean(data.fridayOnly),
-        loanPeriodDays:
-          Number.isInteger(data.loanPeriodDays) && data.loanPeriodDays > 0
-            ? data.loanPeriodDays
-            : 2,
-        exceptionRules,
-      });
-      setStatusMessage("");
-    } catch {
-      setStatusMessage("設定取得に失敗しました");
-    } finally {
-      setIsLoadingSettings(false);
-    }
-  }
-
-  async function onLoanSettingsChanged(next: any) {
+  async function onLoanSettingsChanged(next: LoanSettings) {
     setStatusMessage("保存中...");
     try {
       const payload = {
@@ -71,9 +55,9 @@ export default function AdminPage() {
           Number.isInteger(next.loanPeriodDays) && next.loanPeriodDays > 0
             ? next.loanPeriodDays
             : 2,
-        exceptionRules: (Array.isArray(next.exceptionRules) ? next.exceptionRules : [])
-          .filter((rule: any) => typeof rule?.startDate === "string" && typeof rule?.endDate === "string" && rule.startDate.length > 0 && rule.endDate.length > 0)
-          .map((rule: any) => ({
+        exceptionRules: next.exceptionRules
+          .filter((rule) => rule.startDate.length > 0 && rule.endDate.length > 0)
+          .map((rule) => ({
             startDate: rule.startDate,
             endDate: rule.endDate,
             loanPeriodDays:
@@ -104,18 +88,75 @@ export default function AdminPage() {
     }
   }
 
-  function updateLoanSettings(key: string, value: any) {
-    setSettings((prev: any) => {
+  async function fetchTagList(options?: { silent?: boolean }) {
+    const silent = options?.silent ?? false;
+    if (!silent) setTagStatusMessage("タグ一覧を取得中...");
+    try {
+      const res = await fetch("/api/admin/tags", { cache: "no-store" });
+      if (!res.ok) throw new Error();
+      const data = await res.json();
+      setTaglist(Array.isArray(data) ? data : []);
+      if (!silent) setTagStatusMessage("");
+    } catch {
+      setTagStatusMessage("タグ一覧の取得に失敗しました");
+    } finally {
+      setIsLoadingTags(false);
+    }
+  }
+
+  async function addTag() {
+    const tag = tagInput.trim();
+    if (!tag) {
+      setTagStatusMessage("タグ名を入力してください");
+      return;
+    }
+
+    setTagStatusMessage("タグを保存中...");
+    try {
+      const res = await fetch("/api/admin/tags", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ tags: [tag] }),
+      });
+      if (!res.ok) {
+        try {
+          const err = await res.json();
+          setTagStatusMessage(
+            typeof err?.error === "string" ? err.error : "タグの保存に失敗しました"
+          );
+        } catch {
+          setTagStatusMessage("タグの保存に失敗しました");
+        }
+        return;
+      }
+
+      setTagInput("");
+      await fetchTagList({ silent: true });
+      setTagStatusMessage("タグを保存しました");
+    } catch {
+      setTagStatusMessage("タグの保存に失敗しました");
+    }
+  }
+
+  function updateLoanSettings(
+    key: "fridayOnly" | "loanPeriodDays",
+    value: LoanSettings["fridayOnly"] | LoanSettings["loanPeriodDays"]
+  ) {
+    setSettings((prev) => {
       const next = { ...prev, [key]: value };
       //void onLoanSettingsChanged(next);
       return next;
     });
   }
 
-  function updateExceptionRuleLocal(id: string, key: string, value: any) {
-    setSettings((prev: any) => ({
+  function updateExceptionRuleLocal(
+    id: string,
+    key: "startDate" | "endDate" | "loanPeriodDays",
+    value: ExceptionRule["startDate"] | ExceptionRule["endDate"] | ExceptionRule["loanPeriodDays"]
+  ) {
+    setSettings((prev) => ({
       ...prev,
-      exceptionRules: prev.exceptionRules.map((rule: any) =>
+      exceptionRules: prev.exceptionRules.map((rule) =>
         rule.id === id ? { ...rule, [key]: value } : rule
       ),
     }));
@@ -125,21 +166,83 @@ export default function AdminPage() {
 
 
   function addExceptionRule() {
-    setSettings((prev: any) => ({
+    setSettings((prev) => ({
       ...prev,
       exceptionRules: [...prev.exceptionRules, createExceptionRule()],
     }));
   }
 
   function removeExceptionRule(id: string) {
-    setSettings((prev: any) => ({
+    setSettings((prev) => ({
       ...prev,
-      exceptionRules: prev.exceptionRules.filter((rule: any) => rule.id !== id),
+      exceptionRules: prev.exceptionRules.filter((rule) => rule.id !== id),
     }));
   }
 
   useEffect(() => {
-    void fetchLoanSettings();
+    const fetchSettings = async () => {
+      setStatusMessage("設定を取得中...");
+      try {
+        const res = await fetch("/api/admin/loan-settings", { cache: "no-store" });
+        if (!res.ok) throw new Error();
+        const data: {
+          fridayOnly?: unknown;
+          loanPeriodDays?: unknown;
+          exceptionRules?: Array<{
+            startDate?: unknown;
+            endDate?: unknown;
+            loanPeriodDays?: unknown;
+          }>;
+        } = await res.json();
+
+        const exceptionRules = Array.isArray(data.exceptionRules)
+          ? data.exceptionRules.map((rule) =>
+            createExceptionRule({
+              startDate: typeof rule?.startDate === "string" ? rule.startDate : "",
+              endDate: typeof rule?.endDate === "string" ? rule.endDate : "",
+              loanPeriodDays:
+                Number.isInteger(rule?.loanPeriodDays) && rule.loanPeriodDays > 0
+                  ? rule.loanPeriodDays
+                  : 2,
+            })
+          )
+          : [];
+        setSettings({
+          fridayOnly: Boolean(data.fridayOnly),
+          loanPeriodDays:
+            Number.isInteger(data.loanPeriodDays) && data.loanPeriodDays > 0
+              ? data.loanPeriodDays
+              : 2,
+          exceptionRules,
+        });
+        setStatusMessage("");
+      } catch {
+        setStatusMessage("設定取得に失敗しました");
+      } finally {
+        setIsLoadingSettings(false);
+      }
+    };
+
+    fetchSettings();
+  }, []);
+
+  useEffect(() => {
+    const fetchInitialTags = async () => {
+      setTagStatusMessage("タグ一覧を取得中...");
+      try {
+        const res = await fetch("/api/admin/tags", { cache: "no-store" });
+        if (!res.ok) throw new Error();
+        const data = await res.json();
+        setTaglist(Array.isArray(data) ? data : []);
+        setTagStatusMessage("");
+      } catch {
+        setTagStatusMessage("タグ一覧の取得に失敗しました");
+      } finally {
+        setIsLoadingTags(false);
+      }
+    };
+
+    fetchInitialTags();
   }, []);
 
   return (
@@ -239,7 +342,7 @@ export default function AdminPage() {
             <p className="text-sm text-zinc-600">例外ルールはまだありません。</p>
           )}
 
-          {settings.exceptionRules.map((rule: any, index: number) => (
+          {settings.exceptionRules.map((rule, index) => (
             <div key={rule.id} className="rounded-md border border-zinc-200 bg-white p-3">
               <div className="mb-2 flex items-center justify-between">
                 <p className="text-sm font-semibold text-zinc-800">例外ルール {index + 1}</p>
@@ -290,6 +393,69 @@ export default function AdminPage() {
           ))}
         </div>
       </section>
+
+      <section className="mt-8 max-w-xl rounded-lg border border-zinc-200 bg-zinc-50 p-5">
+        <div className="flex items-center justify-between">
+          <h2 className="text-lg font-semibold text-zinc-900">タグ管理</h2>
+          <button
+            type="button"
+            onClick={() => {
+              void fetchTagList();
+            }}
+            disabled={isLoadingTags}
+            className="rounded-md border border-zinc-300 bg-white px-3 py-1 text-sm text-zinc-700 hover:bg-zinc-100 disabled:cursor-not-allowed disabled:bg-zinc-200"
+          >
+            再取得
+          </button>
+        </div>
+
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            void addTag();
+          }}
+          className="mt-4 flex items-center gap-2"
+        >
+          <input
+            type="text"
+            value={tagInput}
+            onChange={(e) => setTagInput(e.target.value)}
+            placeholder="追加するタグ名"
+            className="w-full rounded border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-800 outline-none focus:border-zinc-400"
+            disabled={isLoadingTags}
+          />
+          <button
+            type="submit"
+            disabled={isLoadingTags}
+            className="rounded bg-zinc-900 px-3 py-2 text-sm font-medium text-white hover:bg-zinc-700 disabled:cursor-not-allowed disabled:bg-zinc-400"
+          >
+            追加
+          </button>
+        </form>
+
+        <div className="mt-4 rounded-md border border-zinc-200 bg-white p-3">
+          {isLoadingTags ? (
+            <p className="text-sm text-zinc-600">タグを読み込み中...</p>
+          ) : taglist.length === 0 ? (
+            <p className="text-sm text-zinc-600">タグはまだありません。</p>
+          ) : (
+            <div className="flex flex-wrap gap-2">
+              {taglist.map((item) => (
+                <span
+                  key={item.id}
+                  className="rounded-full border border-zinc-200 bg-zinc-100 px-3 py-1 text-xs text-zinc-700"
+                >
+                  #{item.tag}
+                </span>
+              ))}
+            </div>
+          )}
+        </div>
+
+        <p className="mt-3 text-xs text-zinc-600">{tagStatusMessage}</p>
+      </section>
+
+
 
       <p className="mt-4 max-w-xl text-xs text-zinc-600">{statusMessage}</p>
     </main>

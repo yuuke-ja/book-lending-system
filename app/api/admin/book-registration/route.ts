@@ -18,7 +18,7 @@ export async function POST(_request: NextRequest) {
     await db.transaction(async (tx) => {
       for (const pb of pending.rows) {
         //PendingBookをBookに登録または更新
-        await tx.query(
+        const savedbook = await tx.query(
           `INSERT INTO "Book" (id, "googleBookId", isbn13, title, authors, description, thumbnail)
            VALUES ($1, $2, $3, $4, $5, $6, $7)
            ON CONFLICT (isbn13)
@@ -27,7 +27,8 @@ export async function POST(_request: NextRequest) {
              title = EXCLUDED.title,
              authors = EXCLUDED.authors,
              description = EXCLUDED.description,
-             thumbnail = EXCLUDED.thumbnail`,
+             thumbnail = EXCLUDED.thumbnail
+           RETURNING id, title, authors, description`,
           [
             randomUUID(),
             pb.googleBookId,
@@ -38,6 +39,18 @@ export async function POST(_request: NextRequest) {
             pb.thumbnail,
           ]
         );
+        const book = savedbook.rows[0];
+        const searchText = `${book.title} ${(book.authors ?? []).join(" ")} ${book.description ?? ""}`.toLowerCase();
+        await tx.query(`DELETE FROM "BookTag" WHERE "bookId" = $1`, [book.id]);
+        await tx.query(
+          `INSERT INTO "BookTag" ("bookId", "tagId")
+           SELECT $1, t.id
+           FROM "TagList" t
+           WHERE $2 LIKE '%' || lower(t.tag) || '%'
+           ON CONFLICT ("bookId", "tagId") DO NOTHING`,
+          [book.id, searchText]
+        );
+
       }
       await tx.query(`DELETE FROM "PendingBook"`);
     });

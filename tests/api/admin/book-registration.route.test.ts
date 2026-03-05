@@ -17,6 +17,8 @@ const mockedAuth = auth as unknown as ReturnType<typeof vi.fn>;
 const mockedAdmin = Admin as unknown as ReturnType<typeof vi.fn>;
 const mockedQuery = db.query as unknown as ReturnType<typeof vi.fn>;
 const mockedTransaction = db.transaction as unknown as ReturnType<typeof vi.fn>;
+const makeNextRequest = (url: string) =>
+  new Request(url) as unknown as import("next/server").NextRequest;
 
 describe("POST /api/admin/book-registration", () => {
   beforeEach(() => {
@@ -26,7 +28,7 @@ describe("POST /api/admin/book-registration", () => {
   it("未ログインのとき401を返す", async () => {
     mockedAuth.mockResolvedValue(null);
 
-    const res = await POST(new Request("http://localhost/api/admin/book-registration") as any);
+    const res = await POST(makeNextRequest("http://localhost/api/admin/book-registration"));
 
     expect(res.status).toBe(401);
   });
@@ -48,11 +50,11 @@ describe("POST /api/admin/book-registration", () => {
     });
 
     const txQuery = vi.fn().mockResolvedValue({});
-    mockedTransaction.mockImplementation(async (callback: any) => {
+    mockedTransaction.mockImplementation(async (callback: (tx: { query: typeof txQuery }) => Promise<unknown>) => {
       return callback({ query: txQuery });
     });
 
-    const res = await POST(new Request("http://localhost/api/admin/book-registration") as any);
+    const res = await POST(makeNextRequest("http://localhost/api/admin/book-registration"));
 
     expect(res.status).toBe(200);
     expect(mockedQuery).toHaveBeenCalledTimes(1);
