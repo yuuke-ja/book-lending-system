@@ -195,24 +195,22 @@ export default function AdminPage() {
           }>;
         } = await res.json();
 
+        const toPositiveDays = (value: unknown): number => {
+          return Number.isInteger(value) && (value as number) > 0 ? (value as number) : 2;
+        };
+
         const exceptionRules = Array.isArray(data.exceptionRules)
           ? data.exceptionRules.map((rule) =>
             createExceptionRule({
               startDate: typeof rule?.startDate === "string" ? rule.startDate : "",
               endDate: typeof rule?.endDate === "string" ? rule.endDate : "",
-              loanPeriodDays:
-                Number.isInteger(rule?.loanPeriodDays) && rule.loanPeriodDays > 0
-                  ? rule.loanPeriodDays
-                  : 2,
+              loanPeriodDays: toPositiveDays(rule?.loanPeriodDays),
             })
           )
           : [];
         setSettings({
           fridayOnly: Boolean(data.fridayOnly),
-          loanPeriodDays:
-            Number.isInteger(data.loanPeriodDays) && data.loanPeriodDays > 0
-              ? data.loanPeriodDays
-              : 2,
+          loanPeriodDays: toPositiveDays(data.loanPeriodDays),
           exceptionRules,
         });
         setStatusMessage("");
