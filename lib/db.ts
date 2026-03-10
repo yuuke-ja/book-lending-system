@@ -19,6 +19,11 @@ if (!databaseUrl) {
 }
 
 const pool = globalForDb.pool ?? new Pool({ connectionString: databaseUrl });
+if (!globalForDb.pool) {
+  pool.on("connect", (client) => {
+    void client.query("SET TIME ZONE 'Asia/Tokyo'");
+  });
+}
 
 async function query<T extends QueryResultRow = QueryResultRow>(
   text: string,

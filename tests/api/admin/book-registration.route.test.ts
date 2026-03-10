@@ -49,7 +49,19 @@ describe("POST /api/admin/book-registration", () => {
       ],
     });
 
-    const txQuery = vi.fn().mockResolvedValue({});
+    const txQuery = vi
+      .fn()
+      .mockResolvedValueOnce({
+        rows: [
+          {
+            id: "book-1",
+            title: "Test Book",
+            authors: ["A Author"],
+            description: "desc",
+          },
+        ],
+      })
+      .mockResolvedValue({});
     mockedTransaction.mockImplementation(async (callback: (tx: { query: typeof txQuery }) => Promise<unknown>) => {
       return callback({ query: txQuery });
     });

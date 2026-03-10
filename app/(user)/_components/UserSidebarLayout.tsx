@@ -8,6 +8,7 @@ import {
   ReturnIcon,
   SettingIcon,
   AdminIcon,
+  StatisticsIcon,
 } from "@/app/(user)/_components/LibraryNavIcons";
 
 type UserSidebarLayoutProps = {
@@ -24,7 +25,7 @@ export default function UserSidebarLayout({
   userEmail,
 }: UserSidebarLayoutProps) {
   const navLinkClass =
-    "flex w-full items-center gap-3 rounded-xl bg-transparent px-4 py-3 text-sm font-medium text-slate-600 transition hover:bg-white/70 hover:text-slate-800";
+    "flex w-full items-center gap-3 rounded-xl bg-transparent px-4 py-3 text-base font-medium text-slate-600 transition hover:bg-white/70 hover:text-slate-800";
 
   return (
     <div className="min-h-screen bg-[#edf0f7]">
@@ -40,26 +41,30 @@ export default function UserSidebarLayout({
 
             <nav className="space-y-1 p-2">
               <Link href="/setting" className={navLinkClass}>
-                <SettingIcon className="h-[18px] w-[18px] shrink-0 text-current" />
+                <SettingIcon className="shrink-0" />
                 設定
               </Link>
               {isAdmin && (
                 <Link href="/admin" className={navLinkClass}>
-                  <AdminIcon className="h-[18px] w-[18px] shrink-0 text-current" />
+                  <AdminIcon className="shrink-0" />
                   管理者はこちら
                 </Link>
               )}
               <Link href="/book-list" className={navLinkClass}>
-                <BookListIcon className="h-[18px] w-[18px] shrink-0 text-current" />
+                <BookListIcon className="shrink-0" />
                 本一覧
+              </Link>
+              <Link href="/statistics" className={navLinkClass}>
+                <StatisticsIcon className="shrink-0" />
+                統計
               </Link>
 
               <Link href="/loan/qr" className={navLinkClass}>
-                <BorrowIcon className="h-[18px] w-[18px] shrink-0 text-current" />
+                <BorrowIcon className="shrink-0" />
                 本を借りる
               </Link>
               <Link href="/return" className={navLinkClass}>
-                <ReturnIcon className="h-[18px] w-[18px] shrink-0 text-current" />
+                <ReturnIcon className="shrink-0" />
                 返却する
               </Link>
             </nav>

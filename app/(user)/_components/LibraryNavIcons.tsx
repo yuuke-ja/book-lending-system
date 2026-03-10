@@ -6,6 +6,8 @@ export function BookListIcon(props: SvgProps) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
+      height="20px"
+      width="20px"
       aria-hidden="true"
       viewBox="0 -960 960 960"
       fill="currentColor"
@@ -18,7 +20,17 @@ export function BookListIcon(props: SvgProps) {
 
 export function BorrowIcon(props: SvgProps) {
   return (
-    <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" viewBox="0 -960 960 960" fill="currentColor"{...props}><path d="M300-80q-58 0-99-41t-41-99v-520q0-58 41-99t99-41h500v600q-25 0-42.5 17.5T740-220q0 25 17.5 42.5T800-160v80H300Zm-60-267q14-7 29-10t31-3h20v-440h-20q-25 0-42.5 17.5T240-740v393Zm160-13h320v-440H400v440Zm-160 13v-453 453Zm60 187h373q-6-14-9.5-28.5T660-220q0-16 3-31t10-29H300q-26 0-43 17.5T240-220q0 26 17 43t43 17Z" /></svg>
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      height="20px"
+      width="20px"
+      aria-hidden="true"
+      viewBox="0 -960 960 960"
+      fill="currentColor"
+      {...props}
+    >
+      <path d="M300-80q-58 0-99-41t-41-99v-520q0-58 41-99t99-41h500v600q-25 0-42.5 17.5T740-220q0 25 17.5 42.5T800-160v80H300Zm-60-267q14-7 29-10t31-3h20v-440h-20q-25 0-42.5 17.5T240-740v393Zm160-13h320v-440H400v440Zm-160 13v-453 453Zm60 187h373q-6-14-9.5-28.5T660-220q0-16 3-31t10-29H300q-26 0-43 17.5T240-220q0 26 17 43t43 17Z" />
+    </svg>
   );
 }
 
@@ -26,6 +38,8 @@ export function ReturnIcon(props: SvgProps) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
+      height="20px"
+      width="20px"
       aria-hidden="true"
       viewBox="0 -960 960 960"
       fill="currentColor"
@@ -40,6 +54,8 @@ export function SettingIcon(props: SvgProps) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
+      height="20px"
+      width="20px"
       aria-hidden="true"
       viewBox="0 -960 960 960"
       fill="currentColor"
@@ -54,12 +70,30 @@ export function AdminIcon(props: SvgProps) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
+      height="20px"
+      width="20px"
       aria-hidden="true"
       viewBox="0 -960 960 960"
       fill="currentColor"
       {...props}
     >
       <path d="M722.5-297.5Q740-315 740-340t-17.5-42.5Q705-400 680-400t-42.5 17.5Q620-365 620-340t17.5 42.5Q655-280 680-280t42.5-17.5ZM680-160q31 0 57-14.5t42-38.5q-22-13-47-20t-52-7q-27 0-52 7t-47 20q16 24 42 38.5t57 14.5ZM480-80q-139-35-229.5-159.5T160-516v-244l320-120 320 120v227q-19-8-39-14.5t-41-9.5v-147l-240-90-240 90v188q0 47 12.5 94t35 89.5Q310-290 342-254t71 60q11 32 29 61t41 52q-1 0-1.5.5t-1.5.5Zm200 0q-83 0-141.5-58.5T480-280q0-83 58.5-141.5T680-480q83 0 141.5 58.5T880-280q0 83-58.5 141.5T680-80ZM480-494Z" />
+    </svg>
+  );
+}
+
+export function StatisticsIcon(props: SvgProps) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      height="20px"
+      width="20px"
+      aria-hidden="true"
+      viewBox="0 -960 960 960"
+      fill="currentColor"
+      {...props}
+    >
+      <path d="m296-320 122-122 80 80 142-141v63h80v-200H520v80h63l-85 85-80-80-178 179 56 56Zm-96 200q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H200Zm0-80h560v-560H200v560Zm0-560v560-560Z" />
     </svg>
   );
 }

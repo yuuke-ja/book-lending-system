@@ -1,4 +1,5 @@
 import ReturnStatus from "@/app/(user)/_components/ReturnStatus";
+import LoanRanking from "@/app/(user)/_components/loanranking";
 import BorrowedBooksList from "@/app/(user)/_components/BorrowedBooksList";
 import BorrowedList from "@/app/(user)/_components/BorrowedList";
 import Link from "next/link";
@@ -23,6 +24,8 @@ export default async function Home() {
       <BorrowedBooksList />
 
       <BorrowedList />
+
+      <LoanRanking />
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
         <Link

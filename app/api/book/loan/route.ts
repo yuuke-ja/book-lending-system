@@ -3,6 +3,18 @@ import { db } from '@/lib/db';
 import { randomUUID } from 'crypto';
 import { NextResponse } from 'next/server';
 
+function calcDueAtByReturnWeek(now: Date, returnWeek: number): Date {
+  const safeWeekday =
+    Number.isInteger(returnWeek) && returnWeek >= 1 && returnWeek <= 3
+      ? returnWeek
+      : 1;
+  const due = new Date(now);
+  const diff = (safeWeekday - due.getDay() + 7) % 7;
+  due.setDate(due.getDate() + diff);
+  due.setHours(23, 59, 59, 999);
+  return due;
+}
+
 export async function POST(request: Request) {
   const session = await auth();
   if (!session) {
@@ -19,6 +31,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'bookIdが不正です' }, { status: 400 });
     }
     const now = new Date();
+    //通常ルールをデータベースから読む
     const settingsResult = await db.query(
       `SELECT id, "fridayOnly", "loanPeriodDays"
        FROM "LoanSettings"
@@ -29,7 +42,7 @@ export async function POST(request: Request) {
     let openPeriod = null;
     if (settings) {
       const openPeriodResult = await db.query(
-        `SELECT id, "loanPeriodDays"
+        `SELECT id, "loanPeriodDays","endDate"
          FROM "LoanOpenPeriod"
          WHERE "loanSettingsId" = $1
            AND enabled = true
@@ -66,9 +79,11 @@ export async function POST(request: Request) {
     if (alreadyLoaned) {
       return NextResponse.json({ error: 'すでに貸出中です' }, { status: 409 });
     }
-    const normalDays = settings?.loanPeriodDays ?? 2;
-    const exceptionDays = openPeriod?.loanPeriodDays;
-    const periodDays = exceptionDays ?? normalDays;
+    const returnWeek = settings?.loanPeriodDays ?? 2;
+    const exceptionDays = openPeriod?.endDate ?? null;
+    console.log(exceptionDays)
+    const dueAt = exceptionDays ?? calcDueAtByReturnWeek(now, returnWeek);
+    console.log(dueAt)
     await db.query(
       `INSERT INTO "Loan" (id, "userEmail", "bookId", "dueAt")
        VALUES ($1, $2, $3, $4)`,
@@ -76,7 +91,7 @@ export async function POST(request: Request) {
         randomUUID(),
         userEmail,
         bookId,
-        new Date(now.getTime() + periodDays * 24 * 60 * 60 * 1000),
+        dueAt,
       ]
     );
     return NextResponse.json({ message: '貸出が完了しました' }, { status: 200 });

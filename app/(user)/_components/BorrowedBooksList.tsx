@@ -2,6 +2,14 @@
 
 import { useEffect, useState } from "react";
 
+const JST_TIMEZONE = "Asia/Tokyo";
+const DAY_MS = 24 * 60 * 60 * 1000;
+
+function toJstDateStartMs(date: Date): number {
+  const dateText = date.toLocaleDateString("en-CA", { timeZone: JST_TIMEZONE });
+  return new Date(`${dateText}T00:00:00.000+09:00`).getTime();
+}
+
 type Loan = {
   id: string;
   loanedAt: string;
@@ -96,11 +104,8 @@ export default function BorrowedBooksList({
           <div className="flex w-max gap-4">
             {loans.map((loan) => {
               const dueDate = loan.dueAt ? new Date(loan.dueAt) : null;
-              const remainingDays = dueDate
-                ? Math.ceil(
-                    (dueDate.getTime() - new Date().getTime()) /
-                      (1000 * 60 * 60 * 24)
-                  )
+              const overdueDaysSigned = dueDate
+                ? Math.round((toJstDateStartMs(dueDate) - toJstDateStartMs(new Date())) / DAY_MS)
                 : null;
 
               return (
@@ -131,22 +136,22 @@ export default function BorrowedBooksList({
                       ISBN: {loan.book.isbn13}
                     </p>
                     <p className="mt-2 text-[11px] text-zinc-600">
-                      借りた日: {new Date(loan.loanedAt).toLocaleDateString()}
+                      借りた日: {new Date(loan.loanedAt).toLocaleDateString("ja-JP", { timeZone: JST_TIMEZONE })}
                     </p>
                     {dueDate && (
                       <p className="text-[11px] text-zinc-600">
-                        返却期限: {dueDate.toLocaleDateString()}
+                        返却期限: {dueDate.toLocaleDateString("ja-JP", { timeZone: JST_TIMEZONE })}
                       </p>
                     )}
-                    {remainingDays !== null && (
+                    {overdueDaysSigned !== null && (
                       <p
                         className={`mt-1 text-xs font-medium ${
-                          remainingDays < 0 ? "text-red-600" : "text-amber-700"
+                          overdueDaysSigned < 0 ? "text-red-600" : "text-amber-700"
                         }`}
                       >
-                        {remainingDays < 0
-                          ? `${Math.abs(remainingDays)}日超過`
-                          : `あと${remainingDays}日`}
+                        {overdueDaysSigned < 0
+                          ? `${Math.abs(overdueDaysSigned)}日超過`
+                          : `あと${overdueDaysSigned}日`}
                       </p>
                     )}
                   </div>

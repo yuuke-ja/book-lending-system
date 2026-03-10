@@ -1,6 +1,8 @@
 "use client";
 import { useEffect, useState } from "react";
 
+const JST_TIMEZONE = "Asia/Tokyo";
+
 type ReturnStatusData = {
   dueToday: { bookTitle: string; dueDate: string }[];
   overdue: { bookTitle: string; dueDate: string }[];
@@ -112,7 +114,7 @@ export default function ReturnStatus() {
                   <li key={idx} className="rounded-lg border border-zinc-200 p-2">
                     <div className="font-medium">{item.bookTitle}</div>
                     <div className="text-xs text-zinc-500">
-                      期限: {new Date(item.dueDate).toLocaleDateString()}
+                      期限: {new Date(item.dueDate).toLocaleDateString("ja-JP", { timeZone: JST_TIMEZONE })}
                     </div>
                   </li>
                 ))}

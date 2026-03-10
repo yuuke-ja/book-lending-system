@@ -23,6 +23,7 @@ type RequireAdminResult =
 type PutBody = {
   fridayOnly?: unknown;
   loanPeriodDays?: unknown;
+  returnweek?: unknown;
   exceptionLoanPeriodDays?: unknown;
   exceptionRules?: unknown;
   exceptionStartDate?: unknown;
@@ -32,20 +33,21 @@ type PutBody = {
 type ParsedPutBody = {
   fridayOnly: boolean;
   loanPeriodDays: number;
+  returnweek: number;
   exceptionRules: ParsedExceptionRule[];
 };
 
 function parseDateStart(date: string): Date {
-  return new Date(`${date}T00:00:00.000Z`);
+  return new Date(`${date}T00:00:00.000+09:00`);
 }
 
 function parseDateEnd(date: string): Date {
-  return new Date(`${date}T23:59:59.999Z`);
+  return new Date(`${date}T23:59:59.999+09:00`);
 }
 
 function toDateOnly(date: Date | null): string {
   if (!date) return "";
-  return date.toISOString().slice(0, 10);
+  return date.toLocaleDateString("en-CA", { timeZone: "Asia/Tokyo" });
 }
 
 function isValidDate(value: Date): boolean {
@@ -60,6 +62,13 @@ function parseLoanDays(value: unknown): number | null {
   if (typeof value !== "number") return null;
   if (!Number.isInteger(value)) return null;
   if (value < MIN_LOAN_PERIOD_DAYS || value > MAX_LOAN_PERIOD_DAYS) return null;
+  return value;
+}
+
+function parseReturnWeek(value: unknown): number | null {
+  if (typeof value !== "number") return null;
+  if (!Number.isInteger(value)) return null;
+  if (value < 1 || value > 3) return null;
   return value;
 }
 
@@ -190,9 +199,17 @@ function parsePutBody(value: unknown, now: Date): {
     return { parsed: null, error: "fridayOnlyが不正です" };
   }
 
-  const loanPeriodDays = parseLoanDays(body.loanPeriodDays);
+  const loanPeriodDays =
+    body.loanPeriodDays === undefined
+      ? DEFAULT_LOAN_PERIOD_DAYS
+      : parseLoanDays(body.loanPeriodDays);
   if (loanPeriodDays === null) {
     return { parsed: null, error: "loanPeriodDaysが不正です" };
+  }
+
+  const returnweek = parseReturnWeek(body.returnweek);
+  if (returnweek === null) {
+    return { parsed: null, error: "returnweekが不正です" };
   }
 
   let exceptionRules: ParsedExceptionRule[] = [];
@@ -217,6 +234,7 @@ function parsePutBody(value: unknown, now: Date): {
     parsed: {
       fridayOnly: body.fridayOnly,
       loanPeriodDays,
+      returnweek,
       exceptionRules,
     },
   };
@@ -329,7 +347,7 @@ export async function PUT(request: Request) {
       return errorJson(parseResult.error ?? "入力が不正です", 400);
     }
 
-    const { fridayOnly, loanPeriodDays, exceptionRules } = parseResult.parsed;
+    const { fridayOnly, returnweek, exceptionRules } = parseResult.parsed;
     const settingsId = await getOrCreateLoanSettingsId();
 
     await db.transaction(async (tx) => {
@@ -339,7 +357,7 @@ export async function PUT(request: Request) {
              "loanPeriodDays" = $2,
              "updatedAt" = NOW()
          WHERE id = $3`,
-        [fridayOnly, loanPeriodDays, settingsId]
+        [fridayOnly, returnweek, settingsId]
       );
 
       await tx.query(

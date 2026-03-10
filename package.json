@@ -3,9 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
+    "dev": "TZ=Asia/Tokyo next dev",
+    "build": "TZ=Asia/Tokyo next build",
+    "start": "TZ=Asia/Tokyo next start",
     "lint": "eslint",
     "test": "vitest run",
     "test:watch": "vitest"
@@ -23,6 +23,7 @@
     "pg": "^8.13.3",
     "react": "19.2.3",
     "react-dom": "19.2.3",
+    "recharts": "^3.8.0",
     "web-push": "^3.6.7"
   },
   "devDependencies": {
