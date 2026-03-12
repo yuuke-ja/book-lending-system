@@ -111,6 +111,8 @@ export default function ISBNImportModal({
     let stream: MediaStream | null = null;
     let timerId: ReturnType<typeof setTimeout> | null = null;
     let resizeBound = false;
+    let candidate = "";
+    let count = 0;
     //ISBNだけ読む設定
     const hints = new Map();
     hints.set(DecodeHintType.POSSIBLE_FORMATS, [BarcodeFormat.EAN_13]);
@@ -184,6 +186,20 @@ export default function ISBNImportModal({
           timerId = setTimeout(scanFrame, SCAN_INTERVAL_MS);
           return;
         }
+        if (count == 0 || candidate !== isbn) {
+          candidate = isbn;
+          count = 1;
+          timerId = setTimeout(scanFrame, SCAN_INTERVAL_MS);
+          return;
+        }
+        count += 1;
+        if (count < 2) {
+          timerId = setTimeout(scanFrame, SCAN_INTERVAL_MS);
+          return;
+        }
+        candidate = "";
+        count = 0;
+
 
         detectingRef.current = true;
         clearResources();
