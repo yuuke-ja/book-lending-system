@@ -4,6 +4,7 @@ import type { ComponentType } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
+  AdminIcon,
   BookListIcon,
   BorrowIcon,
   ReturnIcon,
@@ -18,7 +19,11 @@ type TabItem = {
   Icon: ComponentType<{ className?: string }>;
 };
 
-const tabs: TabItem[] = [
+type MobileTabBarProps = {
+  isAdmin: boolean;
+};
+
+const baseTabs: TabItem[] = [
   {
     href: "/book-list",
     label: "本一覧",
@@ -53,12 +58,28 @@ const tabs: TabItem[] = [
   },
 ];
 
-export default function MobileTabBar() {
+
+export default function MobileTabBar({ isAdmin }: MobileTabBarProps) {
   const pathname = usePathname();
+  const tabs = isAdmin
+    ? [
+      ...baseTabs,
+      {
+        href: "/admin",
+        label: "管理",
+        isActive: (currentPathname: string) =>
+          currentPathname === "/admin" || currentPathname.startsWith("/admin/"),
+        Icon: AdminIcon,
+      },
+    ]
+    : baseTabs;
 
   return (
     <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-[#dfe5ee] bg-white/95 shadow-[0_-12px_24px_-22px_rgba(15,23,42,0.45)] backdrop-blur lg:hidden">
-      <div className="mx-auto grid max-w-md grid-cols-5 px-2 pt-0.5 pb-[calc(0.45rem+env(safe-area-inset-bottom))]">
+      <div
+        className={`mx-auto grid px-2 pt-0.5 pb-[calc(0.45rem+env(safe-area-inset-bottom))] ${isAdmin ? "max-w-lg grid-cols-6" : "max-w-md grid-cols-5"
+          }`}
+      >
         {tabs.map(({ href, label, isActive, Icon }) => {
           const active = isActive(pathname);
           return (
@@ -66,14 +87,12 @@ export default function MobileTabBar() {
               key={href}
               href={href}
               aria-current={active ? "page" : undefined}
-              className={`relative flex min-h-[64px] flex-col items-center justify-center gap-1 px-1 pb-1 pt-2 text-[11px] font-medium tracking-[-0.01em] transition-colors ${
-                active ? "text-[#167fcf]" : "text-[#6f7888] hover:text-[#4f5764]"
-              }`}
+              className={`relative flex min-h-[64px] flex-col items-center justify-center gap-1 px-1 pb-1 pt-2 text-[11px] font-medium tracking-[-0.01em] transition-colors ${active ? "text-[#167fcf]" : "text-[#6f7888] hover:text-[#4f5764]"
+                }`}
             >
               <span
-                className={`absolute left-2 right-2 top-0 h-[2px] rounded-full ${
-                  active ? "bg-[#67b7ea]" : "bg-transparent"
-                }`}
+                className={`absolute left-2 right-2 top-0 h-[2px] rounded-full ${active ? "bg-[#67b7ea]" : "bg-transparent"
+                  }`}
               />
               <Icon className={active ? "h-6 w-6 text-[#167fcf]" : "h-6 w-6 text-[#6f7888]"} />
               <span className="leading-none">{label}</span>

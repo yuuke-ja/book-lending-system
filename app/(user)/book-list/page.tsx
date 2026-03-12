@@ -668,18 +668,19 @@ export default function BookListPage() {
           検索結果がありません
         </div>
       )}
-      <div className="grid gap-4 [grid-template-columns:repeat(auto-fill,minmax(190px,1fr))]">
+      {/* 横幅640px未満は3列、640px以上は4列、768px以上は自動レイアウト */}
+      <div className="grid gap-2 [grid-template-columns:repeat(3,minmax(0,1fr))] sm:gap-3 sm:[grid-template-columns:repeat(4,minmax(0,1fr))] md:gap-4 md:[grid-template-columns:repeat(auto-fill,minmax(190px,1fr))]">
         {displayBooks.map((book) => (
           <div
             key={book.id}
-            className="flex h-full flex-col rounded-md border border-zinc-200 bg-white p-3 shadow-sm"
+            className="flex h-full min-w-0 flex-col rounded-md border border-zinc-200 bg-white p-2 shadow-sm md:p-3"
             onClick={async () => {
               setTagadd(null);
               setSelectedBook(book);
               await getcomment(book.id);
             }}
           >
-            <div className="flex h-56 w-full items-center justify-center overflow-hidden rounded bg-zinc-100">
+            <div className="flex h-32 w-full items-center justify-center overflow-hidden rounded bg-zinc-100 sm:h-40 md:h-56">
               {book.thumbnail ? (
                 <img
                   src={book.thumbnail}
@@ -690,11 +691,11 @@ export default function BookListPage() {
                 <div className="text-xs text-zinc-500">NO IMAGE</div>
               )}
             </div>
-            <div className="mt-3 flex flex-1 flex-col gap-1">
-              <h2 className="line-clamp-2 text-sm font-semibold text-zinc-900">
+            <div className="mt-2 flex flex-1 flex-col gap-1 md:mt-3">
+              <h2 className="line-clamp-2 text-[11px] font-semibold leading-tight text-zinc-900 md:text-sm">
                 {book.title}
               </h2>
-              <div className="mt-1">
+              <div className="mt-1 hidden md:block">
                 {book.tags && book.tags.length > 0 && (
                   <div className="flex flex-wrap gap-1">
                     {book.tags.slice(0, 3).map((tag) => (
@@ -710,11 +711,15 @@ export default function BookListPage() {
               </div>
 
 
-              <p className="line-clamp-1 text-xs text-zinc-600">
+              <p className="hidden line-clamp-1 text-xs text-zinc-600 md:block">
                 {book.authors?.join(", ")}
               </p>
-              <div className="mt-1">
-                <Rating style={{ maxWidth: 120 }} value={Number(book.averageRating ?? 0)} readOnly />
+              <div className="mt-1 w-full max-w-[64px] md:max-w-[120px]">
+                <Rating
+                  style={{ maxWidth: "100%" }}
+                  value={Number(book.averageRating ?? 0)}
+                  readOnly
+                />
               </div>
               {isAdmin && (
                 <button
@@ -737,17 +742,17 @@ export default function BookListPage() {
                       }))
                     );
                   }}
-                  className="mt-1 w-fit rounded border border-zinc-300 bg-white px-2 py-1 text-[10px] font-medium text-zinc-700 hover:bg-zinc-50"
+                  className="mt-1 hidden w-fit rounded border border-zinc-300 bg-white px-2 py-1 text-[10px] font-medium text-zinc-700 hover:bg-zinc-50 md:inline-flex"
                 >
                   タグ変更
                 </button>
               )}
               {loanedSet.has(book.id) && (
-                <span className="mt-1 inline-block w-fit rounded bg-red-100 px-2 py-0.5 text-[10px] text-red-700">
+                <span className="mt-1 inline-block w-fit rounded bg-red-100 px-1.5 py-0.5 text-[9px] text-red-700 md:px-2 md:text-[10px]">
                   貸出中
                 </span>
               )}
-              <p className="mt-auto pt-2 text-[11px] text-zinc-500">
+              <p className="mt-auto hidden pt-2 text-[11px] text-zinc-500 md:block">
                 ISBN: {book.isbn13}
               </p>
             </div>
