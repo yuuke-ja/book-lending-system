@@ -2,6 +2,32 @@ import { auth } from '@/lib/auth';
 import { db } from '@/lib/db';
 import { randomUUID } from 'crypto';
 import { NextResponse } from 'next/server';
+// 本番環境では日本時間どおりに曜日が取れないことがあるので、JSTで曜日を見る。
+function getJstWeekday(date: Date): number {
+  const weekday = new Intl.DateTimeFormat('en-US', {
+    timeZone: 'Asia/Tokyo',
+    weekday: 'short',
+  }).format(date);
+
+  switch (weekday) {
+    case 'Sun':
+      return 0;
+    case 'Mon':
+      return 1;
+    case 'Tue':
+      return 2;
+    case 'Wed':
+      return 3;
+    case 'Thu':
+      return 4;
+    case 'Fri':
+      return 5;
+    case 'Sat':
+      return 6;
+    default:
+      return date.getUTCDay();
+  }
+}
 
 function calcDueAtByReturnWeek(now: Date, returnWeek: number): Date {
   const safeWeekday =
@@ -9,9 +35,12 @@ function calcDueAtByReturnWeek(now: Date, returnWeek: number): Date {
       ? returnWeek
       : 1;
   const due = new Date(now);
-  const diff = (safeWeekday - due.getDay() + 7) % 7;
+  const diff = (safeWeekday - getJstWeekday(now) + 7) % 7;
   due.setDate(due.getDate() + diff);
-  due.setHours(23, 59, 59, 999);
+
+
+  // 日本時間の23:59:59にしたいので、UTCでは14:59:59を入れている。
+  due.setUTCHours(14, 59, 59, 999);
   return due;
 }
 
@@ -54,7 +83,7 @@ export async function POST(request: Request) {
       openPeriod = openPeriodResult.rows[0] ?? null;
     }
     const fridayOnly = settings?.fridayOnly ?? true;
-    const isFriday = now.getDay() === 5;
+    const isFriday = getJstWeekday(now) === 5;
     const inOpenPeriod = !!openPeriod;
     if (fridayOnly && !isFriday && !inOpenPeriod) {
       return NextResponse.json({ error: '貸出は金曜日のみ可能です' }, { status: 403 });
@@ -81,9 +110,7 @@ export async function POST(request: Request) {
     }
     const returnWeek = settings?.loanPeriodDays ?? 2;
     const exceptionDays = openPeriod?.endDate ?? null;
-    console.log(exceptionDays)
     const dueAt = exceptionDays ?? calcDueAtByReturnWeek(now, returnWeek);
-    console.log(dueAt)
     await db.query(
       `INSERT INTO "Loan" (id, "userEmail", "bookId", "dueAt")
        VALUES ($1, $2, $3, $4)`,
