@@ -1,5 +1,6 @@
 "use client";
 
+import ISBNScanGuide from "@/app/_components/ISBNScanGuide";
 import ISBNImportModal from "@/app/_components/ISBNImportModal";
 import { useCallback, useState } from "react";
 
@@ -84,13 +85,16 @@ export default function LoanQrPage() {
         </p>
 
         {!book && !successTitle && (
-          <button
-            type="button"
-            onClick={startScan}
-            className="inline-flex items-center rounded-md bg-black px-4 py-2 text-white hover:bg-zinc-800"
-          >
-            ISBNを読み取る
-          </button>
+          <div className="space-y-4">
+            <ISBNScanGuide />
+            <button
+              type="button"
+              onClick={startScan}
+              className="inline-flex items-center rounded-md bg-black px-4 py-2 text-white hover:bg-zinc-800"
+            >
+              ISBNを読み取る
+            </button>
+          </div>
         )}
 
         {book && (

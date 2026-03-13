@@ -3,14 +3,6 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
-const JST_TIMEZONE = "Asia/Tokyo";
-const DAY_MS = 24 * 60 * 60 * 1000;
-
-function toJstDateStartMs(date: Date): number {
-  const dateText = date.toLocaleDateString("en-CA", { timeZone: JST_TIMEZONE });
-  return new Date(`${dateText}T00:00:00.000+09:00`).getTime();
-}
-
 type ExceptionRule = {
   id: string;
   startDate: string;
@@ -41,26 +33,6 @@ type TagItem = {
   tag: string;
 };
 
-type LoanRow = {
-  id: string;
-  userEmail: string;
-  bookId: string;
-  loanedAt: string;
-  dueAt: string | null;
-  book_id: string;
-  book_googleBookId: string | null;
-  book_isbn13: string;
-  book_title: string;
-  book_authors: string[];
-  book_description: string | null;
-  book_thumbnail: string | null;
-  book_createdAt: string;
-  userTotalLoanCount: number;
-  userLatestLoanedAt: string;
-};
-
-type LoanList = Record<string, LoanRow[]>;
-
 export default function AdminPage() {
   const [settings, setSettings] = useState<LoanSettings>({
     fridayOnly: true,
@@ -73,7 +45,6 @@ export default function AdminPage() {
   const [taglist, setTaglist] = useState<TagItem[]>([]);
   const [isLoadingTags, setIsLoadingTags] = useState(true);
   const [tagStatusMessage, setTagStatusMessage] = useState("");
-  const [loanlist, setloanlist] = useState<LoanList>({});
   const [selectweek, setSelectweek] = useState<number>(1)
   const week = [{ value: 1, label: "月" }, { value: 2, label: "火" }, { value: 3, label: "水" },]
 
@@ -257,32 +228,6 @@ export default function AdminPage() {
 
     fetchSettings();
   }, []);
-
-  useEffect(() => {
-    const fetchloans = async () => {
-      try {
-        const res = await fetch("/api/admin/loans-user", { cache: "no-store" });
-        if (!res.ok) throw new Error("貸出一覧の取得に失敗しました");
-
-        const ras = await res.json();
-        const data: LoanRow[] = Array.isArray(ras) ? ras : [];
-
-        const grouped: LoanList = {};
-        data.forEach((d) => {
-          if (!grouped[d.userEmail]) grouped[d.userEmail] = [];
-          grouped[d.userEmail].push(d);
-        });
-
-        setloanlist(grouped);
-      } catch (error) {
-        console.error(error);
-        setloanlist({});
-      }
-    };
-
-    fetchloans();
-  }, []);
-
 
   useEffect(() => {
     const fetchInitialTags = async () => {
@@ -507,75 +452,18 @@ export default function AdminPage() {
         <p className="mt-3 text-xs text-zinc-600">{tagStatusMessage}</p>
       </section>
 
-      {/*貸出中ユーザ一覧*/}
+      {/*貸出履歴*/}
       <section className="mt-8 max-w-xl rounded-lg border border-zinc-200 bg-zinc-50 p-5">
-        <h2 className="text-lg font-semibold text-zinc-900">貸出中ユーザー一覧</h2>
-        <div className="mt-4 space-y-4">
-          {Object.entries(loanlist).length === 0 && (
-            <p className="text-sm text-zinc-600">貸出中データはありません。</p>
-          )}
-          {Object.entries(loanlist).map(([userEmail, loans]) => (
-            <div key={userEmail} className="rounded-md border border-zinc-200 bg-white p-3">
-              <div className="mb-2 flex items-center justify-between gap-2">
-                <p className="text-sm font-semibold text-zinc-900">{userEmail}</p>
-                <span className="rounded bg-zinc-100 px-2 py-0.5 text-xs text-zinc-700">
-                  {loans[0]?.userTotalLoanCount ?? loans.length}冊
-                </span>
-              </div>
-              <div className="space-y-2">
-                {loans.map((loan) => {
-                  const dueAt = loan.dueAt ? new Date(loan.dueAt) : null;
-                  const overdueDaysSigned = dueAt
-                    ? Math.round(
-                        (toJstDateStartMs(dueAt) - toJstDateStartMs(new Date())) / DAY_MS
-                      )
-                    : null;
-                  const isOverdue = overdueDaysSigned !== null && overdueDaysSigned < 0;
-
-                  return (
-                    <div
-                      key={loan.id}
-                      className={`rounded border p-2 ${isOverdue
-                        ? "border-red-200 bg-red-50 text-red-600"
-                        : "border-zinc-200 bg-zinc-50 text-zinc-800"
-                        }`}
-                    >
-                      <div className="flex gap-2">
-                        <div className="flex h-16 w-12 shrink-0 items-center justify-center overflow-hidden rounded bg-zinc-100">
-                          {loan.book_thumbnail ? (
-                            <img
-                              src={loan.book_thumbnail}
-                              alt={loan.book_title}
-                              className="h-full w-full object-contain"
-                            />
-                          ) : (
-                            <span className="text-[10px] text-zinc-500">NO IMAGE</span>
-                          )}
-                        </div>
-                        <div className="min-w-0">
-                          <p className="text-sm font-medium">{loan.book_title}</p>
-                          <p className="text-xs">
-                            貸出日: {new Date(loan.loanedAt).toLocaleDateString("ja-JP", { timeZone: JST_TIMEZONE })}
-                          </p>
-                          <p className="text-xs">
-                            返却期限: {dueAt ? dueAt.toLocaleDateString("ja-JP", { timeZone: JST_TIMEZONE }) : "未設定"}
-                          </p>
-                          <p className="text-xs font-semibold">
-                            {overdueDaysSigned === null
-                              ? "返却期限なし"
-                              : isOverdue
-                                ? `${Math.abs(overdueDaysSigned)}日超過（期限切れ）`
-                                : `あと${overdueDaysSigned}日`}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          ))}
-        </div>
+        <h2 className="text-lg font-semibold text-zinc-900">貸出履歴</h2>
+        <p className="mt-3 text-sm text-zinc-600">
+          貸出中ユーザー一覧は貸出履歴ページで確認できます。
+        </p>
+        <Link
+          href="/admin/history"
+          className="mt-4 inline-flex items-center rounded-md bg-black px-4 py-2 text-white hover:bg-zinc-800"
+        >
+          貸出履歴を見る
+        </Link>
       </section>
 
 
