@@ -5,6 +5,7 @@ import SignOutButton from "@/app/(user)/_components/SignOutButton";
 import MobileTabBar from "@/app/(user)/_components/MobileTabBar";
 import {
   BookListIcon,
+  CommunityIcon,
   BorrowIcon,
   ReturnIcon,
   SettingIcon,
@@ -54,6 +55,10 @@ export default function UserSidebarLayout({
               <Link href="/book-list" className={navLinkClass}>
                 <BookListIcon className="shrink-0" />
                 本一覧
+              </Link>
+              <Link href="/community" className={navLinkClass}>
+                <CommunityIcon className="shrink-0" />
+                コミュニティ
               </Link>
               <Link href="/statistics" className={navLinkClass}>
                 <StatisticsIcon className="shrink-0" />

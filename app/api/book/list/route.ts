@@ -14,9 +14,7 @@ export async function GET() {
         b.isbn13,
         b.title,
         b.authors,
-        b.description,
         b.thumbnail,
-        b."createdAt",
         COALESCE(AVG(br.rating), 0)::float AS "averageRating",
         COALESCE(
           jsonb_agg(DISTINCT jsonb_build_object('id', tl.id, 'tag', tl.tag)) FILTER (WHERE tl.id IS NOT NULL),
@@ -26,12 +24,12 @@ export async function GET() {
       LEFT JOIN "BookReview" br ON br."bookId" = b.id
       LEFT JOIN "BookTag" bt ON bt."bookId" = b.id
       LEFT JOIN "TagList" tl ON tl.id = bt."tagId"
-      GROUP BY b.id, b.isbn13, b.title, b.authors, b.description, b.thumbnail, b."createdAt"
+      GROUP BY b.id, b.isbn13, b.title, b.authors, b.thumbnail, b."createdAt"
       ORDER BY b."createdAt" DESC`
 
     );
     return NextResponse.json(books.rows, { status: 200 });
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { error: 'Failed to fetch books' },
       { status: 500 }

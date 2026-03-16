@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import {
   AdminIcon,
   BookListIcon,
+  CommunityIcon,
   BorrowIcon,
   ReturnIcon,
   SettingIcon,
@@ -30,6 +31,13 @@ const baseTabs: TabItem[] = [
     isActive: (pathname) =>
       pathname === "/book-list" || pathname.startsWith("/book-list/"),
     Icon: BookListIcon,
+  },
+  {
+    href: "/community",
+    label: "コミュニティ",
+    isActive: (pathname) =>
+      pathname === "/community" || pathname.startsWith("/community/"),
+    Icon: CommunityIcon,
   },
   {
     href: "/loan/qr",
@@ -77,7 +85,7 @@ export default function MobileTabBar({ isAdmin }: MobileTabBarProps) {
   return (
     <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-[#dfe5ee] bg-white/95 shadow-[0_-12px_24px_-22px_rgba(15,23,42,0.45)] backdrop-blur lg:hidden">
       <div
-        className={`mx-auto grid px-2 pt-0.5 pb-[calc(0.45rem+env(safe-area-inset-bottom))] ${isAdmin ? "max-w-lg grid-cols-6" : "max-w-md grid-cols-5"
+        className={`mx-auto grid px-2 pt-0.5 pb-[calc(0.45rem+env(safe-area-inset-bottom))] ${isAdmin ? "max-w-xl grid-cols-7" : "max-w-lg grid-cols-6"
           }`}
       >
         {tabs.map(({ href, label, isActive, Icon }) => {
