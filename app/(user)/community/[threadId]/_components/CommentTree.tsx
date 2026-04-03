@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { type LinkedBook } from "../../_components/types";
 
 export type ThreadCommentNode = {
@@ -39,17 +39,10 @@ function CommentTreeItem({
   depth?: number;
 }) {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const [isReplying, setIsReplying] = useState(false);
   const [replyInput, setReplyInput] = useState("");
   const [isSubmittingReply, setIsSubmittingReply] = useState(false);
   const [linkedBooks, setLinkedBooks] = useState<LinkedBook[]>([]);
-  const selectedBookId = searchParams.get("bookId");
-  const selectedBookTitle = searchParams.get("bookTitle");
-  const selectedBookThumbnail = searchParams.get("bookThumbnail");
-  const replyTo = searchParams.get("replyTo");
-  const draft = searchParams.get("draft");
-  const scrollY = searchParams.get("scrollY");
 
   const getScrollTop = () => {
     const main = document.querySelector("main");
@@ -59,28 +52,40 @@ function CommentTreeItem({
   };
 
   useEffect(() => {
-    if (
-      replyTo !== comment.id ||
-      (!selectedBookId && draft === null && scrollY === null)
-    ) {
+    const savedReplyDraftState = sessionStorage.getItem("replyDraftState");
+    if (!savedReplyDraftState) {
       return;
     }
 
-    if (selectedBookId && selectedBookTitle) {
-      setLinkedBooks([
-        {
-          id: selectedBookId,
-          title: selectedBookTitle,
-          thumbnail: selectedBookThumbnail,
-        },
-      ]);
-    }
-    if (draft !== null) {
-      setReplyInput(draft);
-    }
-    setIsReplying(true);
-    router.replace(`/community/${threadId}`, { scroll: false });
-    if (scrollY !== null) {
+    try {
+      const { draft, scrollY, savedThreadId, savedReplyTo } = JSON.parse(savedReplyDraftState);
+      if (savedThreadId !== threadId || savedReplyTo !== comment.id) {
+        return;
+      }
+
+      const selectedBook = sessionStorage.getItem("selectedBook");
+      if (selectedBook) {
+        try {
+          const { bookId, booktitle, bookthumbnail } = JSON.parse(selectedBook);
+          setLinkedBooks([
+            {
+              id: bookId,
+              title: booktitle,
+              thumbnail: bookthumbnail,
+            },
+          ]);
+        } catch {
+          // ignore
+        } finally {
+          sessionStorage.removeItem("selectedBook");
+        }
+      }
+
+      if (typeof draft === "string") {
+        setReplyInput(draft);
+      }
+      setIsReplying(true);
+
       const top = Number(scrollY);
       window.requestAnimationFrame(() => {
         window.requestAnimationFrame(() => {
@@ -98,19 +103,13 @@ function CommentTreeItem({
           }
         });
       });
+    } catch {
+      // ignore
     }
-  }, [
-    comment.id,
-    draft,
-    replyTo,
-    router,
-    scrollY,
-    selectedBookId,
-    selectedBookThumbnail,
-    selectedBookTitle,
-    threadId,
-  ]);
+    sessionStorage.removeItem("replyDraftState");
+  }, [comment.id, threadId]);
 
+  // 送信処理
   const handleReplySubmit = async () => {
     if (!replyInput.trim() || isSubmittingReply) {
       return;
@@ -147,23 +146,24 @@ function CommentTreeItem({
     }
   };
 
-  const handleOpenBookPicker = () => {
-    const replyReturnParams = new URLSearchParams({
-      replyTo: comment.id,
-      scrollY: String(getScrollTop()),
-    });
-    if (replyInput !== "") {
-      replyReturnParams.set("draft", replyInput);
-    }
-    const replyReturnTo = `/community/${threadId}?${replyReturnParams.toString()}`;
-    router.push(
-      `/community/book-picker?returnTo=${encodeURIComponent(replyReturnTo)}`
+  // 本紐付け処理
+  const openbookpicker = () => {
+    sessionStorage.setItem(
+      "replyDraftState",
+      JSON.stringify({
+        savedThreadId: threadId,
+        savedReplyTo: comment.id,
+        draft: replyInput,
+        scrollY: getScrollTop(),
+      })
     );
+    router.push("/community/book-picker");
   };
 
   return (
     <div className={depth > 0 ? "ml-6 border-l border-zinc-200 pl-5" : ""}>
       <div className="text-sm text-zinc-700">
+        {/*投稿日時と本文を表示*/}
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
             <p className="text-sm text-zinc-400">
@@ -174,7 +174,7 @@ function CommentTreeItem({
             {comment.content}
           </p>
         </div>
-
+        { /*紐付けられている本があれば一覧表示*/}
         {comment.linkedBooks.length > 0 && (
           <div className="mt-4 space-y-3">
             {comment.linkedBooks.map((book) => (
@@ -221,7 +221,7 @@ function CommentTreeItem({
           </button>
         </div>
       </div>
-
+      {/*返信*/}
       {isReplying && (
         <div className="mt-4 ml-11 space-y-3 rounded-2xl border border-zinc-200 bg-zinc-50 p-4">
           <textarea
@@ -234,7 +234,7 @@ function CommentTreeItem({
             <div className="flex items-center gap-3">
               <button
                 type="button"
-                onClick={handleOpenBookPicker}
+                onClick={openbookpicker}
                 className="rounded-lg border border-zinc-300 bg-white px-4 py-2 text-sm font-semibold text-zinc-700"
               >
                 {linkedBooks.length > 0 ? "本を選び直す" : "本を紐付ける"}
@@ -289,6 +289,7 @@ function CommentTreeItem({
 
       {comment.children.length > 0 && (
         <div className="mt-4 space-y-5">
+          {/*子コメント再帰*/}
           {comment.children.map((child) => (
             <CommentTreeItem
               key={child.id}

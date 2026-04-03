@@ -186,11 +186,10 @@ export default function CommunityBookPickerPage() {
                         : [...prev, item.tag]
                     );
                   }}
-                  className={`rounded-full border px-3 py-1 text-xs font-medium transition ${
-                    isSelected
-                      ? "border-zinc-800 bg-zinc-800 text-white"
-                      : "border-zinc-300 bg-zinc-50 text-zinc-700 hover:bg-zinc-100"
-                  }`}
+                  className={`rounded-full border px-3 py-1 text-xs font-medium transition ${isSelected
+                    ? "border-zinc-800 bg-zinc-800 text-white"
+                    : "border-zinc-300 bg-zinc-50 text-zinc-700 hover:bg-zinc-100"
+                    }`}
                 >
                   #{item.tag}
                 </button>
@@ -210,18 +209,8 @@ export default function CommunityBookPickerPage() {
             key={book.id}
             className="flex h-full min-w-0 cursor-pointer flex-col rounded-md border border-zinc-200 bg-white p-2 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md md:p-3"
             onClick={() => {
-              const [pathname, existingQuery = ""] = returnTo.split("?");
-              const params = new URLSearchParams(existingQuery);
-              params.set("bookId", book.id);
-              params.set("bookTitle", book.title);
-              if (book.thumbnail) {
-                params.set("bookThumbnail", book.thumbnail);
-              } else {
-                params.delete("bookThumbnail");
-              }
-              router.push(
-                params.toString() ? `${pathname}?${params.toString()}` : pathname
-              );
+              sessionStorage.setItem("selectedBook", JSON.stringify({ bookId: book.id, booktitle: book.title, bookthumbnail: book.thumbnail }));
+              router.back();
             }}
             role="link"
             tabIndex={0}

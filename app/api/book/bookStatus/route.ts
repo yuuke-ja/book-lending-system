@@ -4,11 +4,11 @@ import { db } from "@/lib/db";
 export async function GET() {
   const session = await auth();
   if (!session) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    return NextResponse.json({ error: '認証が必要です' }, { status: 401 });
   }
   const email = session.user?.email;
   if (!email) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    return NextResponse.json({ error: '認証が必要です' }, { status: 401 });
   }
   try {
     const todayStart = new Date();
@@ -49,8 +49,9 @@ export async function GET() {
 
     return NextResponse.json(books);
   } catch (error) {
+    console.error("返却期限ステータスの取得に失敗:", error);
     return NextResponse.json(
-      { error: 'Failed to fetch book status' },
+      { error: '返却期限ステータスの取得に失敗しました' },
       { status: 500 }
     );
   }

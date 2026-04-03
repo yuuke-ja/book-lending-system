@@ -59,18 +59,8 @@ export default function CommunityPage() {
   const [threadInput, setThreadInput] = useState("");
   const [linkedBooks, setLinkedBooks] = useState<LinkedBook[]>([]);
   const [isSubmittingThread, setIsSubmittingThread] = useState(false);
-  const selectedBookId = searchParams.get("bookId");
-  const selectedBookTitle = searchParams.get("bookTitle");
-  const selectedBookThumbnail = searchParams.get("bookThumbnail");
   const draft = searchParams.get("draft");
   const scrollY = searchParams.get("scrollY");
-
-  const getScrollTop = () => {
-    const main = document.querySelector("main");
-    return main instanceof HTMLElement && main.scrollHeight > main.clientHeight
-      ? main.scrollTop
-      : window.scrollY;
-  };
 
   const fetchThreads = async () => {
     try {
@@ -87,19 +77,19 @@ export default function CommunityPage() {
       setThreads(
         Array.isArray(data)
           ? data.map((thread) => ({
-              id: thread.id,
-              content: thread.content,
-              bookId: thread.bookId,
-              kind: thread.kind,
-              createdAt: thread.createdAt,
-              linkedBook: thread.bookId
-                ? {
-                    id: thread.bookId,
-                    title: thread.bookTitle ?? "関連する本",
-                    thumbnail: thread.bookThumbnail ?? null,
-                  }
-                : null,
-            }))
+            id: thread.id,
+            content: thread.content,
+            bookId: thread.bookId,
+            kind: thread.kind,
+            createdAt: thread.createdAt,
+            linkedBook: thread.bookId
+              ? {
+                id: thread.bookId,
+                title: thread.bookTitle ?? "関連する本",
+                thumbnail: thread.bookThumbnail ?? null,
+              }
+              : null,
+          }))
           : []
       );
     } catch (err) {
@@ -114,19 +104,29 @@ export default function CommunityPage() {
   }, []);
 
   useEffect(() => {
-    if (!selectedBookId && draft === null && scrollY === null) {
+    const selectedBook = sessionStorage.getItem("selectedBook");
+    if (selectedBook) {
+      try {
+        const { bookId, booktitle, bookthumbnail } = JSON.parse(selectedBook);
+        setLinkedBooks([
+          {
+            id: bookId,
+            title: booktitle,
+            thumbnail: bookthumbnail,
+          },
+        ]);
+      } catch {
+        // ignore
+      } finally {
+        sessionStorage.removeItem("selectedBook");
+      }
+    }
+    if (draft === null && scrollY === null) {
       return;
     }
 
-    if (selectedBookId && selectedBookTitle) {
-      setLinkedBooks([
-        {
-          id: selectedBookId,
-          title: selectedBookTitle,
-          thumbnail: selectedBookThumbnail,
-        },
-      ]);
-    }
+
+
     if (draft !== null) {
       setThreadInput(draft);
     }
@@ -154,9 +154,6 @@ export default function CommunityPage() {
     draft,
     router,
     scrollY,
-    selectedBookId,
-    selectedBookThumbnail,
-    selectedBookTitle,
   ]);
 
   const handleThreadSubmit = async () => {
@@ -198,10 +195,10 @@ export default function CommunityPage() {
           createdAt: createdThread.createdAt,
           linkedBook: selectedBook
             ? {
-                id: selectedBook.id,
-                title: selectedBook.title,
-                thumbnail: selectedBook.thumbnail,
-              }
+              id: selectedBook.id,
+              title: selectedBook.title,
+              thumbnail: selectedBook.thumbnail,
+            }
             : null,
         },
         ...prev,
@@ -231,18 +228,8 @@ export default function CommunityPage() {
     );
   }
 
-  const handleOpenBookPicker = () => {
-    const threadReturnParams = new URLSearchParams();
-    if (threadInput !== "") {
-      threadReturnParams.set("draft", threadInput);
-    }
-    threadReturnParams.set("scrollY", String(getScrollTop()));
-    const threadReturnTo = threadReturnParams.toString()
-      ? `/community?${threadReturnParams.toString()}`
-      : "/community";
-    router.push(
-      `/community/book-picker?returnTo=${encodeURIComponent(threadReturnTo)}`
-    );
+  const openbookpicker = () => {
+    router.push("/community/book-picker");
   };
 
   return (
@@ -263,7 +250,7 @@ export default function CommunityPage() {
           <div className="flex items-center gap-3">
             <button
               type="button"
-              onClick={handleOpenBookPicker}
+              onClick={openbookpicker}
               className="rounded-lg border border-zinc-300 bg-white px-4 py-2 text-sm font-semibold text-zinc-700"
             >
               {linkedBooks.length > 0 ? "本を選び直す" : "本を紐付ける"}

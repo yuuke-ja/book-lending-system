@@ -7,7 +7,7 @@ const ISBN13_REGEX = /^97[89]\d{10}$/;
 export async function GET(request: Request) {
   const session = await auth();
   if (!session) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    return NextResponse.json({ error: "認証が必要です" }, { status: 401 });
   }
 
   const searchParams = new URL(request.url).searchParams;
@@ -31,7 +31,8 @@ export async function GET(request: Request) {
     }
 
     return NextResponse.json(book, { status: 200 });
-  } catch {
+  } catch (error) {
+    console.error("本情報の取得に失敗:", error);
     return NextResponse.json({ error: "本情報の取得に失敗しました" }, { status: 500 });
   }
 }

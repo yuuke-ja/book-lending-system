@@ -47,11 +47,11 @@ function calcDueAtByReturnWeek(now: Date, returnWeek: number): Date {
 export async function POST(request: Request) {
   const session = await auth();
   if (!session) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    return NextResponse.json({ error: '認証が必要です' }, { status: 401 });
   }
   const userEmail = session.user?.email;
   if (!userEmail) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    return NextResponse.json({ error: '認証が必要です' }, { status: 401 });
   }
   try {
     const body = await request.json();
@@ -122,7 +122,8 @@ export async function POST(request: Request) {
       ]
     );
     return NextResponse.json({ message: '貸出が完了しました' }, { status: 200 });
-  } catch {
+  } catch (error) {
+    console.error("貸出に失敗:", error);
     return NextResponse.json({ error: '貸出に失敗しました' }, {
       status: 500,
     });
@@ -131,11 +132,11 @@ export async function POST(request: Request) {
 export async function GET() {
   const session = await auth();
   if (!session) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    return NextResponse.json({ error: '認証が必要です' }, { status: 401 });
   }
   const userEmail = session.user?.email;
   if (!userEmail) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    return NextResponse.json({ error: '認証が必要です' }, { status: 401 });
   }
   try {
     const loans = await db.query(
@@ -178,7 +179,8 @@ export async function GET() {
       })),
       { status: 200 }
     );
-  } catch {
+  } catch (error) {
+    console.error("貸出状況の取得に失敗:", error);
     return NextResponse.json({ error: '貸出状況の取得に失敗しました' }, {
       status: 500,
     });

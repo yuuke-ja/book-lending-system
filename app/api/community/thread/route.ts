@@ -7,7 +7,7 @@ export async function POST(request: Request) {
   const userEmail = session?.user?.email;
 
   if (!userEmail) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    return NextResponse.json({ error: "認証が必要です" }, { status: 401 });
   }
 
   try {
@@ -61,7 +61,8 @@ export async function POST(request: Request) {
 
 
     return NextResponse.json(threadResult.rows[0], { status: 200 });
-  } catch {
+  } catch (error) {
+    console.error("スレッドの作成に失敗:", error);
     return NextResponse.json(
       { error: "スレッドの作成に失敗しました" },
       { status: 500 }
@@ -76,7 +77,7 @@ export async function GET(request: Request) {
   const userEmail = session?.user?.email;
 
   if (!userEmail) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    return NextResponse.json({ error: "認証が必要です" }, { status: 401 });
   }
 
   try {
@@ -106,7 +107,8 @@ export async function GET(request: Request) {
       );
 
     return NextResponse.json(threadlist.rows, { status: 200 });
-  } catch {
+  } catch (error) {
+    console.error("スレッドの取得に失敗:", error);
     return NextResponse.json(
       { error: "スレッドの取得に失敗しました" },
       { status: 500 }

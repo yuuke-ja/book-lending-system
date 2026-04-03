@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams, useRouter, useSearchParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import CommentTree, { type ThreadCommentNode } from "./_components/CommentTree";
 import { type LinkedBook } from "../_components/types";
 
@@ -42,7 +42,6 @@ export default function ThreadPage() {
     ? params.threadId[0]
     : params.threadId;
   const router = useRouter();
-  const searchParams = useSearchParams();
   const [thread, setThread] = useState<Thread | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -50,12 +49,6 @@ export default function ThreadPage() {
   const [commentInput, setCommentInput] = useState("");
   const [isSubmittingComment, setIsSubmittingComment] = useState(false);
   const [linkedBooks, setLinkedBooks] = useState<LinkedBook[]>([]);
-  const selectedBookId = searchParams.get("bookId");
-  const selectedBookTitle = searchParams.get("bookTitle");
-  const selectedBookThumbnail = searchParams.get("bookThumbnail");
-  const target = searchParams.get("target");
-  const draft = searchParams.get("draft");
-  const scrollY = searchParams.get("scrollY");
 
   const getScrollTop = () => {
     const main = document.querySelector("main");
@@ -143,28 +136,42 @@ export default function ThreadPage() {
   }, [threadId]);
 
   useEffect(() => {
-    if (
-      target !== "comment" ||
-      !threadId ||
-      (!selectedBookId && draft === null && scrollY === null)
-    ) {
+    if (!threadId) {
+      return;
+    }
+    const savedCommentDraftState = sessionStorage.getItem("commentDraftState");
+    if (!savedCommentDraftState) {
       return;
     }
 
-    if (selectedBookId && selectedBookTitle) {
-      setLinkedBooks([
-        {
-          id: selectedBookId,
-          title: selectedBookTitle,
-          thumbnail: selectedBookThumbnail,
-        },
-      ]);
-    }
-    if (draft !== null) {
-      setCommentInput(draft);
-    }
-    router.replace(`/community/${threadId}`, { scroll: false });
-    if (scrollY !== null) {
+    try {
+      const { draft, scrollY, savedThreadId } = JSON.parse(savedCommentDraftState);
+      if (savedThreadId !== threadId) {
+        return;
+      }
+
+      const selectedBook = sessionStorage.getItem("selectedBook");
+      if (selectedBook) {
+        try {
+          const { bookId, booktitle, bookthumbnail } = JSON.parse(selectedBook);
+          setLinkedBooks([
+            {
+              id: bookId,
+              title: booktitle,
+              thumbnail: bookthumbnail,
+            },
+          ]);
+        } catch {
+          // ignore
+        } finally {
+          sessionStorage.removeItem("selectedBook");
+        }
+      }
+
+      if (typeof draft === "string") {
+        setCommentInput(draft);
+      }
+
       const top = Number(scrollY);
       window.requestAnimationFrame(() => {
         window.requestAnimationFrame(() => {
@@ -182,17 +189,12 @@ export default function ThreadPage() {
           }
         });
       });
+    } catch {
+      // ignore
+    } finally {
+      sessionStorage.removeItem("commentDraftState");
     }
-  }, [
-    draft,
-    router,
-    scrollY,
-    selectedBookId,
-    selectedBookThumbnail,
-    selectedBookTitle,
-    target,
-    threadId,
-  ]);
+  }, [threadId]);
 
   if (loading) {
     return (
@@ -210,18 +212,16 @@ export default function ThreadPage() {
     );
   }
 
-  const handleOpenBookPicker = () => {
-    const commentReturnParams = new URLSearchParams({
-      target: "comment",
-      scrollY: String(getScrollTop()),
-    });
-    if (commentInput !== "") {
-      commentReturnParams.set("draft", commentInput);
-    }
-    const commentReturnTo = `/community/${threadId}?${commentReturnParams.toString()}`;
-    router.push(
-      `/community/book-picker?returnTo=${encodeURIComponent(commentReturnTo)}`
+  const openbookpicker = () => {
+    sessionStorage.setItem(
+      "commentDraftState",
+      JSON.stringify({
+        savedThreadId: threadId,
+        draft: commentInput,
+        scrollY: getScrollTop(),
+      })
     );
+    router.push("/community/book-picker");
   };
   const handleBack = () => {
     if (window.history.length > 1) {
@@ -303,7 +303,7 @@ export default function ThreadPage() {
             <div className="flex items-center gap-3">
               <button
                 type="button"
-                onClick={handleOpenBookPicker}
+                onClick={openbookpicker}
                 className="rounded-lg border border-zinc-300 bg-white px-4 py-2 text-sm font-semibold text-zinc-700"
               >
                 {linkedBooks.length > 0 ? "本を選び直す" : "本を紐付ける"}

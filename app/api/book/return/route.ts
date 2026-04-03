@@ -5,10 +5,10 @@ import { NextResponse } from "next/server";
 export async function POST(request: Request) {
   const session = await auth();
   if (!session) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    return NextResponse.json({ error: "認証が必要です" }, { status: 401 });
   }
   if (!session.user?.email) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    return NextResponse.json({ error: "認証が必要です" }, { status: 401 });
   }
 
   try {
@@ -34,7 +34,8 @@ export async function POST(request: Request) {
       { ok: true, mock: true, message: "返却が完了しました" },
       { status: 200 }
     );
-  } catch {
+  } catch (error) {
+    console.error("返却に失敗:", error);
     return NextResponse.json({ error: "返却に失敗しました" }, { status: 500 });
   }
 }

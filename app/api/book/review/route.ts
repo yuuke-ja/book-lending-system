@@ -12,13 +12,13 @@ export async function GET(request: Request) {
   const session = await auth();
   const userEmail = session?.user?.email;
   if (!userEmail) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    return NextResponse.json({ error: "認証が必要です" }, { status: 401 });
   }
 
   const { searchParams } = new URL(request.url);
   const bookId = searchParams.get("bookId");
   if (!bookId) {
-    return NextResponse.json({ error: "bookId is required" }, { status: 400 });
+    return NextResponse.json({ error: "bookIdが必要です" }, { status: 400 });
   }
 
   try {
@@ -49,7 +49,8 @@ export async function GET(request: Request) {
       },
       { status: 200 }
     );
-  } catch {
+  } catch (error) {
+    console.error("レビュー取得に失敗:", error);
     return NextResponse.json({ error: "レビュー取得に失敗しました" }, { status: 500 });
   }
 }
@@ -58,7 +59,7 @@ export async function POST(request: Request) {
   const session = await auth();
   const userEmail = session?.user?.email;
   if (!userEmail) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    return NextResponse.json({ error: "認証が必要です" }, { status: 401 });
   }
 
   try {
@@ -108,7 +109,8 @@ export async function POST(request: Request) {
     );
 
     return NextResponse.json({ ok: true, data: savedReview.rows[0] }, { status: 200 });
-  } catch {
+  } catch (error) {
+    console.error("レビューの保存に失敗:", error);
     return NextResponse.json({ error: "レビューの保存に失敗しました" }, { status: 500 });
   }
 }

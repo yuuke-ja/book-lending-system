@@ -7,7 +7,7 @@ export async function POST(request: Request) {
   const userEmail = session?.user?.email;
 
   if (!userEmail) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    return NextResponse.json({ error: "認証が必要です" }, { status: 401 });
   }
 
   try {
@@ -108,7 +108,8 @@ export async function POST(request: Request) {
     });
 
     return NextResponse.json({ ok: true }, { status: 200 });
-  } catch {
+  } catch (error) {
+    console.error("コメントの作成に失敗:", error);
     return NextResponse.json(
       { error: "コメントの作成に失敗しました" },
       { status: 500 }

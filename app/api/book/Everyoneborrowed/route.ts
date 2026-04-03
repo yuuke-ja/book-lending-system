@@ -4,11 +4,11 @@ import { NextResponse } from "next/server";
 export async function GET() {
   const session = await auth();
   if (!session) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    return NextResponse.json({ error: "認証が必要です" }, { status: 401 });
   }
   const userEmail = session.user?.email;
   if (!userEmail) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    return NextResponse.json({ error: "認証が必要です" }, { status: 401 });
   }
   try {
     const loans = await db.query(
@@ -29,7 +29,8 @@ export async function GET() {
       })),
       { status: 200 }
     );
-  } catch {
+  } catch (error) {
+    console.error("貸出中の本一覧の取得に失敗:", error);
     return NextResponse.json({ error: "貸出状況の取得に失敗しました" }, {
       status: 500,
     });

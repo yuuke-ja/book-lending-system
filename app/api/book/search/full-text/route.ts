@@ -4,7 +4,7 @@ import { NextResponse } from "next/server";
 export async function GET(request: Request) {
   const session = await auth();
   if (!session?.user?.email) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    return NextResponse.json({ error: "認証が必要です" }, { status: 401 });
   }
 
   const { searchParams } = new URL(request.url);
@@ -40,6 +40,7 @@ export async function GET(request: Request) {
     );
     return NextResponse.json(search.rows, { status: 200 });
   } catch (error) {
+    console.error("全文検索に失敗:", error);
     return NextResponse.json({ error: "検索に失敗しました" }, { status: 500 });
   }
 
