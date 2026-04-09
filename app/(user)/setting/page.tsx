@@ -1,6 +1,6 @@
 "use client";
 
-import AvatarEditor from "react-avatar-editor";
+import AvatarEditor, { type AvatarEditorRef } from "react-avatar-editor";
 import { useRef, useState, useEffect } from "react";
 import { useNotificationManager } from "@/hooks/use-notification-manager";
 
@@ -13,7 +13,7 @@ export default function NotificationsPage() {
   const [isAvatarModalOpen, setIsAvatarModalOpen] = useState(false);
   const [scale, setScale] = useState(1.2);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
-  const editorRef = useRef<AvatarEditor | null>(null);
+  const editorRef = useRef<AvatarEditorRef | null>(null);
   const {
     isSupported,
     subscription,
