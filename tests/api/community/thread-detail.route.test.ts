@@ -55,6 +55,8 @@ describe("/api/community/thread/[threadId]", () => {
             bookId: "book-1",
             kind: "BOOK_TOPIC",
             createdAt: "2026-04-03T10:00:00.000Z",
+            nickname: "しおり",
+            authorAvatarUrl: "https://example.com/avatar.png",
           },
         ],
       })
@@ -75,6 +77,8 @@ describe("/api/community/thread/[threadId]", () => {
             parentCommentId: null,
             content: "最初のコメント",
             createdAt: "2026-04-03T11:00:00.000Z",
+            nickname: "こめ太郎",
+            authorAvatarUrl: "https://example.com/comment-1.png",
           },
           {
             id: "comment-2",
@@ -82,6 +86,8 @@ describe("/api/community/thread/[threadId]", () => {
             parentCommentId: "comment-1",
             content: "返信です",
             createdAt: "2026-04-03T11:05:00.000Z",
+            nickname: "返信子",
+            authorAvatarUrl: null,
           },
         ],
       })
@@ -115,6 +121,8 @@ describe("/api/community/thread/[threadId]", () => {
       bookId: "book-1",
       kind: "BOOK_TOPIC",
       createdAt: "2026-04-03T10:00:00.000Z",
+      nickname: "しおり",
+      authorAvatarUrl: "https://example.com/avatar.png",
       linkedBook: {
         id: "book-1",
         title: "DDD本",
@@ -128,6 +136,8 @@ describe("/api/community/thread/[threadId]", () => {
         parentCommentId: null,
         content: "最初のコメント",
         createdAt: "2026-04-03T11:00:00.000Z",
+        nickname: "こめ太郎",
+        authorAvatarUrl: "https://example.com/comment-1.png",
         linkedBooks: [
           {
             id: "book-2",
@@ -142,6 +152,8 @@ describe("/api/community/thread/[threadId]", () => {
         parentCommentId: "comment-1",
         content: "返信です",
         createdAt: "2026-04-03T11:05:00.000Z",
+        nickname: "返信子",
+        authorAvatarUrl: null,
         linkedBooks: [
           {
             id: "book-3",
@@ -165,6 +177,8 @@ describe("/api/community/thread/[threadId]", () => {
             bookId: null,
             kind: "BOOK_REQUEST",
             createdAt: "2026-04-03T12:00:00.000Z",
+            nickname: null,
+            authorAvatarUrl: null,
           },
         ],
       })

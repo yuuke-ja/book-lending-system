@@ -100,9 +100,12 @@ export async function GET(request: Request) {
            t.kind,
            t."createdAt",
            b.title AS "bookTitle",
-           b.thumbnail AS "bookThumbnail"
+           b.thumbnail AS "bookThumbnail",
+           u.nickname AS nickname,
+           u.avatarurl AS "authorAvatarUrl"
          FROM "Thread" t
          LEFT JOIN "Book" AS b ON b.id = t."bookId"
+         LEFT JOIN "User" AS u ON u.email = t."userEmail"
          ORDER BY t."createdAt" DESC`
       );
 

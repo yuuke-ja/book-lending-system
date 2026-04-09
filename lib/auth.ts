@@ -1,10 +1,10 @@
-import NextAuth from "next-auth"
-import Google from "next-auth/providers/google"
+import NextAuth from "next-auth";
+import Google from "next-auth/providers/google";
+import { db } from "@/lib/db";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   providers: [
     Google({
-      // .env.local の環境変数を利用
       clientId: process.env.AUTH_GOOGLE_ID!,
       clientSecret: process.env.AUTH_GOOGLE_SECRET!,
       authorization: { params: { prompt: "select_account" } },
@@ -12,16 +12,27 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   ],
   callbacks: {
     async signIn({ user }) {
-      if (
-        user.email &&
-        (user.email.endsWith("@nnn.ed.jp") || user.email.endsWith("@nnn.ac.jp"))
-      ) {
-        return true;
+      if (!user.email) {
+        return "/banpage";
       }
-      return "/banpage";
+
+      // if (
+      //   !user.email ||
+      //   (!user.email.endsWith("@nnn.ed.jp") &&
+      //     !user.email.endsWith("@nnn.ac.jp"))
+      // ) {
+      //   return "/banpage";
+      // }
+
+      await db.query(
+        `INSERT INTO "User" (email)
+         VALUES ($1)
+         ON CONFLICT (email) DO NOTHING`,
+        [user.email]
+      );
+
+      return true;
     },
   },
-  // Vercel などプロキシ環境向け
   trustHost: true,
-  // 必要に応じて callbacks や pages などをここに追加
-})
+});

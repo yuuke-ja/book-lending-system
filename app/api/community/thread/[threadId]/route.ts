@@ -22,10 +22,20 @@ export async function GET(
       bookId: string | null;
       kind: string;
       createdAt: string;
+      nickname: string | null;
+      authorAvatarUrl: string | null;
     }>(
-      `SELECT id, content, "bookId", kind, "createdAt"
-       FROM "Thread"
-       WHERE id = $1
+      `SELECT
+         t.id,
+         t.content,
+         t."bookId" AS "bookId",
+         t.kind,
+         t."createdAt" AS "createdAt",
+         u.nickname AS nickname,
+         u.avatarurl AS "authorAvatarUrl"
+       FROM "Thread" t
+       LEFT JOIN "User" u ON u.email = t."userEmail"
+       WHERE t.id = $1
        LIMIT 1`,
       [threadId]
     );
@@ -56,11 +66,21 @@ export async function GET(
       parentCommentId: string | null;
       content: string;
       createdAt: string;
+      nickname: string | null;
+      authorAvatarUrl: string | null;
     }>(
-      `SELECT id, "threadId", "parentCommentId", content, "createdAt"
-       FROM "ThreadComment"
-       WHERE "threadId" = $1
-       ORDER BY "createdAt" ASC`,
+      `SELECT
+         c.id,
+         c."threadId" AS "threadId",
+         c."parentCommentId" AS "parentCommentId",
+         c.content,
+         c."createdAt" AS "createdAt",
+         u.nickname AS nickname,
+         u.avatarurl AS "authorAvatarUrl"
+       FROM "ThreadComment" c
+       LEFT JOIN "User" u ON u.email = c."userEmail"
+       WHERE c."threadId" = $1
+       ORDER BY c."createdAt" ASC`,
       [threadId]
     );
 

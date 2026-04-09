@@ -13,6 +13,8 @@ type ThreadResponse = {
   createdAt: string;
   bookTitle?: string | null;
   bookThumbnail?: string | null;
+  nickname?: string | null;
+  authorAvatarUrl?: string | null;
 };
 
 type Thread = {
@@ -22,18 +24,8 @@ type Thread = {
   kind: string;
   createdAt: string;
   linkedBook: LinkedBook | null;
-};
-
-const getKindLabel = (kind: string) => {
-  if (kind === "BOOK_TOPIC") {
-    return "本についての投稿";
-  }
-
-  if (kind === "BOOK_REQUEST") {
-    return "本を探す相談";
-  }
-
-  return kind;
+  nickname: string | null;
+  authorAvatarUrl: string | null;
 };
 
 const getErrorMessage = async (res: Response, fallback: string) => {
@@ -89,6 +81,8 @@ export default function CommunityPage() {
                 thumbnail: thread.bookThumbnail ?? null,
               }
               : null,
+            nickname: thread.nickname ?? null,
+            authorAvatarUrl: thread.authorAvatarUrl ?? null,
           }))
           : []
       );
@@ -200,6 +194,8 @@ export default function CommunityPage() {
               thumbnail: selectedBook.thumbnail,
             }
             : null,
+          nickname: createdThread.nickname ?? null,
+          authorAvatarUrl: createdThread.authorAvatarUrl ?? null,
         },
         ...prev,
       ]);
@@ -237,11 +233,7 @@ export default function CommunityPage() {
       <div className="space-y-3 rounded-2xl border border-zinc-200 bg-zinc-50 p-4">
         <textarea
           className="min-h-24 w-full rounded-xl border border-zinc-300 px-4 py-3 text-sm text-zinc-900 outline-none"
-          placeholder={
-            linkedBooks.length > 0
-              ? "この本について投稿する"
-              : "本について質問する"
-          }
+          placeholder="投稿を書く"
           value={threadInput}
           onChange={(e) => setThreadInput(e.target.value)}
         />
@@ -321,13 +313,20 @@ export default function CommunityPage() {
               href={`/community/${thread.id}`}
               className="block rounded-3xl border border-zinc-200 bg-white p-7 shadow-sm transition hover:border-zinc-300 hover:bg-zinc-50"
             >
-              <div className="flex flex-wrap items-center justify-between gap-3">
-                <p className="text-xs font-semibold tracking-[0.08em] text-zinc-500">
-                  {getKindLabel(thread.kind)}
-                </p>
-                <p className="text-xs text-zinc-500">
-                  {new Date(thread.createdAt).toLocaleString("ja-JP")}
-                </p>
+              <div className="flex items-center gap-3">
+                <img
+                  src={thread.authorAvatarUrl || "/default-avatar.svg"}
+                  alt={thread.nickname ?? "投稿者"}
+                  className="h-10 w-10 rounded-full border border-zinc-200 bg-zinc-100 object-cover"
+                />
+                <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+                  <p className="text-sm font-semibold text-zinc-900">
+                    {thread.nickname || "未設定"}
+                  </p>
+                  <p className="text-sm text-zinc-400">
+                    {new Date(thread.createdAt).toLocaleString("ja-JP")}
+                  </p>
+                </div>
               </div>
               <div className="mt-4 whitespace-pre-wrap text-lg leading-8 text-zinc-800">
                 {thread.content}

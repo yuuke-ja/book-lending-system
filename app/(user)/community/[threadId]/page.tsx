@@ -11,6 +11,8 @@ type Thread = {
   bookId: string | null;
   kind: string;
   createdAt: string;
+  nickname: string | null;
+  authorAvatarUrl: string | null;
   linkedBook: LinkedBook | null;
 };
 
@@ -20,6 +22,8 @@ type ThreadComment = {
   parentCommentId: string | null;
   content: string;
   createdAt: string;
+  nickname: string | null;
+  authorAvatarUrl: string | null;
   linkedBooks: LinkedBook[];
 };
 
@@ -260,6 +264,21 @@ export default function ThreadPage() {
         <p className="text-xs font-semibold tracking-[0.08em] text-zinc-500">
           THREAD
         </p>
+        <div className="mt-4 flex items-center gap-3">
+          <img
+            src={thread?.authorAvatarUrl || "/default-avatar.svg"}
+            alt={thread?.nickname ?? "投稿者"}
+            className="h-12 w-12 rounded-full border border-zinc-200 bg-zinc-100 object-cover"
+          />
+          <div>
+            <p className="text-sm font-semibold text-zinc-900">
+              {thread?.nickname || "未設定"}
+            </p>
+            <p className="text-xs text-zinc-500">
+              {thread ? new Date(thread.createdAt).toLocaleString("ja-JP") : ""}
+            </p>
+          </div>
+        </div>
         <div className="mt-5 whitespace-pre-wrap text-lg leading-8 text-zinc-800">
           {thread?.content ?? "スレッド本文がありません"}
         </div>

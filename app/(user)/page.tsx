@@ -2,8 +2,8 @@ import ReturnStatus from "@/app/(user)/_components/ReturnStatus";
 import LoanRanking from "@/app/(user)/_components/loanranking";
 import BorrowedBooksList from "@/app/(user)/_components/BorrowedBooksList";
 import BorrowedList from "@/app/(user)/_components/BorrowedList";
+import UserLoanRanking from "@/app/(user)/_components/Userloanranking";
 import Link from "next/link";
-
 export default async function Home() {
   return (
     <section className="space-y-6">
@@ -26,6 +26,10 @@ export default async function Home() {
       <BorrowedList />
 
       <LoanRanking />
+
+      <UserLoanRanking />
+
+
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
         <Link

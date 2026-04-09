@@ -10,6 +10,8 @@ export type ThreadCommentNode = {
   parentCommentId: string | null;
   content: string;
   createdAt: string;
+  nickname: string | null;
+  authorAvatarUrl: string | null;
   linkedBooks: LinkedBook[];
   children: ThreadCommentNode[];
 };
@@ -165,10 +167,20 @@ function CommentTreeItem({
       <div className="text-sm text-zinc-700">
         {/*投稿日時と本文を表示*/}
         <div className="min-w-0">
-          <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-            <p className="text-sm text-zinc-400">
-              {new Date(comment.createdAt).toLocaleString("ja-JP")}
-            </p>
+          <div className="flex items-center gap-3">
+            <img
+              src={comment.authorAvatarUrl || "/default-avatar.svg"}
+              alt={comment.nickname ?? "投稿者"}
+              className="h-10 w-10 rounded-full border border-zinc-200 bg-zinc-100 object-cover"
+            />
+            <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+              <p className="text-sm font-semibold text-zinc-900">
+                {comment.nickname || "未設定"}
+              </p>
+              <p className="text-sm text-zinc-400">
+                {new Date(comment.createdAt).toLocaleString("ja-JP")}
+              </p>
+            </div>
           </div>
           <p className="mt-2 whitespace-pre-wrap text-base leading-7 text-zinc-800">
             {comment.content}
