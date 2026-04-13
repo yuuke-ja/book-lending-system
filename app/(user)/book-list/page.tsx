@@ -3,7 +3,6 @@
 import { createClient } from '@supabase/supabase-js';
 import { useCallback, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { BookDetailsModal } from './_components/BookDetailsModal';
 import { Rating } from '@smastrom/react-rating';
 import '@smastrom/react-rating/style.css';
 
@@ -27,18 +26,6 @@ type TagItem = {
   tag: string;
 };
 
-type TagAdd = {
-  bookId: string;
-  title: string;
-  tags: { id: string; tag: string }[];
-};
-type UpdateTag = {
-  bookId: string;
-  tagId: string;
-  isRemove: boolean;
-  new: boolean;
-};
-
 export default function BookListPage() {
   const router = useRouter();
   const [books, setBooks] = useState<Book[]>([]);
@@ -48,11 +35,7 @@ export default function BookListPage() {
   const [loanedBooks, setLoanedBooks] = useState<string[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
-  const [tagadd, setTagadd] = useState<TagAdd | null>(null);
-  const [isAdmin, setIsAdmin] = useState(false);
   const [taglist, setTaglist] = useState<TagItem[]>([]);
-  const [updatetag, setUpdatetag] = useState<UpdateTag[]>([]);
-  const [isSavingTags, setIsSavingTags] = useState(false);
   const displayBooks = searchBooks ?? books;
   const hasSearched = searchBooks !== null;
   const loanedSet = new Set(loanedBooks);
@@ -88,19 +71,6 @@ export default function BookListPage() {
       });
   }, []);
 
-  //タグ候補クリック時に、タグ状態を追加/削除トグルする。
-  const toggleTagInDraft = useCallback((bookId: string, tagId: string) => {
-    setUpdatetag((prev) => {
-      const exists = prev.some((item) => item.tagId === tagId);
-      if (!exists) {
-        return [...prev, { bookId, tagId, isRemove: false, new: true }];
-      }
-      return prev.map((item) =>
-        item.tagId === tagId ? { ...item, isRemove: !item.isRemove } : item
-      );
-    });
-  }, []);
-
   // 貸出状況を取得する（貸出中判定に使う）
   const fetchLoans = useCallback(async () => {
     try {
@@ -115,54 +85,6 @@ export default function BookListPage() {
       console.error('貸出状況取得エラー:', err);
     }
   }, []);
-  //本のタグ編集したものを更新する
-  async function saveBookTags(bookId: string, updates: UpdateTag[]) {
-    try {
-      const tags = Array.from(
-        new Set(
-          updates
-            .filter((item) => item.bookId === bookId && !item.isRemove)
-            .map((item) => item.tagId)
-        )
-      );
-      const res = await fetch('/api/admin/updatetags', {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          bookId,
-          tags,
-        }),
-      });
-      if (!res.ok) throw new Error('タグの保存に失敗しました');
-
-      setBooks((prev) =>
-        prev.map((book) =>
-          book.id === bookId ? {
-            ...book,
-            tags: taglist.filter((t) => tags.includes(t.id)),
-          } : book
-        )
-      );
-      setTagadd((prev) => prev ? {
-        ...prev,
-        tags: taglist.filter((t) => tags.includes(t.id)),
-      } : prev);
-      setUpdatetag(
-        tags.map((tagId) => ({
-          bookId,
-          tagId,
-          isRemove: false,
-          new: false,
-        }))
-      );
-    } catch (err) {
-      console.error('タグ保存エラー:', err);
-      alert(err instanceof Error ? err.message : 'エラーが発生しました');
-    }
-  }
-
   // 初回レンダリング時に貸出状況を取得する
   useEffect(() => {
     fetchLoans();
@@ -206,20 +128,6 @@ export default function BookListPage() {
     fetchTags();
   }, []);
 
-  //管理者APIへアクセスし、管理者権限の有無を判定
-  useEffect(() => {
-    const fetchIsAdmin = async () => {
-      try {
-        const res = await fetch('/api/admin/tags', { cache: 'no-store' });
-        setIsAdmin(res.ok);
-      } catch {
-        setIsAdmin(false);
-      }
-    };
-    fetchIsAdmin();
-  }, []);
-
-
   useEffect(() => {
     // 本一覧を取得する
     const fetchBooks = async () => {
@@ -255,106 +163,6 @@ export default function BookListPage() {
 
   return (
     <section className="space-y-5">
-      {tagadd && isAdmin && (
-        <BookDetailsModal
-          isOpen={true}
-          onClose={() => {
-            setTagadd(null);
-            setUpdatetag([]);
-          }}
-          title={`タグ変更: ${tagadd.title}`}
-        >
-          <div className="space-y-3">
-            <div className="flex flex-wrap gap-1">
-              {tagadd.tags.length === 0 && (
-                <p className="text-sm text-zinc-700">タグはまだありません。</p>
-              )}
-              {tagadd.tags.map((tag) => {
-                const removed = updatetag.some(
-                  (item) => item.tagId === tag.id && item.isRemove
-                );
-                return (
-                  <span
-                    key={tag.id}
-                    className={`inline-flex rounded border px-1 py-0.5 text-[10px] leading-none ${removed
-                      ? 'border-red-300 bg-red-50 text-red-700'
-                      : 'border-zinc-300 bg-zinc-50 text-zinc-600'
-                      }`}
-                  >
-                    #{tag.tag}
-                    <button
-                      type="button"
-                      onClick={() => toggleTagInDraft(tagadd.bookId, tag.id)}
-                      className={
-                        removed
-                          ? 'text-red-600 hover:text-red-700'
-                          : 'text-zinc-500 hover:text-zinc-700'
-                      }
-                      aria-label={`${tag.tag}を削除`}
-                    >
-                      ×
-                    </button>
-                  </span>
-                );
-              })}
-            </div>
-            {taglist.length > 0 && (
-              <div className="space-y-1">
-                <p className="text-xs font-semibold tracking-[0.08em] text-zinc-500">
-                  候補タグ
-                </p>
-                <div className="flex flex-wrap gap-2">
-                  {taglist.map((item) => {
-                    const isSelected = updatetag.some(
-                      (draft) => draft.tagId === item.id && !draft.isRemove && draft.new
-                    );
-                    return (
-                      <button
-                        key={item.id}
-                        type="button"
-                        onClick={() => toggleTagInDraft(tagadd.bookId, item.id)}
-                        className={`rounded-full border px-3 py-1 text-xs font-medium transition ${isSelected
-                          ? 'border-green-700 bg-green-700 text-white'
-                          : 'border-zinc-300 bg-zinc-50 text-zinc-700 hover:bg-zinc-100'
-                          }`}
-                      >
-                        #{item.tag}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-            )}
-            <div className="flex items-center justify-end">
-
-            </div>
-            <div className="flex items-center justify-end">
-              <button
-                type="button"
-                disabled={isSavingTags}
-                onClick={async () => {
-                  if (isSavingTags) return;
-                  setIsSavingTags(true);
-                  try {
-                    await saveBookTags(tagadd.bookId, updatetag);
-                  } finally {
-                    setIsSavingTags(false);
-                  }
-                }}
-                className="inline-flex items-center gap-2 rounded-md border border-zinc-300 bg-white px-4 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50 disabled:cursor-not-allowed disabled:opacity-60"
-              >
-                {isSavingTags && (
-                  <span
-                    className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-zinc-500 border-t-transparent"
-                    aria-hidden="true"
-                  />
-                )}
-                {isSavingTags ? '保存中...' : '変更を保存'}
-              </button>
-            </div>
-          </div>
-        </BookDetailsModal>
-      )}
       <div className="rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm">
         <form
           onSubmit={(e) => {
@@ -495,31 +303,6 @@ export default function BookListPage() {
                   readOnly
                 />
               </div>
-              {isAdmin && (
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    const currentTags = book.tags ?? [];
-                    setTagadd({
-                      bookId: book.id,
-                      title: book.title,
-                      tags: currentTags,
-                    });
-                    setUpdatetag(
-                      currentTags.map((tag) => ({
-                        bookId: book.id,
-                        tagId: tag.id,
-                        isRemove: false,
-                        new: false,
-                      }))
-                    );
-                  }}
-                  className="mt-1 hidden w-fit rounded border border-zinc-300 bg-white px-2 py-1 text-[10px] font-medium text-zinc-700 hover:bg-zinc-50 md:inline-flex"
-                >
-                  タグ変更
-                </button>
-              )}
               {loanedSet.has(book.id) && (
                 <span className="mt-1 inline-block w-fit rounded bg-red-100 px-1.5 py-0.5 text-[9px] text-red-700 md:px-2 md:text-[10px]">
                   貸出中

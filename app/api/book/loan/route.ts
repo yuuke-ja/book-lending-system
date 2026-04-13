@@ -1,5 +1,6 @@
 import { auth } from '@/lib/auth';
 import { db } from '@/lib/db';
+import { recordResearchEvent } from '@/lib/research-event.server';
 import { randomUUID } from 'crypto';
 import { NextResponse } from 'next/server';
 // 本番環境では日本時間どおりに曜日が取れないことがあるので、JSTで曜日を見る。
@@ -111,16 +112,29 @@ export async function POST(request: Request) {
     const returnWeek = settings?.loanPeriodDays ?? 2;
     const exceptionDays = openPeriod?.endDate ?? null;
     const dueAt = exceptionDays ?? calcDueAtByReturnWeek(now, returnWeek);
-    await db.query(
-      `INSERT INTO "Loan" (id, "userEmail", "bookId", "dueAt")
-       VALUES ($1, $2, $3, $4)`,
-      [
-        randomUUID(),
-        userEmail,
-        bookId,
-        dueAt,
-      ]
-    );
+    const loanId = randomUUID();
+    await db.transaction(async (tx) => {
+      await tx.query(
+        `INSERT INTO "Loan" (id, "userEmail", "bookId", "dueAt")
+         VALUES ($1, $2, $3, $4)`,
+        [
+          loanId,
+          userEmail,
+          bookId,
+          dueAt,
+        ]
+      );
+      await recordResearchEvent(
+        {
+          eventType: 'loan',
+          userEmail,
+          bookId,
+          sourceType: 'direct',
+          sourceId: null,
+        },
+        tx
+      );
+    });
     return NextResponse.json({ message: '貸出が完了しました' }, { status: 200 });
   } catch (error) {
     console.error("貸出に失敗:", error);

@@ -1,6 +1,8 @@
 import { notFound } from "next/navigation";
 import StarRating from "@/app/(user)/book-list/_components/Rating";
 import { getBookById } from "@/lib/books/get-book-by-id";
+import { auth } from "@/lib/auth";
+import { recordResearchEvent } from "@/lib/research-event.server";
 import BookThreadSection from "./_components/BookThreadSection";
 import BackButton from "./_components/BackButton";
 
@@ -14,6 +16,19 @@ export default async function BookPage({
 
   if (!book) {
     notFound();
+  }
+
+  const session = await auth();
+  const userEmail = session?.user?.email;
+
+  if (userEmail) {
+    await recordResearchEvent({
+      eventType: "book_detail_view",
+      userEmail,
+      bookId: book.id,
+      sourceType: "direct",
+      sourceId: null,
+    });
   }
 
   return (

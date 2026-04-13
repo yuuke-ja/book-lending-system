@@ -13,6 +13,7 @@ vi.mock("@/lib/db", () => ({
 
 const mockedAuth = auth as unknown as ReturnType<typeof vi.fn>;
 const mockedQuery = db.query as unknown as ReturnType<typeof vi.fn>;
+const mockedTransaction = db.transaction as unknown as ReturnType<typeof vi.fn>;
 
 function createLoanRequest(): Request {
   return new Request("http://localhost/api/book/loan", {
@@ -50,6 +51,9 @@ describe("POST /api/book/loan", () => {
     vi.clearAllMocks();
     vi.useFakeTimers();
     vi.setSystemTime(new Date("2026-03-08T12:00:00.000+09:00"));
+    mockedTransaction.mockImplementation(async (callback) =>
+      callback({ query: mockedQuery })
+    );
   });
 
   afterEach(() => {
@@ -76,21 +80,21 @@ describe("POST /api/book/loan", () => {
       caseName: "例外期間の開始日（非金曜）は借りられる",
       now: "2026-03-09T12:00:00.000+09:00",
       expectedStatus: 200,
-      expectedQueryCount: 5,
+      expectedQueryCount: 6,
       expectedInPeriod: true,
     },
     {
       caseName: "例外期間の期間中（非金曜）は借りられる",
       now: "2026-03-10T12:00:00.000+09:00",
       expectedStatus: 200,
-      expectedQueryCount: 5,
+      expectedQueryCount: 6,
       expectedInPeriod: true,
     },
     {
       caseName: "例外期間の終了日（非金曜）は借りられる",
       now: "2026-03-11T12:00:00.000+09:00",
       expectedStatus: 200,
-      expectedQueryCount: 5,
+      expectedQueryCount: 6,
       expectedInPeriod: true,
     },
     {
@@ -117,6 +121,9 @@ describe("POST /api/book/loan", () => {
 
     expect(res.status).toBe(scenario.expectedStatus);
     expect(mockedQuery).toHaveBeenCalledTimes(scenario.expectedQueryCount);
+    expect(mockedTransaction).toHaveBeenCalledTimes(
+      scenario.expectedStatus === 200 ? 1 : 0
+    );
 
     if (scenario.expectedInPeriod) {
       const insertParams = mockedQuery.mock.calls[4]?.[1] as unknown[] | undefined;
@@ -137,7 +144,8 @@ describe("POST /api/book/loan", () => {
     const res = await POST(createLoanRequest());
 
     expect(res.status).toBe(200);
-    expect(mockedQuery).toHaveBeenCalledTimes(5);
+    expect(mockedQuery).toHaveBeenCalledTimes(6);
+    expect(mockedTransaction).toHaveBeenCalledTimes(1);
   });
 
   it("fridayOnlyがfalseなら非金曜・例外期間外でも借りられる", async () => {
@@ -152,7 +160,8 @@ describe("POST /api/book/loan", () => {
     const res = await POST(createLoanRequest());
 
     expect(res.status).toBe(200);
-    expect(mockedQuery).toHaveBeenCalledTimes(5);
+    expect(mockedQuery).toHaveBeenCalledTimes(6);
+    expect(mockedTransaction).toHaveBeenCalledTimes(1);
   });
 
   it("貸出設定が未作成なら非金曜は借りられない", async () => {
@@ -164,5 +173,6 @@ describe("POST /api/book/loan", () => {
 
     expect(res.status).toBe(403);
     expect(mockedQuery).toHaveBeenCalledTimes(1);
+    expect(mockedTransaction).not.toHaveBeenCalled();
   });
 });

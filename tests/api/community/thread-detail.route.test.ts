@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { GET } from "@/app/api/community/thread/[threadId]/route";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
+import { recordResearchEvent } from "@/lib/research-event.server";
 
 vi.mock("@/lib/auth", () => ({ auth: vi.fn() }));
 vi.mock("@/lib/db", () => ({
@@ -10,9 +11,13 @@ vi.mock("@/lib/db", () => ({
     transaction: vi.fn(),
   },
 }));
+vi.mock("@/lib/research-event.server", () => ({
+  recordResearchEvent: vi.fn(),
+}));
 
 const mockedAuth = auth as unknown as ReturnType<typeof vi.fn>;
 const mockedQuery = db.query as unknown as ReturnType<typeof vi.fn>;
+const mockedRecordResearchEvent = recordResearchEvent as unknown as ReturnType<typeof vi.fn>;
 
 describe("/api/community/thread/[threadId]", () => {
   beforeEach(() => {
@@ -115,6 +120,13 @@ describe("/api/community/thread/[threadId]", () => {
 
     expect(res.status).toBe(200);
     expect(mockedQuery).toHaveBeenCalledTimes(4);
+    expect(mockedRecordResearchEvent).toHaveBeenCalledWith({
+      eventType: "post_view",
+      userEmail: "user@example.com",
+      bookId: "book-1",
+      sourceType: "thread",
+      sourceId: "thread-1",
+    });
     expect(data.thread).toEqual({
       id: "thread-1",
       content: "DDDの話をしたい",
@@ -193,6 +205,7 @@ describe("/api/community/thread/[threadId]", () => {
 
     expect(res.status).toBe(200);
     expect(mockedQuery).toHaveBeenCalledTimes(2);
+    expect(mockedRecordResearchEvent).not.toHaveBeenCalled();
     expect(data.thread.linkedBook).toBeNull();
     expect(data.comments).toEqual([]);
   });

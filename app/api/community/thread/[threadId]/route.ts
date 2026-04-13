@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
+import { recordResearchEvent } from "@/lib/research-event.server";
 
 export async function GET(
   _request: Request,
@@ -45,6 +46,16 @@ export async function GET(
     }
 
     const thread = threadResult.rows[0];
+
+    if (thread.bookId) {
+      await recordResearchEvent({
+        eventType: "post_view",
+        userEmail,
+        bookId: thread.bookId,
+        sourceType: "thread",
+        sourceId: threadId,
+      });
+    }
 
     const linkedThreadBookResult = thread.bookId
       ? await db.query<{

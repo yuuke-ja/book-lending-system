@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { type LinkedBook } from "../../_components/types";
+
 
 export type ThreadCommentNode = {
   id: string;
@@ -45,6 +46,7 @@ function CommentTreeItem({
   const [replyInput, setReplyInput] = useState("");
   const [isSubmittingReply, setIsSubmittingReply] = useState(false);
   const [linkedBooks, setLinkedBooks] = useState<LinkedBook[]>([]);
+  const commentRef = useRef<HTMLDivElement>(null);
 
   const getScrollTop = () => {
     const main = document.querySelector("main");
@@ -52,6 +54,65 @@ function CommentTreeItem({
       ? main.scrollTop
       : window.scrollY;
   };
+
+  useEffect(() => {
+    const element = commentRef.current;
+    if (!element || comment.linkedBooks.length === 0) {
+      return;
+    }
+
+    let sent = false;
+    let timer: ReturnType<typeof setTimeout> | null = null;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (sent) return;
+
+        if (entry.isIntersecting && entry.intersectionRatio >= 0.5) {
+          if (timer) {
+            return;
+          }
+
+          timer = setTimeout(() => {
+            if (sent) return;
+            sent = true;
+            fetch("/api/comment/research-event", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                eventType: "post_view",
+                bookId: comment.linkedBooks[0].id,
+                sourceType: "comment",
+                sourceId: comment.id,
+              }),
+              keepalive: true,
+            })
+
+              .catch(() => {
+                // ignore
+              });
+          }, 1000);
+          return;
+        }
+        if (timer) {
+          clearTimeout(timer);
+          timer = null;
+        }
+      },
+      { threshold: [0.5] }
+    );
+
+    observer.observe(element);
+
+    return () => {
+      observer.disconnect();
+      if (timer) {
+        clearTimeout(timer);
+      }
+    };
+  }, [comment.id, comment.linkedBooks]);
 
   useEffect(() => {
     const savedReplyDraftState = sessionStorage.getItem("replyDraftState");
@@ -163,7 +224,7 @@ function CommentTreeItem({
   };
 
   return (
-    <div className={depth > 0 ? "ml-6 border-l border-zinc-200 pl-5" : ""}>
+    <div ref={commentRef} className={depth > 0 ? "ml-6 border-l border-zinc-200 pl-5" : ""}>
       <div className="text-sm text-zinc-700">
         {/*投稿日時と本文を表示*/}
         <div className="min-w-0">
