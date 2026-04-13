@@ -1,5 +1,5 @@
 import { auth } from "@/lib/auth";
-import { db } from "@/lib/db";
+import { getLoanedBookIds } from "@/lib/books/get-loaned-book-ids";
 import { NextResponse } from "next/server";
 export async function GET() {
   const session = await auth();
@@ -11,21 +11,10 @@ export async function GET() {
     return NextResponse.json({ error: "認証が必要です" }, { status: 401 });
   }
   try {
-    const loans = await db.query(
-      `SELECT
-         l.id,
-         l."bookId",
-         l."loanedAt"
-       FROM "Loan" l
-       INNER JOIN "Book" b ON b.id = l."bookId"
-       WHERE l."returnedAt" IS NULL
-       ORDER BY l."loanedAt" DESC`
-    );
+    const bookIds = await getLoanedBookIds();
     return NextResponse.json(
-      loans.rows.map((loan) => ({
-        id: loan.id,
-        bookId: loan.bookId,
-        loanedAt: loan.loanedAt,
+      bookIds.map((bookId) => ({
+        bookId,
       })),
       { status: 200 }
     );
