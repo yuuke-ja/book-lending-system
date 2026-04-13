@@ -81,6 +81,7 @@ export default function MobileHeader() {
           <div className="relative flex h-full items-center justify-between">
             <Link
               href="/"
+              prefetch={false}
               className="inline-flex items-center gap-1 text-base font-semibold tracking-[0.04em] text-zinc-900 transition hover:text-sky-800"
             >
               プロクラ図書

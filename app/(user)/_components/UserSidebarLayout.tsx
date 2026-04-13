@@ -36,40 +36,41 @@ export default function UserSidebarLayout({
           <div className="flex h-full flex-col">
             <Link
               href="/"
+              prefetch={false}
               className="mb-5 rounded-2xl px-4 py-3"
             >
               <h1 className="mt-2 text-xl font-semibold text-zinc-900">プロクラ図書</h1>
             </Link>
 
             <nav className="space-y-1 p-2">
-              <Link href="/setting" className={navLinkClass}>
+              <Link href="/setting" prefetch={false} className={navLinkClass}>
                 <SettingIcon className="shrink-0" />
                 設定
               </Link>
               {isAdmin && (
-                <Link href="/admin" className={navLinkClass}>
+                <Link href="/admin" prefetch={false} className={navLinkClass}>
                   <AdminIcon className="shrink-0" />
                   管理者はこちら
                 </Link>
               )}
-              <Link href="/book-list" className={navLinkClass}>
+              <Link href="/book-list" prefetch={false} className={navLinkClass}>
                 <BookListIcon className="shrink-0" />
                 本一覧
               </Link>
-              <Link href="/community" className={navLinkClass}>
+              <Link href="/community" prefetch={false} className={navLinkClass}>
                 <CommunityIcon className="shrink-0" />
                 コミュニティ
               </Link>
-              <Link href="/statistics" className={navLinkClass}>
+              <Link href="/statistics" prefetch={false} className={navLinkClass}>
                 <StatisticsIcon className="shrink-0" />
                 統計
               </Link>
 
-              <Link href="/loan/qr" className={navLinkClass}>
+              <Link href="/loan/qr" prefetch={false} className={navLinkClass}>
                 <BorrowIcon className="shrink-0" />
                 本を借りる
               </Link>
-              <Link href="/return" className={navLinkClass}>
+              <Link href="/return" prefetch={false} className={navLinkClass}>
                 <ReturnIcon className="shrink-0" />
                 返却する
               </Link>

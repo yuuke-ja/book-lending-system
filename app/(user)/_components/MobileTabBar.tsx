@@ -94,6 +94,7 @@ export default function MobileTabBar({ isAdmin }: MobileTabBarProps) {
             <Link
               key={href}
               href={href}
+              prefetch={false}
               aria-current={active ? "page" : undefined}
               className={`relative flex min-h-[64px] flex-col items-center justify-center gap-1 px-1 pb-1 pt-2 text-[11px] font-medium tracking-[-0.01em] transition-colors ${active ? "text-[#167fcf]" : "text-[#6f7888] hover:text-[#4f5764]"
                 }`}
