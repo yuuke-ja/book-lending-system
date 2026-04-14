@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
+import { getThreadList } from "@/lib/community/get-thread-list";
 
 export async function POST(request: Request) {
   const session = await auth();
@@ -83,33 +84,9 @@ export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const bookId = searchParams.get("bookId");
+    const threadList = await getThreadList(bookId);
 
-    const threadlist = bookId
-      ? await db.query(
-        `SELECT id, content, "bookId", kind, "createdAt"
-           FROM "Thread"
-           WHERE "bookId" = $1
-           ORDER BY "createdAt" DESC`,
-        [bookId]
-      )
-      : await db.query(
-        `SELECT
-           t.id,
-           t.content,
-           t."bookId",
-           t.kind,
-           t."createdAt",
-           b.title AS "bookTitle",
-           b.thumbnail AS "bookThumbnail",
-           u.nickname AS nickname,
-           u.avatarurl AS "authorAvatarUrl"
-         FROM "Thread" t
-         LEFT JOIN "Book" AS b ON b.id = t."bookId"
-         LEFT JOIN "User" AS u ON u.email = t."userEmail"
-         ORDER BY t."createdAt" DESC`
-      );
-
-    return NextResponse.json(threadlist.rows, { status: 200 });
+    return NextResponse.json(threadList, { status: 200 });
   } catch (error) {
     console.error("スレッドの取得に失敗:", error);
     return NextResponse.json(

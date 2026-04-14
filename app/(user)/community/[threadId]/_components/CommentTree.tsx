@@ -3,19 +3,8 @@
 import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { type LinkedBook } from "../../_components/types";
-
-
-export type ThreadCommentNode = {
-  id: string;
-  threadId: string;
-  parentCommentId: string | null;
-  content: string;
-  createdAt: string;
-  nickname: string | null;
-  authorAvatarUrl: string | null;
-  linkedBooks: LinkedBook[];
-  children: ThreadCommentNode[];
-};
+import type { ThreadCommentNode } from "./types";
+export type { ThreadCommentNode } from "./types";
 
 const getErrorMessage = async (res: Response, fallback: string) => {
   try {
@@ -33,12 +22,10 @@ const getErrorMessage = async (res: Response, fallback: string) => {
 function CommentTreeItem({
   comment,
   threadId,
-  onReload,
   depth = 0,
 }: {
   comment: ThreadCommentNode;
   threadId: string;
-  onReload: () => Promise<void>;
   depth?: number;
 }) {
   const router = useRouter();
@@ -62,18 +49,18 @@ function CommentTreeItem({
     }
 
     let sent = false;
-    let timer: ReturnType<typeof setTimeout> | null = null;
+    let timer: number | null = null;
 
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (sent) return;
 
         if (entry.isIntersecting && entry.intersectionRatio >= 0.5) {
-          if (timer) {
+          if (timer !== null) {
             return;
           }
 
-          timer = setTimeout(() => {
+          timer = window.setTimeout(() => {
             if (sent) return;
             sent = true;
             fetch("/api/comment/research-event", {
@@ -96,8 +83,8 @@ function CommentTreeItem({
           }, 1000);
           return;
         }
-        if (timer) {
-          clearTimeout(timer);
+        if (timer !== null) {
+          window.clearTimeout(timer);
           timer = null;
         }
       },
@@ -108,8 +95,8 @@ function CommentTreeItem({
 
     return () => {
       observer.disconnect();
-      if (timer) {
-        clearTimeout(timer);
+      if (timer !== null) {
+        window.clearTimeout(timer);
       }
     };
   }, [comment.id, comment.linkedBooks]);
@@ -201,7 +188,7 @@ function CommentTreeItem({
       setReplyInput("");
       setLinkedBooks([]);
       setIsReplying(false);
-      await onReload();
+      router.refresh();
     } catch (err) {
       alert(err instanceof Error ? err.message : "エラーが発生しました");
     } finally {
@@ -368,7 +355,6 @@ function CommentTreeItem({
               key={child.id}
               comment={child}
               threadId={threadId}
-              onReload={onReload}
               depth={depth + 1}
             />
           ))}
@@ -381,21 +367,14 @@ function CommentTreeItem({
 export default function CommentTree({
   comments,
   threadId,
-  onReload,
 }: {
   comments: ThreadCommentNode[];
   threadId: string;
-  onReload: () => Promise<void>;
 }) {
   return (
     <>
       {comments.map((comment) => (
-        <CommentTreeItem
-          key={comment.id}
-          comment={comment}
-          threadId={threadId}
-          onReload={onReload}
-        />
+        <CommentTreeItem key={comment.id} comment={comment} threadId={threadId} />
       ))}
     </>
   );

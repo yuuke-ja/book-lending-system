@@ -16,13 +16,13 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         return "/banpage";
       }
 
-      // if (
-      //   !user.email ||
-      //   (!user.email.endsWith("@nnn.ed.jp") &&
-      //     !user.email.endsWith("@nnn.ac.jp"))
-      // ) {
-      //   return "/banpage";
-      // }
+      if (
+        !user.email ||
+        (!user.email.endsWith("@nnn.ed.jp") &&
+          !user.email.endsWith("@nnn.ac.jp"))
+      ) {
+        return "/banpage";
+      }
 
       await db.query(
         `INSERT INTO "User" (email)

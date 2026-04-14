@@ -1,5 +1,1 @@
-export type LinkedBook = {
-  id: string;
-  title: string;
-  thumbnail: string | null;
-};
+export type { CommunityThread, LinkedBook } from "@/lib/community/types";

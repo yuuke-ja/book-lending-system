@@ -185,7 +185,11 @@ describe("/api/community/thread", () => {
       expect(res.status).toBe(200);
       expect(mockedQuery).toHaveBeenCalledTimes(1);
       expect(String(mockedQuery.mock.calls[0]?.[0])).toContain('FROM "Thread" t');
-      expect(data[0].bookTitle).toBe("DDD本");
+      expect(data[0].linkedBook).toEqual({
+        id: "book-1",
+        title: "DDD本",
+        thumbnail: "thumb-1",
+      });
     });
 
     it("bookId指定ありなら対象本のスレッドだけ返す", async () => {
@@ -198,6 +202,10 @@ describe("/api/community/thread", () => {
             bookId: "book-2",
             kind: "BOOK_TOPIC",
             createdAt: "2026-04-03T12:00:00.000Z",
+            bookTitle: "設計入門",
+            bookThumbnail: null,
+            nickname: "太郎",
+            authorAvatarUrl: null,
           },
         ],
       });
@@ -209,8 +217,14 @@ describe("/api/community/thread", () => {
 
       expect(res.status).toBe(200);
       expect(mockedQuery).toHaveBeenCalledTimes(1);
+      expect(String(mockedQuery.mock.calls[0]?.[0])).toContain('LEFT JOIN "Book" AS b');
       expect(mockedQuery.mock.calls[0]?.[1]).toEqual(["book-2"]);
       expect(data[0].bookId).toBe("book-2");
+      expect(data[0].linkedBook).toEqual({
+        id: "book-2",
+        title: "設計入門",
+        thumbnail: null,
+      });
     });
   });
 });
