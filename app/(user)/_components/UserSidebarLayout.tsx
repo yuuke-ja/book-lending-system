@@ -1,8 +1,10 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
 import MobileHeader from "@/app/(user)/_components/MobileHeader";
-import SignOutButton from "@/app/(user)/_components/SignOutButton";
 import MobileTabBar from "@/app/(user)/_components/MobileTabBar";
+import UserProfileModal from "@/app/(user)/_components/UserProfileModal";
+
+import { getUserProfile } from "@/lib/user-profile";
 import {
   BookListIcon,
   CommunityIcon,
@@ -18,9 +20,10 @@ type UserSidebarLayoutProps = {
   isAdmin: boolean;
   userName: string | null;
   userEmail: string | null;
+  nickname?: string | null;
 };
 
-export default function UserSidebarLayout({
+export default async function UserSidebarLayout({
   children,
   isAdmin,
   userName,
@@ -28,6 +31,7 @@ export default function UserSidebarLayout({
 }: UserSidebarLayoutProps) {
   const navLinkClass =
     "flex w-full items-center gap-3 rounded-xl bg-transparent px-4 py-3 text-base font-medium text-slate-600 transition hover:bg-white/70 hover:text-slate-800";
+  const result = userEmail ? await getUserProfile(userEmail) : null;
 
   return (
     <div className="min-h-screen bg-[#edf0f7]">
@@ -75,17 +79,14 @@ export default function UserSidebarLayout({
                 返却する
               </Link>
             </nav>
+            <UserProfileModal
+              avatarUrl={result?.avatarUrl ?? null}
+              nickname={result?.nickname ?? null}
+              userName={userName}
+              userEmail={userEmail}
 
-            <div className="mt-auto rounded-2xl border border-[#e3e8f2] bg-[#f4f6fb] p-4">
-              <p className="text-xs font-semibold tracking-[0.16em] text-slate-500">
-                ACCOUNT
-              </p>
-              <p className="mt-2 text-sm font-semibold text-slate-800">
-                {userName || "ユーザー"}
-              </p>
-              {userEmail && <p className="text-xs text-slate-500">{userEmail}</p>}
-              <SignOutButton className="mt-4 w-full rounded-xl bg-[#4a5977] px-4 py-2.5 text-sm font-medium text-white transition hover:bg-[#42506b]" />
-            </div>
+            />
+
           </div>
         </aside>
 

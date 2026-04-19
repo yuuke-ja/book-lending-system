@@ -1,4 +1,4 @@
-import { signOut } from "@/lib/auth";
+import { handleSignOut } from "@/lib/action/signout";
 
 type SignOutButtonProps = {
   className?: string;
@@ -6,12 +6,7 @@ type SignOutButtonProps = {
 
 export default function SignOutButton({ className }: SignOutButtonProps) {
   return (
-    <form
-      action={async () => {
-        "use server";
-        await signOut({ redirectTo: "/" });
-      }}
-    >
+    <form action={handleSignOut}>
       <button type="submit" className={className}>
         ログアウト
       </button>
