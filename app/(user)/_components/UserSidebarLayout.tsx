@@ -91,7 +91,12 @@ export default async function UserSidebarLayout({
         </aside>
 
         <div className="min-w-0 space-y-4 p-4 pb-24 sm:p-5 sm:pb-24 lg:p-6 lg:pb-6">
-          <MobileHeader />
+          <MobileHeader
+            avatarUrl={result?.avatarUrl ?? null}
+            nickname={result?.nickname ?? null}
+            userName={userName}
+            userEmail={userEmail}
+          />
 
           <main className="min-w-0 rounded-md border border-white/70 bg-white/90 p-4 shadow-xl shadow-slate-200/50 backdrop-blur sm:rounded-lg sm:p-6 lg:h-[calc(100vh-3rem)] lg:overflow-y-auto">
             {children}

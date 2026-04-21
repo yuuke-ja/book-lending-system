@@ -3,6 +3,7 @@ import { getThreadDetail } from "@/lib/community/get-thread-detail";
 import { recordResearchEvent } from "@/lib/research-event.server";
 import CommentComposer from "./_components/CommentComposer";
 import CommentTree, { type ThreadCommentNode } from "./_components/CommentTree";
+import ThreadLinkedBookCard from "./_components/ThreadLinkedBookCard";
 import ThreadBackButton from "./_components/ThreadBackButton";
 import { type LinkedBook } from "../_components/types";
 
@@ -100,27 +101,7 @@ export default async function ThreadPage({
           </div>
 
           {thread.linkedBook && (
-            <div className="relative mt-6 overflow-hidden rounded-3xl border border-indigo-200 bg-white p-5 shadow-sm">
-              <div className="absolute bottom-0 left-0 top-0 w-1.5 bg-indigo-500" />
-              <div className="flex items-center gap-5 pl-2">
-                <div className="flex h-40 w-28 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-zinc-200 bg-zinc-50">
-                  {thread.linkedBook.thumbnail ? (
-                    <img
-                      src={thread.linkedBook.thumbnail}
-                      alt={thread.linkedBook.title}
-                      className="h-full w-full object-contain"
-                    />
-                  ) : (
-                    <div className="text-[10px] text-zinc-400">NO IMAGE</div>
-                  )}
-                </div>
-                <div className="min-w-0 flex-1">
-                  <p className="mt-3 line-clamp-2 text-2xl font-bold leading-tight text-zinc-900">
-                    {thread.linkedBook.title}
-                  </p>
-                </div>
-              </div>
-            </div>
+            <ThreadLinkedBookCard book={thread.linkedBook} threadId={threadId} />
           )}
         </header>
 

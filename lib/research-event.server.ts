@@ -1,6 +1,10 @@
 import { db } from "@/lib/db";
 
-type ResearchEventType = "post_view" | "book_detail_view" | "loan";
+type ResearchEventType =
+  | "post_view"
+  | "book_detail_view"
+  | "loan"
+  | "book_link_click";
 type ResearchEventSourceType = "thread" | "comment" | "direct";
 
 type ResearchEventQueryClient = {

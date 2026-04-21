@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import UserProfileModal from "@/app/(user)/_components/UserProfileModal";
 
 type PageMeta = {
   eyebrow: string;
@@ -65,9 +66,20 @@ function getPageMeta(pathname: string): PageMeta {
   };
 }
 
-export default function MobileHeader() {
+type MobileHeaderProps = {
+  avatarUrl: string | null;
+  userName: string | null;
+  userEmail: string | null;
+  nickname?: string | null;
+};
+
+export default function MobileHeader({
+  avatarUrl,
+  userName,
+  userEmail,
+  nickname,
+}: MobileHeaderProps) {
   const pathname = usePathname();
-  const isHome = pathname === "/";
   const pageMeta = getPageMeta(pathname);
 
   return (
@@ -87,12 +99,18 @@ export default function MobileHeader() {
               プロクラ図書
             </Link>
 
-            <div className="flex min-w-[72px] justify-end">
-              {!isHome && (
-                <span className="max-w-[84px] truncate text-xs font-medium text-zinc-500">
-                  {pageMeta.title}
-                </span>
-              )}
+            <div className="flex items-center gap-3">
+              <span className="max-w-[96px] truncate text-xs font-medium text-zinc-500">
+                {pageMeta.title}
+              </span>
+              <UserProfileModal
+                avatarUrl={avatarUrl}
+                nickname={nickname}
+                userName={userName}
+                userEmail={userEmail}
+                triggerClassName="rounded-full"
+                triggerImageClassName="h-10 w-10 rounded-full border border-zinc-200 bg-zinc-100 object-cover"
+              />
             </div>
           </div>
         </div>

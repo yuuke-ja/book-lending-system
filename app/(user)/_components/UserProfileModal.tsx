@@ -11,6 +11,8 @@ type UserProfileModalProps = {
   userName: string | null;
   userEmail: string | null;
   nickname?: string | null;
+  triggerClassName?: string;
+  triggerImageClassName?: string;
 };
 
 export default function UserProfileModal({
@@ -18,6 +20,8 @@ export default function UserProfileModal({
   userName,
   userEmail,
   nickname,
+  triggerClassName,
+  triggerImageClassName,
 }: UserProfileModalProps) {
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const dialogTitleId = useId();
@@ -38,7 +42,7 @@ export default function UserProfileModal({
     <>
       <button
         type="button"
-        className="mt-auto w-fit rounded-full"
+        className={triggerClassName ?? "mt-auto w-fit rounded-full"}
         onClick={() => setIsProfileModalOpen(true)}
         aria-haspopup="dialog"
         aria-expanded={isProfileModalOpen}
@@ -46,7 +50,7 @@ export default function UserProfileModal({
         <img
           src={avatarUrl || "/default-avatar.svg"}
           alt={userName || "ユーザー"}
-          className="h-16 w-16 rounded-full object-cover"
+          className={triggerImageClassName ?? "h-16 w-16 rounded-full object-cover"}
         />
       </button>
 

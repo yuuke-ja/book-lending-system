@@ -13,7 +13,7 @@ const getErrorMessage = async (res: Response, fallback: string) => {
       return data.error;
     }
   } catch {
-    // ignore
+    // レスポンス本文がJSONでない場合は既定メッセージを使う。
   }
 
   return fallback;
@@ -32,8 +32,10 @@ function CommentTreeItem({
   const [isReplying, setIsReplying] = useState(false);
   const [replyInput, setReplyInput] = useState("");
   const [isSubmittingReply, setIsSubmittingReply] = useState(false);
+  const [isNavigatingToBook, setIsNavigatingToBook] = useState(false);
   const [linkedBooks, setLinkedBooks] = useState<LinkedBook[]>([]);
   const commentRef = useRef<HTMLDivElement>(null);
+  const isNavigatingToBookRef = useRef(false);
 
   const getScrollTop = () => {
     const main = document.querySelector("main");
@@ -41,6 +43,32 @@ function CommentTreeItem({
       ? main.scrollTop
       : window.scrollY;
   };
+  function handleBookClick(bookId: string) {
+    if (isNavigatingToBookRef.current) {
+      return;
+    }
+
+    isNavigatingToBookRef.current = true;
+    setIsNavigatingToBook(true);
+
+    void fetch("/api/comment/book-link-click", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        eventType: "book_link_click",
+        bookId,
+        sourceType: "comment",
+        sourceId: comment.id,
+      }),
+      keepalive: true,
+    }).catch((error) => {
+      console.error("本リンククリックログの送信に失敗:", error);
+    });
+
+    router.push(`/book/${bookId}`);
+  }
 
   useEffect(() => {
     const element = commentRef.current;
@@ -77,8 +105,8 @@ function CommentTreeItem({
               keepalive: true,
             })
 
-              .catch(() => {
-                // ignore
+              .catch((error) => {
+                console.error("コメント閲覧ログの送信に失敗:", error);
               });
           }, 1000);
           return;
@@ -124,8 +152,8 @@ function CommentTreeItem({
               thumbnail: bookthumbnail,
             },
           ]);
-        } catch {
-          // ignore
+        } catch (error) {
+          console.warn("選択した本データの復元に失敗:", error);
         } finally {
           sessionStorage.removeItem("selectedBook");
         }
@@ -153,8 +181,8 @@ function CommentTreeItem({
           }
         });
       });
-    } catch {
-      // ignore
+    } catch (error) {
+      console.warn("返信下書きの復元に失敗:", error);
     }
     sessionStorage.removeItem("replyDraftState");
   }, [comment.id, threadId]);
@@ -211,8 +239,8 @@ function CommentTreeItem({
   };
 
   return (
-    <div ref={commentRef} className={depth > 0 ? "ml-6 border-l border-zinc-200 pl-5" : ""}>
-      <div className="text-sm text-zinc-700">
+    <div className={depth > 0 ? "ml-6 border-l border-zinc-200 pl-5" : ""}>
+      <div ref={commentRef} className="text-sm text-zinc-700">
         {/*投稿日時と本文を表示*/}
         <div className="min-w-0">
           <div className="flex items-center gap-3">
@@ -243,11 +271,13 @@ function CommentTreeItem({
                 className="relative inline-flex max-w-[520px] overflow-hidden rounded-2xl border border-indigo-200 bg-white p-4 shadow-sm"
               >
                 <div className="absolute bottom-0 left-0 top-0 w-1 bg-indigo-500" />
-                <div
+                <button
+                  type="button"
                   onClick={() => {
-                    router.push(`/book/${book.id}`);
+                    handleBookClick(book.id);
                   }}
-                  className="flex items-center gap-4 pl-1"
+                  disabled={isNavigatingToBook}
+                  className="flex items-center gap-4 pl-1 text-left disabled:cursor-not-allowed disabled:opacity-70"
                 >
                   <div className="flex h-24 w-16 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-zinc-200 bg-zinc-50">
                     {book.thumbnail ? (
@@ -265,7 +295,7 @@ function CommentTreeItem({
                       {book.title}
                     </p>
                   </div>
-                </div>
+                </button>
               </div>
             ))}
           </div>

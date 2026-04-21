@@ -9,8 +9,6 @@ import {
   CommunityIcon,
   BorrowIcon,
   ReturnIcon,
-  SettingIcon,
-  StatisticsIcon,
 } from "@/app/(user)/_components/LibraryNavIcons";
 
 type TabItem = {
@@ -45,25 +43,14 @@ const baseTabs: TabItem[] = [
     isActive: (pathname) => pathname === "/loan/qr" || pathname.startsWith("/loan/"),
     Icon: BorrowIcon,
   },
-  {
-    href: "/statistics",
-    label: "統計",
-    isActive: (pathname) =>
-      pathname === "/statistics" || pathname.startsWith("/statistics/"),
-    Icon: StatisticsIcon,
-  },
+
   {
     href: "/return",
     label: "返却",
     isActive: (pathname) => pathname === "/return" || pathname.startsWith("/return/"),
     Icon: ReturnIcon,
   },
-  {
-    href: "/setting",
-    label: "設定",
-    isActive: (pathname) => pathname === "/setting" || pathname.startsWith("/setting/"),
-    Icon: SettingIcon,
-  },
+
 ];
 
 
@@ -85,8 +72,8 @@ export default function MobileTabBar({ isAdmin }: MobileTabBarProps) {
   return (
     <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-[#dfe5ee] bg-white/95 shadow-[0_-12px_24px_-22px_rgba(15,23,42,0.45)] backdrop-blur lg:hidden">
       <div
-        className={`mx-auto grid px-2 pt-0.5 pb-[calc(0.45rem+env(safe-area-inset-bottom))] ${isAdmin ? "max-w-xl grid-cols-7" : "max-w-lg grid-cols-6"
-          }`}
+        className="mx-auto grid w-full max-w-xl px-2 pt-0.5 pb-[calc(0.45rem+env(safe-area-inset-bottom))]"
+        style={{ gridTemplateColumns: `repeat(${tabs.length}, minmax(0, 1fr))` }}
       >
         {tabs.map(({ href, label, isActive, Icon }) => {
           const active = isActive(pathname);
