@@ -1,14 +1,15 @@
-"use client";
-
-import { signIn } from "next-auth/react";
+import { signIn } from "@/lib/auth";
+import LoginSubmitButton from "@/app/(user)/_components/LoginSubmitButton";
 
 export default function LoginButton() {
   return (
-    <button
-      className="rounded-md bg-black px-4 py-2 text-white hover:bg-zinc-800"
-      onClick={() => signIn("google", { callbackUrl: "/" })}
+    <form
+      action={async () => {
+        "use server";
+        await signIn("google", { redirectTo: "/" });
+      }}
     >
-      Googleでログイン
-    </button>
+      <LoginSubmitButton />
+    </form>
   );
 }
