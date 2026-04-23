@@ -62,7 +62,7 @@ export default async function BookPage({
               {book.authors && book.authors.length > 0 && (
                 <p className="text-sm text-zinc-600">{book.authors.join(", ")}</p>
               )}
-              <p className="text-sm text-zinc-500">ISBN: {book.isbn13}</p>
+              <p className="text-sm text-zinc-500">ISBN/JAN: {book.isbn13}</p>
             </div>
 
             <StarRating

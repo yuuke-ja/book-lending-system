@@ -39,7 +39,7 @@ export async function GET(request: Request) {
     isbn = searchParams.get("isbn") ?? "";
 
     if (!isbn || !/^\d{13}$/.test(isbn)) {
-      return NextResponse.json({ error: "ISBNが不正です" }, { status: 400 });
+      return NextResponse.json({ error: "ISBN/JANが不正です" }, { status: 400 });
     }
 
     if (isbn.startsWith("491")) {

@@ -31,7 +31,7 @@ function getPageMeta(pathname: string): PageMeta {
     return {
       eyebrow: "LOAN",
       title: "本を借りる",
-      description: "ISBNを読み取って貸出",
+      description: "ISBN/JANを読み取って貸出",
     };
   }
 
@@ -47,7 +47,7 @@ function getPageMeta(pathname: string): PageMeta {
     return {
       eyebrow: "RETURN",
       title: "返却する",
-      description: "ISBNを読み取って返却",
+      description: "ISBN/JANを読み取って返却",
     };
   }
 

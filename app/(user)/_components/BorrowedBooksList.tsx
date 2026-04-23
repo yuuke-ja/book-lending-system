@@ -133,7 +133,7 @@ export default function BorrowedBooksList({
                       {loan.book.authors.join(", ")}
                     </p>
                     <p className="mt-1 text-[11px] text-zinc-500">
-                      ISBN: {loan.book.isbn13}
+                      ISBN/JAN: {loan.book.isbn13}
                     </p>
                     <p className="mt-2 text-[11px] text-zinc-600">
                       借りた日: {new Date(loan.loanedAt).toLocaleDateString("ja-JP", { timeZone: JST_TIMEZONE })}

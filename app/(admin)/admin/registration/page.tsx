@@ -185,7 +185,7 @@ export default function QRCodeReader() {
             className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm font-medium text-slate-700 shadow-sm transition hover:border-slate-400 hover:bg-slate-100 disabled:cursor-not-allowed disabled:border-slate-200 disabled:bg-slate-100 disabled:text-slate-400 sm:w-auto"
           >
             <CameraIcon className="h-4 w-4" />
-            {isDetecting ? "読み取り中..." : "ISBNを読み取る"}
+            {isDetecting ? "読み取り中..." : "ISBN/JANを読み取る"}
           </button>
 
           <button
@@ -257,7 +257,7 @@ export default function QRCodeReader() {
                 )}
 
                 <p className="mt-4 text-xs font-medium tracking-wide text-slate-400">
-                  ISBN: {pb.isbn13}
+                  ISBN/JAN: {pb.isbn13}
                 </p>
               </div>
             </div>
@@ -270,7 +270,7 @@ export default function QRCodeReader() {
           <BookOpenIcon className="mx-auto h-12 w-12 text-slate-300" />
           <h2 className="mt-4 text-lg font-semibold text-slate-800">登録する書籍がありません</h2>
           <p className="mt-2 text-sm text-slate-500">
-            「ISBNを読み取る」ボタンから書籍を追加してください。
+            「ISBN/JANを読み取る」ボタンから書籍を追加してください。
           </p>
         </div>
       )}

@@ -51,7 +51,7 @@ export default async function Home() {
             LOAN
           </p>
           <p className="mt-2 text-lg font-semibold text-zinc-900">本を借りる</p>
-          <p className="mt-1 text-sm text-zinc-600">ISBNを読み取って貸出</p>
+          <p className="mt-1 text-sm text-zinc-600">ISBN/JANを読み取って貸出</p>
         </Link>
 
         <Link
@@ -62,7 +62,7 @@ export default async function Home() {
             RETURN
           </p>
           <p className="mt-2 text-lg font-semibold text-zinc-900">返却する</p>
-          <p className="mt-1 text-sm text-zinc-600">ISBNを読み取って返却</p>
+          <p className="mt-1 text-sm text-zinc-600">ISBN/JANを読み取って返却</p>
         </Link>
       </div>
     </section>

@@ -269,7 +269,7 @@ export default function ISBNImportModal({
         />
       )}
       <div className="absolute bottom-0 w-full bg-black/70 p-4 text-white">
-        <p className="mb-3 text-sm">ISBN(978/979)または雑誌JAN(491)を枠に合わせてください</p>
+        <p className="mb-3 text-sm">ISBN/JANコードを枠に合わせてください（ISBN: 978/979、雑誌JAN: 491）</p>
         {cameraError && <p className="mb-3 text-sm text-red-300">{cameraError}</p>}
         <button
           type="button"

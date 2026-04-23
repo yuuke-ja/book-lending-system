@@ -190,7 +190,7 @@ export default function AdminLoanHistoryPage() {
                             ? firstRow.bookAuthors.join(" / ")
                             : "著者情報なし"}
                         </p>
-                        <p>ISBN: {firstRow.bookIsbn13}</p>
+                        <p>ISBN/JAN: {firstRow.bookIsbn13}</p>
                       </div>
                     ) : (
                       <p className="mt-1 text-sm text-zinc-600">

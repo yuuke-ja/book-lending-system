@@ -13,7 +13,7 @@ export async function GET(request: Request) {
   const searchParams = new URL(request.url).searchParams;
   const isbn13 = searchParams.get("isbn13");
   if (!isbn13 || !ISBN13_REGEX.test(isbn13)) {
-    return NextResponse.json({ error: "isbn13が不正です" }, { status: 400 });
+    return NextResponse.json({ error: "ISBN/JANが不正です" }, { status: 400 });
   }
 
   try {

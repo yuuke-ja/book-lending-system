@@ -122,7 +122,7 @@ export default function BorrowedBooksList({
                       {borrowed.book.authors.join(", ")}
                     </p>
                     <p className="mt-1 text-[11px] text-zinc-500">
-                      ISBN: {borrowed.book.isbn13}
+                      ISBN/JAN: {borrowed.book.isbn13}
                     </p>
 
 

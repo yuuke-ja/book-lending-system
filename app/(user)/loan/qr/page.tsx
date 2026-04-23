@@ -81,7 +81,7 @@ export default function LoanQrPage() {
       <section className="mx-auto max-w-3xl space-y-4">
         <h1 className="text-xl font-semibold text-zinc-900 sm:text-2xl">QRコードで貸出</h1>
         <p className="text-sm text-zinc-600">
-          ISBNバーコードを読み取って本を確認し、貸出を確定します。
+          ISBN/JANコードを読み取って本を確認し、貸出を確定します。
         </p>
 
         {!book && !successTitle && (
@@ -92,7 +92,7 @@ export default function LoanQrPage() {
               onClick={startScan}
               className="inline-flex items-center rounded-md bg-black px-4 py-2 text-white hover:bg-zinc-800"
             >
-              ISBNを読み取る
+              ISBN/JANを読み取る
             </button>
           </div>
         )}
@@ -111,7 +111,7 @@ export default function LoanQrPage() {
               <div className="space-y-2">
                 <p className="font-semibold text-zinc-900">{book.title}</p>
                 <p className="text-sm text-zinc-600">{book.authors.join(", ")}</p>
-                <p className="text-xs text-zinc-500">ISBN: {book.isbn13}</p>
+                <p className="text-xs text-zinc-500">ISBN/JAN: {book.isbn13}</p>
                 {book.description && (
                   <p className="text-sm text-zinc-700">{book.description}</p>
                 )}

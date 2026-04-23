@@ -257,7 +257,7 @@ export default function CommunityBookPickerPage() {
                 />
               </div>
               <p className="mt-auto hidden pt-2 text-[11px] text-zinc-500 md:block">
-                ISBN: {book.isbn13}
+                ISBN/JAN: {book.isbn13}
               </p>
             </div>
           </div>
