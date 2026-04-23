@@ -4,7 +4,7 @@ import { auth } from "@/lib/auth";
 import { Admin } from "@/lib/admin";
 import { randomUUID } from "crypto";
 
-const ISBN13_REGEX = /^97[89]\d{10}$/;
+const ISBN13_REGEX = /^(97[89]|491)\d{10}$/;
 
 export async function GET() {
   try {

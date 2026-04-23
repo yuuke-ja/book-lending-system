@@ -5,7 +5,7 @@ const JST_TIMEZONE = "Asia/Tokyo";
 
 export default function ThreadList({ threads }: { threads: CommunityThread[] }) {
   return (
-    <section className="space-y-4">
+    <section>
       {threads.length === 0 ? (
         <div className="rounded-3xl border border-zinc-200 bg-white p-7 text-sm text-zinc-600 shadow-sm">
           まだスレッドはありません
@@ -15,7 +15,7 @@ export default function ThreadList({ threads }: { threads: CommunityThread[] }) 
           <Link
             key={thread.id}
             href={`/community/${thread.id}`}
-            className="block rounded-3xl border border-zinc-200 bg-white p-7 shadow-sm transition hover:border-zinc-300 hover:bg-zinc-50"
+            className="block border-b border-zinc-200 p-7 transition last:border-b-0 hover:bg-zinc-50"
           >
             <div className="flex items-center gap-3">
               <img

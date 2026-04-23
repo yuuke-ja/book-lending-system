@@ -25,7 +25,7 @@ type ISBNImportModalProps = {
   onDetected: (isbn: string) => void | Promise<void>;
 };
 
-const ISBN13_REGEX = /^97[89]\d{10}$/;
+const ISBN13_REGEX = /^(97[89]|491)\d{10}$/;
 const SCAN_INTERVAL_MS = 45;
 //横枠比率
 const SCAN_WIDTH_RATIO = 0.65;
@@ -182,7 +182,7 @@ export default function ISBNImportModal({
         const result = reader.decodeFromCanvas(scanCanvas);
         const isbn = result.getText().trim();
         if (!ISBN13_REGEX.test(isbn)) {
-          // ISBN(978/979)じゃなければスキップ。
+          // ISBN(978/979)か雑誌JAN(491)じゃなければスキップ。
           timerId = setTimeout(scanFrame, SCAN_INTERVAL_MS);
           return;
         }
@@ -269,7 +269,7 @@ export default function ISBNImportModal({
         />
       )}
       <div className="absolute bottom-0 w-full bg-black/70 p-4 text-white">
-        <p className="mb-3 text-sm">ISBN(978/979)バーコードを枠に合わせてください</p>
+        <p className="mb-3 text-sm">ISBN(978/979)または雑誌JAN(491)を枠に合わせてください</p>
         {cameraError && <p className="mb-3 text-sm text-red-300">{cameraError}</p>}
         <button
           type="button"
