@@ -4,6 +4,14 @@ import { Admin } from "@/lib/admin";
 import { NextResponse } from "next/server";
 
 type RakutenMagazineSearchResponse = {
+  Items?: Array<{
+    title?: string;
+    publisherName?: string;
+    itemCaption?: string;
+    largeImageUrl?: string;
+    mediumImageUrl?: string;
+    smallImageUrl?: string;
+  }>;
   items?: Array<{
     title?: string;
     publisherName?: string;
@@ -38,10 +46,14 @@ export async function GET(request: Request) {
       if (!process.env.RAKUTEN_APP_ID || !process.env.RAKUTEN_ACCESS_KEY) {
         return NextResponse.json({ error: "楽天APIの設定が不足しています" }, { status: 500 });
       }
+      const requestOrigin = new URL(request.url).origin;
 
       const res = await axios.get<RakutenMagazineSearchResponse>(
         "https://openapi.rakuten.co.jp/services/api/BooksMagazine/Search/20170404",
         {
+          headers: {
+            Origin: requestOrigin,
+          },
           params: {
             applicationId: process.env.RAKUTEN_APP_ID,
             accessKey: process.env.RAKUTEN_ACCESS_KEY,
@@ -54,7 +66,7 @@ export async function GET(request: Request) {
         }
       );
 
-      const item = res.data.items?.[0];
+      const item = res.data.Items?.[0] ?? res.data.items?.[0];
       if (!item) {
         return NextResponse.json({ error: "雑誌が見つかりません" }, { status: 404 });
       }
