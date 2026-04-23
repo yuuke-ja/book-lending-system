@@ -18,6 +18,9 @@ export default async function UserLayout({
           <h1 className="text-2xl font-semibold text-zinc-900">
             ログインしてください
           </h1>
+          <p className="text-sm text-zinc-600">
+            学校のメールアドレスでログインしてください。
+          </p>
           <LoginButton />
         </div>
       </main>
