@@ -9,8 +9,8 @@ type DbClient = {
   ): Promise<QueryResult<T>>;
 };
 
-const globalForDb = globalThis as unknown as {
-  pool?: Pool;
+const globalForDb = globalThis as typeof globalThis & {
+  __dbPool?: Pool;
 };
 
 const databaseUrl = process.env.DATABASE_URL;
@@ -18,11 +18,21 @@ if (!databaseUrl) {
   throw new Error("DATABASE_URL is not set");
 }
 
-const pool = globalForDb.pool ?? new Pool({ connectionString: databaseUrl });
-if (!globalForDb.pool) {
+const pool =
+  globalForDb.__dbPool ??
+  new Pool({
+    connectionString: databaseUrl,
+    max: process.env.NODE_ENV === "production" ? 2 : 5,
+    idleTimeoutMillis: 10_000,
+    connectionTimeoutMillis: 5_000,
+    allowExitOnIdle: true,
+  });
+
+if (!globalForDb.__dbPool) {
   pool.on("connect", (client) => {
     void client.query("SET TIME ZONE 'Asia/Tokyo'");
   });
+  globalForDb.__dbPool = pool;
 }
 
 async function query<T extends QueryResultRow = QueryResultRow>(
@@ -54,7 +64,3 @@ export const db = {
   query,
   transaction,
 };
-
-if (process.env.NODE_ENV !== "production") {
-  globalForDb.pool = pool;
-}

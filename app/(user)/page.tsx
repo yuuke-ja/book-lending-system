@@ -31,40 +31,7 @@ export default async function Home() {
 
 
 
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
-        <Link
-          href="/book-list"
-          className="rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
-        >
-          <p className="text-xs font-semibold tracking-[0.14em] text-zinc-500">
-            BOOKS
-          </p>
-          <p className="mt-2 text-lg font-semibold text-zinc-900">本一覧</p>
-          <p className="mt-1 text-sm text-zinc-600">登録済みの本を確認</p>
-        </Link>
 
-        <Link
-          href="/loan/qr"
-          className="rounded-2xl border border-emerald-100 bg-emerald-50/70 p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
-        >
-          <p className="text-xs font-semibold tracking-[0.14em] text-emerald-700">
-            LOAN
-          </p>
-          <p className="mt-2 text-lg font-semibold text-zinc-900">本を借りる</p>
-          <p className="mt-1 text-sm text-zinc-600">ISBN/JANを読み取って貸出</p>
-        </Link>
-
-        <Link
-          href="/return"
-          className="rounded-2xl border border-amber-100 bg-amber-50/70 p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
-        >
-          <p className="text-xs font-semibold tracking-[0.14em] text-amber-700">
-            RETURN
-          </p>
-          <p className="mt-2 text-lg font-semibold text-zinc-900">返却する</p>
-          <p className="mt-1 text-sm text-zinc-600">ISBN/JANを読み取って返却</p>
-        </Link>
-      </div>
     </section>
   );
 }

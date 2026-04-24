@@ -96,7 +96,7 @@ export default async function ThreadPage({
               </p>
             </div>
           </div>
-          <div className="mt-5 whitespace-pre-wrap text-lg leading-8 text-zinc-800">
+          <div className="mt-5 whitespace-pre-wrap text-lg leading-8 text-zinc-800 font-bold">
             {thread.content || "スレッド本文がありません"}
           </div>
 
