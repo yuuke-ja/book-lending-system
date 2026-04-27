@@ -1,9 +1,11 @@
+import { Suspense } from "react";
 import ReturnStatus from "@/app/(user)/_components/ReturnStatus";
 import LoanRanking from "@/app/(user)/_components/loanranking";
 import BorrowedBooksList from "@/app/(user)/_components/BorrowedBooksList";
 import BorrowedList from "@/app/(user)/_components/BorrowedList";
+import SectionLoadingFallback from "@/app/(user)/_components/SectionLoadingFallback";
 import UserLoanRanking from "@/app/(user)/_components/Userloanranking";
-import Link from "next/link";
+
 export default async function Home() {
   return (
     <section className="space-y-6">
@@ -25,12 +27,27 @@ export default async function Home() {
 
       <BorrowedList />
 
-      <LoanRanking />
+      <Suspense
+        fallback={
+          <SectionLoadingFallback
+            label="LOAN RANKING"
+            title="貸出ランキング"
+          />
+        }
+      >
+        <LoanRanking />
+      </Suspense>
 
-      <UserLoanRanking />
-
-
-
+      <Suspense
+        fallback={
+          <SectionLoadingFallback
+            label="LOAN RANKING"
+            title="貸出ユーザーランキング"
+          />
+        }
+      >
+        <UserLoanRanking />
+      </Suspense>
 
     </section>
   );

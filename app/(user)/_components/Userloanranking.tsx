@@ -1,30 +1,15 @@
-"use client";
-import { useEffect, useState } from "react";
-export default function UserLoanRanking() {
-  const [ranking, setRanking] = useState<
-    { userId?: string | null; nickname?: string | null; avatarUrl?: string | null; loanCount: number; ranking: number }[]
-  >([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  useEffect(() => {
-    const fetchRanking = async () => {
-      setLoading(true);
-      try {
-        const res = await fetch("/api/ranking/loanuser");
-        if (!res.ok) {
-          throw new Error("貸出ユーザーランキングの取得に失敗しました");
-        }
-        const data = await res.json();
-        setRanking(Array.isArray(data) ? data : []);
-      } catch (error) {
-        console.error("貸出ユーザーランキングの取得に失敗:", error);
-        setError("貸出ユーザーランキングの取得に失敗しました");
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchRanking();
-  }, []);
+import { userranking } from "@/lib/ranking/user";
+export default async function UserLoanRanking() {
+  const loading = false;
+  let error: string | null = null;
+  let ranking: Awaited<ReturnType<typeof userranking>> = [];
+
+  try {
+    ranking = await userranking();
+  } catch (caughtError) {
+    console.error("貸出ユーザーランキングの取得に失敗:", caughtError);
+    error = "貸出ユーザーランキングの取得に失敗しました";
+  }
   return (
     <section
       id={"user-loan-ranking"}
@@ -39,7 +24,7 @@ export default function UserLoanRanking() {
             貸出ユーザーランキング
           </h3>
         </div>
-        {!loading && (
+        {!loading && !error && (
           <span className="rounded-full bg-zinc-100 px-3 py-1 text-xs font-medium text-zinc-700">
             TOP {ranking.length}
           </span>

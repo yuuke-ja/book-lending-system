@@ -1,14 +1,4 @@
-"use client";
-
-import { useEffect, useState } from "react";
-
-type LoanRankingItem = {
-  bookId: string;
-  title: string;
-  thumbnail?: string | null;
-  loanCount: number;
-  ranking: number;
-};
+import { loanranking } from "@/lib/ranking/loan";
 
 type LoanRankingProps = {
   sectionId?: string;
@@ -57,61 +47,19 @@ function renderRankingBadge(ranking: number) {
   );
 }
 
-function normalizeLoanRanking(data: unknown): LoanRankingItem[] {
-  if (!Array.isArray(data)) return [];
-
-  return data.flatMap((item) => {
-    if (!item || typeof item !== "object") return [];
-
-    const row = item as Record<string, unknown>;
-    const bookId = typeof row.bookId === "string" ? row.bookId : "";
-    const title = typeof row.title === "string" ? row.title : "";
-    const thumbnail =
-      typeof row.thumbnail === "string" ? row.thumbnail : null;
-    const loanCount = Number(row.loanCount ?? 0);
-    const ranking = Number(row.ranking ?? 0);
-
-    if (!bookId || !title || Number.isNaN(loanCount) || Number.isNaN(ranking)) {
-      return [];
-    }
-
-    return [{ bookId, title, thumbnail, loanCount, ranking }];
-  });
-}
-
-export default function LoanRanking({
+export default async function LoanRanking({
   sectionId = "loan-ranking",
 }: LoanRankingProps) {
-  const [ranking, setRanking] = useState<LoanRankingItem[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const loading = false;
+  let error: string | null = null;
+  let ranking: Awaited<ReturnType<typeof loanranking>> = [];
 
-  useEffect(() => {
-    let active = true;
-
-    fetch("/api/ranking/loan", { cache: "no-store" })
-      .then(async (res) => {
-        if (!res.ok) throw new Error("貸出ランキングの取得に失敗しました");
-        return res.json();
-      })
-      .then((data) => {
-        if (!active) return;
-        setRanking(normalizeLoanRanking(data));
-        setError(null);
-      })
-      .catch((e) => {
-        if (!active) return;
-        setRanking([]);
-        setError(e instanceof Error ? e.message : "取得に失敗しました");
-      })
-      .finally(() => {
-        if (active) setLoading(false);
-      });
-
-    return () => {
-      active = false;
-    };
-  }, []);
+  try {
+    ranking = await loanranking();
+  } catch (caughtError) {
+    console.error("貸出ランキングの取得に失敗:", caughtError);
+    error = "貸出ランキングの取得に失敗しました";
+  }
 
   return (
     <section
@@ -127,7 +75,7 @@ export default function LoanRanking({
             貸出ランキング
           </h3>
         </div>
-        {!loading && (
+        {!loading && !error && (
           <span className="rounded-full bg-zinc-100 px-3 py-1 text-xs font-medium text-zinc-700">
             TOP {ranking.length}
           </span>
