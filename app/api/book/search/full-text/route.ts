@@ -1,6 +1,7 @@
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { NextResponse } from "next/server";
+
 export async function GET(request: Request) {
   const session = await auth();
   if (!session?.user?.email) {
@@ -43,6 +44,5 @@ export async function GET(request: Request) {
     console.error("全文検索に失敗:", error);
     return NextResponse.json({ error: "検索に失敗しました" }, { status: 500 });
   }
-
 
 }

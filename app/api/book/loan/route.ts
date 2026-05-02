@@ -3,6 +3,7 @@ import { db } from '@/lib/db';
 import { recordResearchEvent } from '@/lib/research-event.server';
 import { randomUUID } from 'crypto';
 import { NextResponse } from 'next/server';
+
 // 本番環境では日本時間どおりに曜日が取れないことがあるので、JSTで曜日を見る。
 function getJstWeekday(date: Date): number {
   const weekday = new Intl.DateTimeFormat('en-US', {
@@ -38,7 +39,6 @@ function calcDueAtByReturnWeek(now: Date, returnWeek: number): Date {
   const due = new Date(now);
   const diff = (safeWeekday - getJstWeekday(now) + 7) % 7;
   due.setDate(due.getDate() + diff);
-
 
   // 日本時間の23:59:59にしたいので、UTCでは14:59:59を入れている。
   due.setUTCHours(14, 59, 59, 999);

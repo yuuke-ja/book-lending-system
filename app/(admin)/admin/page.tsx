@@ -263,6 +263,12 @@ export default function AdminPage() {
       >
         本登録
       </Link>
+      <Link
+        href="/admin/statistics"
+        className="mt-4 ml-4 inline-flex items-center rounded-md bg-black px-4 py-2 text-white hover:bg-zinc-800"
+      >
+        統計を見る
+      </Link>
 
       <section className="mt-8 max-w-xl rounded-lg border border-zinc-200 bg-zinc-50 p-5">
         <h2 className="text-lg font-semibold text-zinc-900">通常貸出ルール</h2>

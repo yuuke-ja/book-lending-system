@@ -1,4 +1,5 @@
 import { auth } from "@/lib/auth";
+import { Admin } from "@/lib/admin";
 import { db } from "@/lib/db";
 import { NextResponse } from "next/server";
 
@@ -26,6 +27,12 @@ export async function GET(request: Request) {
   if (!email) {
     return NextResponse.json({ error: "認証が必要です" }, { status: 401 });
   }
+
+  const isAdmin = await Admin(email);
+  if (!isAdmin) {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
+
   try {
     const result = await db.query(
       `SELECT

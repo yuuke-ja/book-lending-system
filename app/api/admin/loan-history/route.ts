@@ -24,18 +24,18 @@ function conversionstatus(status: LoanHistoryStatus): string {
 }
 
 export async function GET(request: Request) {
+  const session = await auth();
+  if (!session) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const email = session.user?.email;
+  const isAdmin = email ? await Admin(email) : false;
+  if (!isAdmin) {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
+
   try {
-    const session = await auth();
-    if (!session) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    const email = session.user?.email;
-    const isAdmin = email ? await Admin(email) : false;
-    if (!isAdmin) {
-      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-    }
-
     const { searchParams } = new URL(request.url);
     const status = confirmationStatus(searchParams.get("status"));
     if (!status) {

@@ -24,17 +24,17 @@ type RakutenMagazineSearchResponse = {
 
 export async function GET(request: Request) {
   let isbn = "";
-  try {
-    const session = await auth();
-    const email = session?.user?.email;
-    if (!email) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-    const isAdmin = await Admin(email);
-    if (!isAdmin) {
-      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-    }
+  const session = await auth();
+  const email = session?.user?.email;
+  if (!email) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+  const isAdmin = await Admin(email);
+  if (!isAdmin) {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
 
+  try {
     const searchParams = new URL(request.url).searchParams;
     isbn = searchParams.get("isbn") ?? "";
 

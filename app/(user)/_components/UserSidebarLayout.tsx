@@ -12,7 +12,6 @@ import {
   ReturnIcon,
   SettingIcon,
   AdminIcon,
-  StatisticsIcon,
 } from "@/app/(user)/_components/LibraryNavIcons";
 
 type UserSidebarLayoutProps = {
@@ -65,11 +64,6 @@ export default async function UserSidebarLayout({
                 <CommunityIcon className="shrink-0" />
                 コミュニティ
               </Link>
-              <Link href="/statistics" prefetch={false} className={navLinkClass}>
-                <StatisticsIcon className="shrink-0" />
-                統計
-              </Link>
-
               <Link href="/loan/qr" prefetch={false} className={navLinkClass}>
                 <BorrowIcon className="shrink-0" />
                 本を借りる

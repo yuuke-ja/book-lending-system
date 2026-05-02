@@ -60,7 +60,6 @@ export async function POST(request: Request) {
       [kind, bookId, userEmail, content]
     );
 
-
     return NextResponse.json(threadResult.rows[0], { status: 200 });
   } catch (error) {
     console.error("スレッドの作成に失敗:", error);
@@ -70,8 +69,6 @@ export async function POST(request: Request) {
     );
   }
 }
-
-
 
 export async function GET(request: Request) {
   const session = await auth();

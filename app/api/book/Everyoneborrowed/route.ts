@@ -1,6 +1,7 @@
 import { auth } from "@/lib/auth";
 import { getLoanedBookIds } from "@/lib/books/get-loaned-book-ids";
 import { NextResponse } from "next/server";
+
 export async function GET() {
   const session = await auth();
   if (!session) {

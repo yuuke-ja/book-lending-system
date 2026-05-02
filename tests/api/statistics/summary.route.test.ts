@@ -1,9 +1,11 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { GET } from "@/app/api/statistics/summary/route";
 import { auth } from "@/lib/auth";
+import { Admin } from "@/lib/admin";
 import { db } from "@/lib/db";
 
 vi.mock("@/lib/auth", () => ({ auth: vi.fn() }));
+vi.mock("@/lib/admin", () => ({ Admin: vi.fn() }));
 vi.mock("@/lib/db", () => ({
   db: {
     query: vi.fn(),
@@ -12,12 +14,24 @@ vi.mock("@/lib/db", () => ({
 }));
 
 const mockedAuth = auth as unknown as ReturnType<typeof vi.fn>;
+const mockedAdmin = Admin as unknown as ReturnType<typeof vi.fn>;
 const mockedQuery = db.query as unknown as ReturnType<typeof vi.fn>;
 
 describe("GET /api/statistics/summary", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockedAuth.mockResolvedValue({ user: { email: "user@example.com" } });
+    mockedAdmin.mockResolvedValue(true);
+  });
+
+  it("管理者以外は取得できない", async () => {
+    mockedAdmin.mockResolvedValue(false);
+
+    const res = await GET();
+
+    expect(res.status).toBe(403);
+    expect(await res.json()).toEqual({ error: "Forbidden" });
+    expect(mockedQuery).not.toHaveBeenCalled();
   });
 
   it("件数が0でも数値で返す", async () => {

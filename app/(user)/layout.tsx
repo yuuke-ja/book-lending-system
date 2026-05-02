@@ -1,14 +1,23 @@
 import type { ReactNode } from "react";
+import { Suspense } from "react";
 import { auth } from "@/lib/auth";
 import { Admin } from "@/lib/admin";
 import LoginButton from "@/app/(user)/_components/LoginButton";
 import UserSidebarLayout from "@/app/(user)/_components/UserSidebarLayout";
 
-export default async function UserLayout({
+export default function UserLayout({
   children,
 }: {
   children: ReactNode;
 }) {
+  return (
+    <Suspense fallback={null}>
+      <UserGuard>{children}</UserGuard>
+    </Suspense>
+  );
+}
+
+async function UserGuard({ children }: { children: ReactNode }) {
   const session = await auth();
 
   if (!session) {

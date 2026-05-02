@@ -29,7 +29,6 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "返却する貸出が見つかりません" }, { status: 404 });
     }
 
-
     return NextResponse.json(
       { ok: true, mock: true, message: "返却が完了しました" },
       { status: 200 }

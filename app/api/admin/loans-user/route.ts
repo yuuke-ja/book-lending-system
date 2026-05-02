@@ -2,17 +2,19 @@ import { auth } from "@/lib/auth";
 import { Admin } from "@/lib/admin";
 import { db } from "@/lib/db";
 import { NextResponse } from "next/server";
+
 export async function GET() {
+  const session = await auth();
+  if (!session) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+  const email = session.user?.email;
+  const isAdmin = email ? await Admin(email) : false;
+  if (!isAdmin) {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
+
   try {
-    const session = await auth();
-    if (!session) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-    const email = session.user?.email;
-    const isAdmin = email ? await Admin(email) : false;
-    if (!isAdmin) {
-      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-    }
     const loans = await db.query(
       `SELECT
          l.id,

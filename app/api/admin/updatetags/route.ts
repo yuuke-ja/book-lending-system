@@ -26,7 +26,6 @@ export async function PUT(request: NextRequest) {
         ? data.add
         : [];
 
-
     await db.transaction(async (tx) => {
       await tx.query(
         `DELETE FROM "BookTag" WHERE "bookId" = $1`,

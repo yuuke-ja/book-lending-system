@@ -90,7 +90,6 @@ export async function POST(request: NextRequest) {
       ]
     );
 
-
     return NextResponse.json(pendingBook.rows[0], {
       status: (existing.rowCount ?? 0) > 0 ? 200 : 201,
     });
@@ -119,7 +118,6 @@ export async function DELETE(request: NextRequest) {
     if (!id || typeof id !== "string") {
       return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
     }
-
 
     const deleted = await db.query(
       `DELETE FROM "PendingBook" WHERE id = $1 RETURNING id`,

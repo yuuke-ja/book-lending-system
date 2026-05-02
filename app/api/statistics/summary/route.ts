@@ -1,12 +1,20 @@
 import { auth } from "@/lib/auth";
+import { Admin } from "@/lib/admin";
 import { db } from "@/lib/db";
 import { NextResponse } from "next/server";
 
 export async function GET() {
   const session = await auth();
-  if (!session) {
+  const email = session?.user?.email;
+  if (!email) {
     return NextResponse.json({ error: "認証が必要です" }, { status: 401 });
   }
+
+  const isAdmin = await Admin(email);
+  if (!isAdmin) {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
+
   try {
     const [res, booksRes] = await Promise.all([
       db.query(`
