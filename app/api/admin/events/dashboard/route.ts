@@ -93,6 +93,7 @@ export async function GET(request: Request) {
       ),
       db.query(
         `WITH
+           --投稿を見たあと、指定時間内に同じ本の詳細を見たかず
            "postToBookDetail" AS (
              SELECT
                detail.id,
@@ -111,6 +112,7 @@ export async function GET(request: Request) {
              ) post ON true
              WHERE detail."eventType" = 'book_detail_view'
            ),
+           --投稿を見た後指定時間内に同じ本を借りたかず
            "postToLoan" AS (
              SELECT loan.id
              FROM "ResearchEvent" loan
@@ -134,6 +136,7 @@ export async function GET(request: Request) {
                    )
                )
            ),
+           --投稿内の本詳細リンクを押した後、指定時間内に同じ本の詳細を見たかず
            "threadLinkToBookDetail" AS (
              SELECT link.id
              FROM "ResearchEvent" link
@@ -149,6 +152,7 @@ export async function GET(request: Request) {
                    AND detail."occurredAt" <= link."occurredAt" + ($3::int * interval '1 second')
                )
            ),
+            --本の詳細を見た後、指定時間内に同じ本を借りたかず
            "bookDetailToLoan" AS (
              SELECT
                loan.id,
