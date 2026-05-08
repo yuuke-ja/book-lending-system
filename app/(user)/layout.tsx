@@ -24,8 +24,13 @@ async function UserGuard({ children }: { children: ReactNode }) {
     return (
       <main className="grid min-h-screen place-items-center bg-zinc-50 p-6">
         <div className="space-y-4 text-center">
+          <img
+            src="/icon/favicon.png"
+            alt="Logo"
+            className="mx-auto h-16 w-16"
+          />
           <h1 className="text-2xl font-semibold text-zinc-900">
-            ログインしてください
+            ログインが必要です
           </h1>
           <p className="text-sm text-zinc-600">
             学校のメールアドレスでログインしてください。

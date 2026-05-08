@@ -3,6 +3,16 @@ import { getBookList } from "@/lib/books/get-book-list";
 import type { BookListBook } from "@/lib/books/book-list-types";
 import StarRating from "./_components/Rating";
 
+async function getAdminBookListData() {
+  try {
+    const books = await getBookList();
+    return books;
+  } catch (error) {
+    console.error("管理者本一覧ページの初期表示に失敗:", error);
+    return null;
+  }
+}
+
 export default async function AdminBooksPage({
   searchParams,
 }: {
@@ -10,7 +20,34 @@ export default async function AdminBooksPage({
 }) {
   const resolvedSearchParams = searchParams ? await searchParams : {};
   const query = resolvedSearchParams.query?.trim() ?? "";
-  const books = await getBookList();
+  const books = await getAdminBookListData();
+
+  if (!books) {
+    return (
+      <div className="rounded-2xl border border-red-200 bg-red-50 p-6 text-sm text-red-700">
+        エラー: 本一覧の取得に失敗しました
+      </div>
+    );
+  }
+
+  function matchesQuery(book: BookListBook, query: string) {
+    const searchText = [
+      book.title,
+      book.authors?.join(" "),
+      book.isbn13,
+      book.tags?.map((tag) => tag.tag).join(" "),
+    ]
+      .filter(Boolean)
+      .join(" ")
+      .toLowerCase();
+
+    return query
+      .toLowerCase()
+      .split(/\s+/)
+      .filter(Boolean)
+      .every((word) => searchText.includes(word));
+  }
+
   const displayBooks = query ? books.filter((book) => matchesQuery(book, query)) : books;
   const hasSearched = query.length > 0;
 
@@ -102,22 +139,4 @@ export default async function AdminBooksPage({
       </div>
     </section>
   );
-}
-
-function matchesQuery(book: BookListBook, query: string) {
-  const searchText = [
-    book.title,
-    book.authors?.join(" "),
-    book.isbn13,
-    book.tags?.map((tag) => tag.tag).join(" "),
-  ]
-    .filter(Boolean)
-    .join(" ")
-    .toLowerCase();
-
-  return query
-    .toLowerCase()
-    .split(/\s+/)
-    .filter(Boolean)
-    .every((word) => searchText.includes(word));
 }

@@ -15,6 +15,11 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "プロクラ図書",
   description: "プロクラ図書",
+  icons: {
+    icon: "/icon/favicon.png",
+    shortcut: "/icon/favicon.png",
+    apple: "/icon/appicon.png",
+  },
 };
 
 export default function RootLayout({

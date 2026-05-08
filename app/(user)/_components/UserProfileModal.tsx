@@ -72,7 +72,6 @@ export default function UserProfileModal({
                 <Link
                   href="/setting"
                   className="flex items-center justify-start text-slate-600 transition hover:text-slate-800"
-                  prefetch={false}
                   onClick={() => setIsProfileModalOpen(false)}
                   aria-label="設定"
                 >

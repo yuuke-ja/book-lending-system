@@ -39,39 +39,46 @@ export default async function UserSidebarLayout({
           <div className="flex h-full flex-col">
             <Link
               href="/"
-              prefetch={false}
               className="mb-5 rounded-2xl px-4 py-3"
             >
               <h1 className="mt-2 text-xl font-semibold text-zinc-900">プロクラ図書</h1>
             </Link>
 
             <nav className="space-y-1 p-2">
-              <Link href="/setting" prefetch={false} className={navLinkClass}>
+              <Link href="/setting" className={navLinkClass}>
                 <SettingIcon className="shrink-0" />
                 設定
               </Link>
               {isAdmin && (
-                <Link href="/admin" prefetch={false} className={navLinkClass}>
+                <Link href="/admin" className={navLinkClass}>
                   <AdminIcon className="shrink-0" />
                   管理者はこちら
                 </Link>
               )}
-              <Link href="/book-list" prefetch={false} className={navLinkClass}>
+              <Link href="/book-list" className={navLinkClass}>
                 <BookListIcon className="shrink-0" />
                 本一覧
               </Link>
-              <Link href="/community" prefetch={false} className={navLinkClass}>
+              <Link href="/community" className={navLinkClass}>
                 <CommunityIcon className="shrink-0" />
                 コミュニティ
               </Link>
-              <Link href="/loan/qr" prefetch={false} className={navLinkClass}>
+              <Link href="/loan/qr" className={navLinkClass}>
                 <BorrowIcon className="shrink-0" />
                 本を借りる
               </Link>
-              <Link href="/return" prefetch={false} className={navLinkClass}>
+              <Link href="/return" className={navLinkClass}>
                 <ReturnIcon className="shrink-0" />
                 返却する
               </Link>
+              <a
+                href="https://docs.google.com/forms/d/e/1FAIpQLSfmUtl-W-PRoh4hYBsrVTZnveuchA9d4thp0N1JFzMK0AIw-A/viewform?usp=header"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex w-full items-center gap-3 rounded-xl bg-blue-600 px-4 py-3 text-base font-medium text-white transition hover:bg-blue-700"
+              >
+                要望フォーム
+              </a>
             </nav>
             <UserProfileModal
               avatarUrl={result?.avatarUrl ?? null}
