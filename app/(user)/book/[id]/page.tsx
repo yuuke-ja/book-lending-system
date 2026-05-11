@@ -66,6 +66,7 @@ export default async function BookPage({
             </div>
 
             <StarRating
+              bookId={book.id}
               value={book.averageRating}
               ratingCount={book.ratingCount}
               showSummaryPanel

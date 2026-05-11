@@ -17,6 +17,7 @@
     "@zxing/library": "^0.21.3",
     "axios": "^1.13.4",
     "googleapis": "^170.1.0",
+    "groq-sdk": "^1.1.2",
     "next": "16.1.4",
     "next-auth": "^5.0.0-beta.30",
     "node-cron": "^4.2.1",

@@ -28,6 +28,7 @@ export async function getBookById(id: string): Promise<BookDetail | null> {
       b.description,
       b.thumbnail,
       COALESCE(AVG(br.rating), 0)::float AS "averageRating",
+      COUNT(DISTINCT br.id)::int AS "ratingCount",
       COALESCE(
         jsonb_agg(DISTINCT jsonb_build_object('id', tl.id, 'tag', tl.tag))
           FILTER (WHERE tl.id IS NOT NULL),

@@ -14,7 +14,7 @@ function getPageMeta(pathname: string): PageMeta {
   if (pathname === "/") {
     return {
       eyebrow: "HOME",
-      title: "プロクラ図書",
+      title: "プロマス図書",
       description: "図書貸出ホーム",
     };
   }
@@ -61,7 +61,7 @@ function getPageMeta(pathname: string): PageMeta {
 
   return {
     eyebrow: "LIBRARY",
-    title: "プロクラ図書",
+    title: "プロマス図書",
     description: "図書貸出システム",
   };
 }
@@ -95,7 +95,7 @@ export default function MobileHeader({
               href="/"
               className="inline-flex items-center gap-1 text-base font-semibold tracking-[0.04em] text-zinc-900 transition hover:text-sky-800"
             >
-              プロクラ図書
+              プロマス図書
             </Link>
 
             <div className="flex items-center gap-3">

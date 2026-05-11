@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "プロクラ図書",
-  description: "プロクラ図書",
+  title: "プロマス図書",
+  description: "プロマス図書",
   icons: {
     icon: "/icon/favicon.png",
     shortcut: "/icon/favicon.png",

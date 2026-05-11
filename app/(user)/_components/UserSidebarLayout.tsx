@@ -41,7 +41,7 @@ export default async function UserSidebarLayout({
               href="/"
               className="mb-5 rounded-2xl px-4 py-3"
             >
-              <h1 className="mt-2 text-xl font-semibold text-zinc-900">プロクラ図書</h1>
+              <h1 className="mt-2 text-xl font-semibold text-zinc-900">プロマス図書</h1>
             </Link>
 
             <nav className="space-y-1 p-2">
