@@ -23,7 +23,7 @@ export default function ThreadLinkedBookCard({
     isNavigatingRef.current = true;
     setIsNavigating(true);
 
-    void fetch("/api/thread/book-link-click", {
+    fetch("/api/thread/book-link-click", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

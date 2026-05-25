@@ -15,6 +15,7 @@ const SOURCE_TYPE_LABELS: Record<string, string> = {
   thread: "投稿",
   comment: "コメント",
   direct: "直接",
+  ai_chat: "AIおすすめ",
 };
 
 function formatDateTime(value: string) {

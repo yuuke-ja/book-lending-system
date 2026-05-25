@@ -3,6 +3,7 @@ import { POST } from "@/app/api/admin/book-registration/route";
 import { auth } from "@/lib/auth";
 import { Admin } from "@/lib/admin";
 import { db } from "@/lib/db";
+import { rebuildBookEmbeddings } from "@/app/api/admin/book-embeddings/book-embedding";
 
 vi.mock("@/lib/auth", () => ({ auth: vi.fn() }));
 vi.mock("@/lib/admin", () => ({ Admin: vi.fn() }));
@@ -12,17 +13,22 @@ vi.mock("@/lib/db", () => ({
     transaction: vi.fn(),
   },
 }));
+vi.mock("@/app/api/admin/book-embeddings/book-embedding", () => ({
+  rebuildBookEmbeddings: vi.fn(),
+}));
 
 const mockedAuth = auth as unknown as ReturnType<typeof vi.fn>;
 const mockedAdmin = Admin as unknown as ReturnType<typeof vi.fn>;
 const mockedQuery = db.query as unknown as ReturnType<typeof vi.fn>;
 const mockedTransaction = db.transaction as unknown as ReturnType<typeof vi.fn>;
+const mockedRebuildBookEmbeddings = rebuildBookEmbeddings as unknown as ReturnType<typeof vi.fn>;
 const makeNextRequest = (url: string) =>
   new Request(url) as unknown as import("next/server").NextRequest;
 
 describe("POST /api/admin/book-registration", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mockedRebuildBookEmbeddings.mockResolvedValue(1);
   });
 
   it("未ログインのとき401を返す", async () => {

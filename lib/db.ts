@@ -30,7 +30,9 @@ const pool =
 
 if (!globalForDb.__dbPool) {
   pool.on("connect", (client) => {
-    void client.query("SET TIME ZONE 'Asia/Tokyo'");
+    client.query("SET TIME ZONE 'Asia/Tokyo'").catch((error) => {
+      console.error("Failed to set database timezone:", error);
+    });
   });
   globalForDb.__dbPool = pool;
 }

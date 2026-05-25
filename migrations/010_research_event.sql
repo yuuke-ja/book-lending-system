@@ -14,3 +14,12 @@ CREATE TABLE "ResearchEvent" (
   CONSTRAINT source_type_check
     CHECK ("sourceType" IN ('thread', 'comment', 'direct'))
 );
+
+CREATE INDEX "ResearchEvent_eventType_userEmail_bookId_occurredAt_idx"
+  ON "ResearchEvent" ("eventType", "userEmail", "bookId", "occurredAt");
+
+CREATE INDEX "ResearchEvent_eventType_sourceType_occurredAt_idx"
+  ON "ResearchEvent" ("eventType", "sourceType", "occurredAt");
+
+CREATE INDEX "ResearchEvent_occurredAt_id_idx"
+  ON "ResearchEvent" ("occurredAt" DESC, id DESC);

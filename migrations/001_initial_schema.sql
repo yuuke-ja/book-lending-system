@@ -93,8 +93,15 @@ CREATE UNIQUE INDEX IF NOT EXISTS "Loan_one_active_per_book"
   ON "Loan" ("bookId")
   WHERE "returnedAt" IS NULL;
 
-CREATE INDEX IF NOT EXISTS "LoanOpenPeriod_startDate_endDate_enabled_idx"
-  ON "LoanOpenPeriod" ("startDate", "endDate", enabled);
+CREATE INDEX IF NOT EXISTS "Loan_loanedAt_idx"
+  ON "Loan" ("loanedAt");
+
+CREATE INDEX IF NOT EXISTS "Loan_active_dueAt_userEmail_idx"
+  ON "Loan" ("dueAt", "userEmail")
+  WHERE "returnedAt" IS NULL;
+
+CREATE INDEX IF NOT EXISTS "LoanOpenPeriod_loanSettingsId_enabled_startDate_endDate_idx"
+  ON "LoanOpenPeriod" ("loanSettingsId", enabled, "startDate", "endDate");
 
 CREATE INDEX IF NOT EXISTS "PushSubscription_userEmail_idx"
   ON "PushSubscription" ("userEmail");

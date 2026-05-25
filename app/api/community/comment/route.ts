@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
+import { summary } from "@/lib/ai/aiSummary";
 
 export async function POST(request: Request) {
   const session = await auth();
@@ -85,11 +86,11 @@ export async function POST(request: Request) {
       }
     }
 
-    await db.transaction(async (tx) => {
-      const commentResult = await tx.query<{ id: string }>(
+    const savedComment = await db.transaction(async (tx) => {
+      const commentResult = await tx.query<{ id: string; updatedAt: string }>(
         `INSERT INTO "ThreadComment" ("threadId", "parentCommentId", "userEmail", content)
          VALUES ($1, $2, $3, $4)
-         RETURNING id`,
+         RETURNING id, "updatedAt"`,
         [threadId, parentCommentId, userEmail, content]
       );
 
@@ -105,7 +106,21 @@ export async function POST(request: Request) {
           [commentId, bookIds]
         );
       }
+
+      return {
+        id: commentId,
+        updatedAt: commentResult.rows[0].updatedAt,
+      };
     });
+
+    if (content.length >= 500) {
+      await summary({
+        sourceType: "comment",
+        sourceId: savedComment.id,
+        content,
+        updatedAt: savedComment.updatedAt,
+      });
+    }
 
     return NextResponse.json({ ok: true }, { status: 200 });
   } catch (error) {

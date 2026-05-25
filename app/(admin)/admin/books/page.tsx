@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { getBookList } from "@/lib/books/get-book-list";
 import type { BookListBook } from "@/lib/books/book-list-types";
+import { getBookEmbeddingCount } from "@/lib/books/get-book-embedding-count";
+import BookEmbeddingStatusBar from "./_components/BookEmbeddingStatusBar";
 import StarRating from "./_components/Rating";
 
 async function getAdminBookListData() {
@@ -21,6 +23,7 @@ export default async function AdminBooksPage({
   const resolvedSearchParams = searchParams ? await searchParams : {};
   const query = resolvedSearchParams.query?.trim() ?? "";
   const books = await getAdminBookListData();
+  const embeddingCount = await getBookEmbeddingCount();
 
   if (!books) {
     return (
@@ -53,6 +56,8 @@ export default async function AdminBooksPage({
 
   return (
     <section className="space-y-5">
+      <BookEmbeddingStatusBar embeddingCount={embeddingCount} />
+
       <div className="rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm">
         <form action="/admin/books" className="space-y-2">
           <label

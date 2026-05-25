@@ -16,7 +16,6 @@ export async function POST(request: Request) {
     if (body.eventType !== "book_link_click") {
       return NextResponse.json({ error: "eventTypeが不正です" }, { status: 400 });
     }
-
     if (typeof body.bookId !== "string" || body.bookId.trim() === "") {
       return NextResponse.json({ error: "bookIdが不正です" }, { status: 400 });
     }
@@ -25,7 +24,6 @@ export async function POST(request: Request) {
     if (body.sourceType !== "thread") {
       return NextResponse.json({ error: "sourceTypeが不正です" }, { status: 400 });
     }
-
     if (typeof body.sourceId !== "string" || body.sourceId.trim() === "") {
       return NextResponse.json({ error: "sourceIdが不正です" }, { status: 400 });
     }

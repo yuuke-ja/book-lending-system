@@ -3,6 +3,7 @@ import { db } from "@/lib/db";
 import { auth } from "@/lib/auth";
 import { Admin } from "@/lib/admin";
 import { randomUUID } from "crypto";
+import { rebuildBookEmbeddings } from "@/app/api/admin/book-embeddings/book-embedding";
 
 type SavedBookRow = {
   id: string;
@@ -40,7 +41,6 @@ function hasMatchingTagTokens(bookTokens: string[], tagTokens: string[]) {
 }
 
 export async function POST(_request: NextRequest) {
-  void _request;
   const session = await auth();
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const email = session.user?.email;
@@ -51,6 +51,7 @@ export async function POST(_request: NextRequest) {
     const pending = await db.query(
       `SELECT * FROM "PendingBook"`
     );
+    const savedBookIds: string[] = [];
 
     await db.transaction(async (tx) => {
       //タグ単語化
@@ -91,6 +92,7 @@ export async function POST(_request: NextRequest) {
           ]
         );
         const book = savedbook.rows[0];
+        savedBookIds.push(book.id);
         const searchText = `${book.title} ${(book.authors ?? []).join(" ")} ${book.description ?? ""}`;
         //本の情報単語化
         const tokenResult = await tx.query<TokenRow>(
@@ -122,8 +124,13 @@ export async function POST(_request: NextRequest) {
       await tx.query(`DELETE FROM "PendingBook"`);
     });
 
+    const embeddingCount = await rebuildBookEmbeddings(savedBookIds);
+
     return NextResponse.json(
-      { message: "All pending books registered successfully" },
+      {
+        message: "All pending books registered successfully",
+        embeddingCount,
+      },
       { status: 200 }
     );
   } catch (error) {

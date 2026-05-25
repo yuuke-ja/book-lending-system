@@ -143,7 +143,6 @@ export default function AdminPage() {
   ) {
     setSettings((prev) => {
       const next = { ...prev, [key]: value };
-      //void onLoanSettingsChanged(next);
       return next;
     });
   }
@@ -403,7 +402,7 @@ export default function AdminPage() {
           <button
             type="button"
             onClick={() => {
-              void fetchTagList();
+              fetchTagList();
             }}
             disabled={isLoadingTags}
             className="rounded-md border border-zinc-300 bg-white px-3 py-1 text-sm text-zinc-700 hover:bg-zinc-100 disabled:cursor-not-allowed disabled:bg-zinc-200"
@@ -415,7 +414,7 @@ export default function AdminPage() {
         <form
           onSubmit={(e) => {
             e.preventDefault();
-            void addTag();
+            addTag();
           }}
           className="mt-4 flex items-center gap-2"
         >

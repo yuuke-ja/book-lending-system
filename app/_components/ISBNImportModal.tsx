@@ -22,7 +22,7 @@ type OverlayRect = {
 type ISBNImportModalProps = {
   open: boolean;
   onClose: () => void;
-  onDetected: (isbn: string) => void | Promise<void>;
+  onDetected: (isbn: string) => unknown | Promise<unknown>;
 };
 
 const ISBN13_REGEX = /^(97[89]|491)\d{10}$/;
@@ -204,7 +204,7 @@ export default function ISBNImportModal({
         detectingRef.current = true;
         clearResources();
         onCloseRef.current();
-        void Promise.resolve(onDetectedRef.current(isbn)).finally(() => {
+        Promise.resolve(onDetectedRef.current(isbn)).finally(() => {
           detectingRef.current = false;
         });
         return;
@@ -243,7 +243,7 @@ export default function ISBNImportModal({
       }
     };
 
-    void startCamera();
+    startCamera();
 
     return () => {
       active = false;

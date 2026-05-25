@@ -73,7 +73,7 @@ export default function AdminLoanHistoryPage() {
       }
     }
 
-    void fetchLoanHistory();
+    fetchLoanHistory();
 
     return () => {
       isCancelled = true;

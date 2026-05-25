@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { Admin } from "@/lib/admin";
 import { db } from "@/lib/db";
+import { rebuildBookEmbeddings } from "@/app/api/admin/book-embeddings/book-embedding";
 
 export async function PUT(request: NextRequest) {
   try {
@@ -40,8 +41,15 @@ export async function PUT(request: NextRequest) {
       }
     });
 
+    const embeddingCount = await rebuildBookEmbeddings([data.bookId]);
+
     return NextResponse.json(
-      { ok: true, mock: true, message: "タグの更新が完了しました" },
+      {
+        ok: true,
+        mock: true,
+        message: "タグの更新が完了しました",
+        embeddingCount,
+      },
       { status: 200 }
     );
   } catch (error) {

@@ -31,11 +31,21 @@ export default function EventDashboard({
   }
 
   const [pathImpactTimes, setPathImpactTimes] = useState({
-    postToBookDetail: { amount: "10", unit: "minutes" },
-    postToLoan: { amount: "1", unit: "hours" },
-    threadLinkToBookDetail: { amount: "5", unit: "seconds" },
-    bookDetailToLoan: { amount: "30", unit: "minutes" },
+    postToLoan: { amount: "7", unit: "days" },
+    bookDetailToLoan: { amount: "7", unit: "days" },
+    threadLinkClickToLoan: { amount: "7", unit: "days" },
+    aiRecommendationDisplayToLoan: { amount: "7", unit: "days" },
+    aiRecommendationToLoan: { amount: "7", unit: "days" },
   });
+
+  type ImpactPathKey = keyof typeof pathImpactTimes;
+  type PathItem = {
+    key: string;
+    label: string;
+    value: number;
+    detail: string;
+    impactKey?: ImpactPathKey;
+  };
 
   const summaryItems = [
     { label: "投稿閲覧", value: data.summary.postViewCount },
@@ -44,39 +54,70 @@ export default function EventDashboard({
     { label: "利用者数", value: data.summary.uniqueUserCount },
   ];
 
-  const pathItems = [
+  const pathItems: PathItem[] = [
     {
-      key: "postToBookDetail" as const,
-      label: "投稿経由 → 本詳細",
-      value: data.paths.postToBookDetailCount,
-      detail: `平均 ${formatSeconds(data.paths.avgPostToBookDetailSeconds)}`,
-    },
-    {
-      key: "postToLoan" as const,
+      key: "postToLoan",
+      impactKey: "postToLoan",
       label: "投稿経由 → 貸出",
       value: data.paths.postToLoanCount,
       detail: "投稿閲覧から貸出まで",
     },
     {
-      key: "threadLinkToBookDetail" as const,
-      label: "投稿内リンク → 本詳細",
-      value: data.paths.threadLinkToBookDetailCount,
-      detail: "投稿・コメント内リンク",
+      key: "threadLinkClick",
+      label: "投稿内リンククリック",
+      value: data.paths.threadLinkClickCount,
+      detail: "投稿・コメント内の本リンク",
     },
     {
-      key: "bookDetailToLoan" as const,
+      key: "threadLinkClickToLoan",
+      label: "投稿内リンククリック後貸出",
+      impactKey: "threadLinkClickToLoan",
+      value: data.paths.threadLinkClickToLoanCount,
+      detail: `貸出率 ${(data.paths.threadLinkClickToLoanRate * 100).toFixed(1)}%`,
+    },
+    {
+      key: "bookDetailToLoan",
+      impactKey: "bookDetailToLoan",
       label: "本詳細 → 貸出",
       value: data.paths.bookDetailToLoanCount,
       detail: `平均 ${formatSeconds(data.paths.avgBookDetailToLoanSeconds)}`,
+    },
+    {
+      key: "aiRecommendation",
+      label: "AIおすすめ表示",
+      value: data.paths.aiRecommendationCount,
+      detail: "AIが表示したおすすめ本",
+    },
+    {
+      key: "aiRecommendationDisplayToLoan",
+      label: "AIおすすめ表示後貸出",
+      impactKey: "aiRecommendationDisplayToLoan",
+      value: data.paths.aiRecommendationDisplayToLoanCount,
+      detail: `貸出率 ${(data.paths.aiRecommendationDisplayToLoanRate * 100).toFixed(1)}%`,
+    },
+    {
+      key: "aiClick",
+      label: "AIおすすめクリック",
+      value: data.paths.aiClickCount,
+      detail: `クリック率 ${(data.paths.aiClickRate * 100).toFixed(1)}%`,
+    },
+    {
+      key: "aiRecommendationToLoan",
+      label: "AIおすすめクリック後貸出",
+      impactKey: "aiRecommendationToLoan",
+      value: data.paths.aiRecommendationToLoanCount,
+      detail: `貸出率 ${(data.paths.aiRecommendationToLoanRate * 100).toFixed(1)}%`,
     },
   ];
 
   function paopop() {
     const url = `/api/admin/events/dashboard` +
-      `?postToBookDetailImpactTime=${pathImpactTimes.postToBookDetail.amount}${pathImpactTimes.postToBookDetail.unit}` +
-      `&postToLoanImpactTime=${pathImpactTimes.postToLoan.amount}${pathImpactTimes.postToLoan.unit}` +
-      `&threadLinkToBookDetailImpactTime=${pathImpactTimes.threadLinkToBookDetail.amount}${pathImpactTimes.threadLinkToBookDetail.unit}` +
-      `&bookDetailToLoanImpactTime=${pathImpactTimes.bookDetailToLoan.amount}${pathImpactTimes.bookDetailToLoan.unit}`;
+      `?postToLoanImpactTime=${pathImpactTimes.postToLoan.amount}${pathImpactTimes.postToLoan.unit}` +
+      `&bookDetailToLoanImpactTime=${pathImpactTimes.bookDetailToLoan.amount}${pathImpactTimes.bookDetailToLoan.unit}` +
+      `&threadLinkClickToLoanImpactTime=${pathImpactTimes.threadLinkClickToLoan.amount}${pathImpactTimes.threadLinkClickToLoan.unit}` +
+      `&aiRecommendationDisplayToLoanImpactTime=${pathImpactTimes.aiRecommendationDisplayToLoan.amount}${pathImpactTimes.aiRecommendationDisplayToLoan.unit}` +
+      `&aiRecommendationToLoanImpactTime=${pathImpactTimes.aiRecommendationToLoan.amount}${pathImpactTimes.aiRecommendationToLoan.unit}`;
+
 
     onApplyImpactTime(url);
   }
@@ -120,46 +161,55 @@ export default function EventDashboard({
                 <p className="mt-2 text-xs text-zinc-500">{item.detail}</p>
               </div>
 
-              <div className="mt-5 border-t border-zinc-200 pt-4">
-                <p className="text-xs font-semibold text-zinc-500">影響時間</p>
-                <div className="mt-2 flex gap-2">
-                  <input
-                    type="number"
-                    min={1}
-                    value={pathImpactTimes[item.key].amount}
-                    onChange={(event) =>
-                      setPathImpactTimes((current) => ({
-                        ...current,
-                        [item.key]: {
-                          ...current[item.key],
-                          amount: event.target.value,
-                        },
-                      }))
-                    }
-                    className="h-10 w-24 rounded-xl border border-zinc-300 bg-white px-3 text-sm text-zinc-800 outline-none transition focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
-                    aria-label={`${item.label}の影響時間`}
-                  />
-                  <select
-                    value={pathImpactTimes[item.key].unit}
-                    onChange={(event) =>
-                      setPathImpactTimes((current) => ({
-                        ...current,
-                        [item.key]: {
-                          ...current[item.key],
-                          unit: event.target.value,
-                        },
-                      }))
-                    }
-                    className="h-10 rounded-xl border border-zinc-300 bg-white px-3 text-sm text-zinc-800 outline-none transition focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
-                    aria-label={`${item.label}の影響時間単位`}
-                  >
-                    <option value="seconds">秒</option>
-                    <option value="minutes">分</option>
-                    <option value="hours">時間</option>
-                    <option value="days">日</option>
-                  </select>
+              {item.impactKey ? (
+                <div className="mt-5 border-t border-zinc-200 pt-4">
+                  <p className="text-xs font-semibold text-zinc-500">影響時間</p>
+                  <div className="mt-2 flex gap-2">
+                    <input
+                      type="number"
+                      min={1}
+                      value={pathImpactTimes[item.impactKey].amount}
+                      onChange={(event) =>
+                        setPathImpactTimes((current) => ({
+                          ...current,
+                          [item.impactKey as ImpactPathKey]: {
+                            ...current[item.impactKey as ImpactPathKey],
+                            amount: event.target.value,
+                          },
+                        }))
+                      }
+                      className="h-10 w-24 rounded-xl border border-zinc-300 bg-white px-3 text-sm text-zinc-800 outline-none transition focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
+                      aria-label={`${item.label}の影響時間`}
+                    />
+                    <select
+                      value={pathImpactTimes[item.impactKey].unit}
+                      onChange={(event) =>
+                        setPathImpactTimes((current) => ({
+                          ...current,
+                          [item.impactKey as ImpactPathKey]: {
+                            ...current[item.impactKey as ImpactPathKey],
+                            unit: event.target.value,
+                          },
+                        }))
+                      }
+                      className="h-10 rounded-xl border border-zinc-300 bg-white px-3 text-sm text-zinc-800 outline-none transition focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
+                      aria-label={`${item.label}の影響時間単位`}
+                    >
+                      <option value="seconds">秒</option>
+                      <option value="minutes">分</option>
+                      <option value="hours">時間</option>
+                      <option value="days">日</option>
+                    </select>
+                  </div>
                 </div>
-              </div>
+              ) : (
+                <div className="mt-5 border-t border-zinc-200 pt-4">
+                  <p className="text-xs font-semibold text-zinc-500">集計条件</p>
+                  <p className="mt-2 text-sm text-zinc-600">
+                    クリック数をそのまま集計
+                  </p>
+                </div>
+              )}
             </article>
           ))}
         </div>
@@ -174,7 +224,7 @@ export default function EventDashboard({
             この条件で再集計
           </button>
           <p className="text-sm text-zinc-500">
-            4つの影響時間をまとめて適用します。
+            影響時間をまとめて適用します。
           </p>
         </div>
       </section>

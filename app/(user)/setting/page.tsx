@@ -132,7 +132,11 @@ export default function NotificationsPage() {
         />
 
         <div>
-          <form onSubmit={(event) => void handleNicknameUpdate(event)}>
+          <form
+            onSubmit={(event) => {
+              handleNicknameUpdate(event);
+            }}
+          >
             <button
               type="button"
               onClick={() => setIsAvatarModalOpen(true)}
@@ -172,7 +176,9 @@ export default function NotificationsPage() {
             <input
               type="checkbox"
               checked={isChecked}
-              onChange={(e) => void handleToggle(e.target.checked)}
+              onChange={(e) => {
+                handleToggle(e.target.checked);
+              }}
               className="sr-only peer"
             />
             <div className="relative h-6 w-11 rounded-full bg-zinc-300 transition peer-checked:bg-emerald-500 peer-disabled:opacity-50 after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:bg-white after:transition-all peer-checked:after:translate-x-5" />

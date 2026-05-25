@@ -7,12 +7,19 @@ export type EventDashboardData = {
     uniqueUserCount: number;
   };
   paths: {
-    postToBookDetailCount: number;
     postToLoanCount: number;
-    threadLinkToBookDetailCount: number;
+    threadLinkClickCount: number;
+    threadLinkClickToLoanCount: number;
+    threadLinkClickToLoanRate: number;
     bookDetailToLoanCount: number;
-    avgPostToBookDetailSeconds: number | null;
     avgBookDetailToLoanSeconds: number | null;
+    aiRecommendationCount: number;
+    aiRecommendationToLoanCount: number;
+    aiRecommendationToLoanRate: number;
+    aiRecommendationDisplayToLoanCount: number;
+    aiRecommendationDisplayToLoanRate: number;
+    aiClickCount: number;
+    aiClickRate: number;
   };
   ranking: {
     bookId: string | null;

@@ -51,7 +51,7 @@ function CommentTreeItem({
     isNavigatingToBookRef.current = true;
     setIsNavigatingToBook(true);
 
-    void fetch("/api/comment/book-link-click", {
+    fetch("/api/comment/book-link-click", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

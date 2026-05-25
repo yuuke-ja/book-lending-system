@@ -85,13 +85,13 @@ export default function BookListClient({
         "postgres_changes",
         { event: "*", schema: "public", table: "Loan" },
         () => {
-          void fetchLoans();
+          fetchLoans();
         }
       )
       .subscribe();
 
     return () => {
-      void supabase.removeChannel(channel);
+      supabase.removeChannel(channel);
     };
   }, [fetchLoans]);
 

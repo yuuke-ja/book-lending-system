@@ -7,10 +7,11 @@ import type { EventDashboardData } from "./_components/types";
 
 const DEFAULT_DASHBOARD_URL =
   "/api/admin/events/dashboard" +
-  "?postToBookDetailImpactTime=10minutes" +
-  "&postToLoanImpactTime=1hours" +
-  "&threadLinkToBookDetailImpactTime=5seconds" +
-  "&bookDetailToLoanImpactTime=30minutes";
+  "?postToLoanImpactTime=1hours" +
+  "&bookDetailToLoanImpactTime=30minutes" +
+  "&threadLinkClickToLoanImpactTime=7days" +
+  "&aiRecommendationDisplayToLoanImpactTime=7days" +
+  "&aiRecommendationToLoanImpactTime=7days";
 
 export default function AdminEventsPage() {
   const [data, setData] = useState<EventDashboardData | null>(null);
@@ -44,7 +45,7 @@ export default function AdminEventsPage() {
   useEffect(() => {
     const controller = new AbortController();
 
-    void fetchDashboard(DEFAULT_DASHBOARD_URL, controller.signal);
+    fetchDashboard(DEFAULT_DASHBOARD_URL, controller.signal);
 
     return () => controller.abort();
   }, []);
@@ -70,7 +71,9 @@ export default function AdminEventsPage() {
           <EventDashboard
             data={data}
             isLoading={isLoading}
-            onApplyImpactTime={(url) => void fetchDashboard(url)}
+            onApplyImpactTime={(url) => {
+              fetchDashboard(url);
+            }}
           />
           <EventActivity data={data} />
         </>

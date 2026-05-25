@@ -1,0 +1,7 @@
+ALTER TABLE "Thread"
+ADD COLUMN IF NOT EXISTS "aiSummary" TEXT,
+ADD COLUMN IF NOT EXISTS "aiSummarySourceUpdatedAt" TIMESTAMP(3);
+
+ALTER TABLE "ThreadComment"
+ADD COLUMN IF NOT EXISTS "aiSummary" TEXT,
+ADD COLUMN IF NOT EXISTS "aiSummarySourceUpdatedAt" TIMESTAMP(3);

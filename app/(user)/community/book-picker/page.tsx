@@ -93,8 +93,8 @@ export default function CommunityBookPickerPage() {
       }
     };
 
-    void fetchTags();
-    void fetchBooks();
+    fetchTags();
+    fetchBooks();
   }, []);
 
   if (loading) {

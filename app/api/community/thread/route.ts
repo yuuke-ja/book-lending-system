@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { getThreadList } from "@/lib/community/get-thread-list";
+import { summary } from "@/lib/ai/aiSummary";
 
 export async function POST(request: Request) {
   const session = await auth();
@@ -53,12 +54,23 @@ export async function POST(request: Request) {
       bookId: string | null;
       kind: string;
       createdAt: string;
+      updatedAt: string;
     }>(
       `INSERT INTO "Thread" (kind, "bookId", "userEmail", content)
        VALUES ($1, $2, $3, $4)
-       RETURNING id, content, "bookId", kind, "createdAt"`,
+       RETURNING id, content, "bookId", kind, "createdAt", "updatedAt"`,
       [kind, bookId, userEmail, content]
     );
+
+    const thread = threadResult.rows[0];
+    if (thread && content.length >= 800) {
+      await summary({
+        sourceType: "thread",
+        sourceId: thread.id,
+        content,
+        updatedAt: thread.updatedAt,
+      });
+    }
 
     return NextResponse.json(threadResult.rows[0], { status: 200 });
   } catch (error) {

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   AdminIcon,
+  AiChatIcon,
   BookListIcon,
   CommunityIcon,
   BorrowIcon,
@@ -36,6 +37,13 @@ const baseTabs: TabItem[] = [
     isActive: (pathname) =>
       pathname === "/community" || pathname.startsWith("/community/"),
     Icon: CommunityIcon,
+  },
+  {
+    href: "/ai-chat",
+    label: "AI",
+    isActive: (pathname) =>
+      pathname === "/ai-chat" || pathname.startsWith("/ai-chat/"),
+    Icon: AiChatIcon,
   },
   {
     href: "/loan/qr",

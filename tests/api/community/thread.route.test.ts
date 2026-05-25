@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { GET, POST } from "@/app/api/community/thread/route";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
+import { summary } from "@/lib/ai/aiSummary";
 
 vi.mock("@/lib/auth", () => ({ auth: vi.fn() }));
 vi.mock("@/lib/db", () => ({
@@ -10,9 +11,11 @@ vi.mock("@/lib/db", () => ({
     transaction: vi.fn(),
   },
 }));
+vi.mock("@/lib/ai/aiSummary", () => ({ summary: vi.fn() }));
 
 const mockedAuth = auth as unknown as ReturnType<typeof vi.fn>;
 const mockedQuery = db.query as unknown as ReturnType<typeof vi.fn>;
+const mockedSummary = summary as unknown as ReturnType<typeof vi.fn>;
 
 describe("/api/community/thread", () => {
   beforeEach(() => {
@@ -85,6 +88,7 @@ describe("/api/community/thread", () => {
             bookId: "book-1",
             kind: "BOOK_TOPIC",
             createdAt: "2026-04-03T10:00:00.000Z",
+            updatedAt: "2026-04-03T10:00:00.000Z",
           },
         ],
       });
@@ -114,7 +118,9 @@ describe("/api/community/thread", () => {
         bookId: "book-1",
         kind: "BOOK_TOPIC",
         createdAt: "2026-04-03T10:00:00.000Z",
+        updatedAt: "2026-04-03T10:00:00.000Z",
       });
+      expect(mockedSummary).not.toHaveBeenCalled();
     });
 
     it("本なし相談スレッドを保存できる", async () => {
@@ -127,6 +133,7 @@ describe("/api/community/thread", () => {
             bookId: null,
             kind: "BOOK_REQUEST",
             createdAt: "2026-04-03T11:00:00.000Z",
+            updatedAt: "2026-04-03T11:00:00.000Z",
           },
         ],
       });
@@ -150,6 +157,42 @@ describe("/api/community/thread", () => {
         "おすすめありますか",
       ]);
       expect(data.bookId).toBeNull();
+    });
+
+    it("800文字以上のスレッドなら要約を保存する", async () => {
+      mockedAuth.mockResolvedValue({ user: { email: "user@example.com" } });
+      mockedSummary.mockResolvedValue("要約");
+      mockedQuery.mockResolvedValueOnce({ rowCount: 1, rows: [{ "?column?": 1 }] });
+      mockedQuery.mockResolvedValueOnce({
+        rows: [
+          {
+            id: "thread-long",
+            content: "あ".repeat(800),
+            bookId: "book-1",
+            kind: "BOOK_TOPIC",
+            createdAt: "2026-04-03T10:00:00.000Z",
+            updatedAt: "2026-04-03T10:00:00.000Z",
+          },
+        ],
+      });
+
+      const req = new Request("http://localhost/api/community/thread", {
+        method: "POST",
+        body: JSON.stringify({
+          kind: "BOOK_TOPIC",
+          bookId: "book-1",
+          content: "あ".repeat(800),
+        }),
+      });
+      const res = await POST(req);
+
+      expect(res.status).toBe(200);
+      expect(mockedSummary).toHaveBeenCalledWith({
+        sourceType: "thread",
+        sourceId: "thread-long",
+        content: "あ".repeat(800),
+        updatedAt: "2026-04-03T10:00:00.000Z",
+      });
     });
   });
 

@@ -52,14 +52,14 @@ CREATE TABLE "CommentBookLink" (
 );
 
 
-CREATE INDEX "Thread_bookId_idx"
-  ON "Thread" ("bookId");
+CREATE INDEX "Thread_bookId_createdAt_idx"
+  ON "Thread" ("bookId", "createdAt" DESC);
 
 CREATE INDEX "Thread_createdAt_idx"
   ON "Thread" ("createdAt" DESC);
 
-CREATE INDEX "ThreadComment_threadId_idx"
-  ON "ThreadComment" ("threadId");
+CREATE INDEX "ThreadComment_threadId_createdAt_idx"
+  ON "ThreadComment" ("threadId", "createdAt" ASC);
 
 CREATE INDEX "ThreadComment_parentCommentId_idx"
   ON "ThreadComment" ("parentCommentId");
@@ -67,8 +67,8 @@ CREATE INDEX "ThreadComment_parentCommentId_idx"
 CREATE INDEX "ThreadComment_createdAt_idx"
   ON "ThreadComment" ("createdAt" ASC);
 
-CREATE INDEX "CommentBookLink_commentId_idx"
-  ON "CommentBookLink" ("commentId");
+CREATE INDEX "CommentBookLink_commentId_createdAt_idx"
+  ON "CommentBookLink" ("commentId", "createdAt" ASC);
 
 CREATE INDEX "CommentBookLink_bookId_idx"
   ON "CommentBookLink" ("bookId");

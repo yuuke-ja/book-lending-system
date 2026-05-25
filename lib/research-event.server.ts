@@ -5,7 +5,7 @@ type ResearchEventType =
   | "book_detail_view"
   | "loan"
   | "book_link_click";
-type ResearchEventSourceType = "thread" | "comment" | "direct";
+type ResearchEventSourceType = "thread" | "comment" | "direct" | "ai_chat";
 
 type ResearchEventQueryClient = {
   query(text: string, params?: unknown[]): Promise<unknown>;

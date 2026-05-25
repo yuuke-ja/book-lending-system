@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { Admin } from "@/lib/admin";
 import { db } from "@/lib/db";
+import { rebuildBookEmbeddings } from "@/app/api/admin/book-embeddings/book-embedding";
 
 export async function POST(
   request: NextRequest,
@@ -45,10 +46,13 @@ export async function POST(
       return NextResponse.json({ error: "本が見つかりません" }, { status: 404 });
     }
 
+    const embeddingCount = await rebuildBookEmbeddings([bookId]);
+
     return NextResponse.json(
       {
         ok: true,
         message: "本の情報を更新しました",
+        embeddingCount,
       },
       { status: 200 }
     );
