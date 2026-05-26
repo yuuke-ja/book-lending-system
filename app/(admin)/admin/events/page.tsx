@@ -7,8 +7,8 @@ import type { EventDashboardData } from "./_components/types";
 
 const DEFAULT_DASHBOARD_URL =
   "/api/admin/events/dashboard" +
-  "?postToLoanImpactTime=1hours" +
-  "&bookDetailToLoanImpactTime=30minutes" +
+  "?postToLoanImpactTime=7days" +
+  "&bookDetailToLoanImpactTime=7days" +
   "&threadLinkClickToLoanImpactTime=7days" +
   "&aiRecommendationDisplayToLoanImpactTime=7days" +
   "&aiRecommendationToLoanImpactTime=7days";

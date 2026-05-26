@@ -29,9 +29,38 @@ export async function GET(request: Request) {
 
   try {
     const searchtag = await db.query(
-      `SELECT
-         b.id, b."googleBookId", b.isbn13, b.title, b.authors, b.description, b.thumbnail, b."createdAt"
+      `WITH review_summary AS (
+         SELECT
+           "bookId",
+           AVG(rating)::float AS "averageRating"
+         FROM "BookReview"
+         GROUP BY "bookId"
+       ),
+       tag_summary AS (
+         SELECT
+           bt."bookId",
+           jsonb_agg(
+             jsonb_build_object('id', tl.id, 'tag', tl.tag)
+             ORDER BY tl.tag
+           ) AS "tags"
+         FROM "BookTag" bt
+         INNER JOIN "TagList" tl ON tl.id = bt."tagId"
+         GROUP BY bt."bookId"
+       )
+       SELECT
+         b.id,
+         b."googleBookId",
+         b.isbn13,
+         b.title,
+         b.authors,
+         b.description,
+         b.thumbnail,
+         b."createdAt",
+         COALESCE(rs."averageRating", 0)::float AS "averageRating",
+         COALESCE(ts."tags", '[]'::jsonb) AS "tags"
        FROM "Book" b
+       LEFT JOIN review_summary rs ON rs."bookId" = b.id
+       LEFT JOIN tag_summary ts ON ts."bookId" = b.id
        WHERE EXISTS (
          SELECT 1
          FROM "BookTag" bt
