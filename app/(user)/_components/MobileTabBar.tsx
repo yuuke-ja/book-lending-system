@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   AdminIcon,
-  AiChatIcon,
+  // AiChatIcon,
   BookListIcon,
   CommunityIcon,
   BorrowIcon,
@@ -38,6 +38,7 @@ const baseTabs: TabItem[] = [
       pathname === "/community" || pathname.startsWith("/community/"),
     Icon: CommunityIcon,
   },
+  /*
   {
     href: "/ai-chat",
     label: "AI",
@@ -45,6 +46,7 @@ const baseTabs: TabItem[] = [
       pathname === "/ai-chat" || pathname.startsWith("/ai-chat/"),
     Icon: AiChatIcon,
   },
+  */
   {
     href: "/loan/qr",
     label: "借りる",
