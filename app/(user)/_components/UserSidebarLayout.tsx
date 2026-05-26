@@ -87,6 +87,14 @@ export default async function UserSidebarLayout({
               >
                 要望フォーム
               </a>
+              <a
+                href="https://forms.gle/SAGxeju6tRGtzMgg8"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex w-full items-center gap-3 rounded-xl bg-orange-500 px-4 py-3 text-base font-medium text-white transition hover:bg-orange-600"
+              >
+                本の要望フォーム
+              </a>
             </nav>
             <UserProfileModal
               avatarUrl={result?.avatarUrl ?? null}
@@ -113,6 +121,14 @@ export default async function UserSidebarLayout({
       </div>
 
       <MobileTabBar isAdmin={isAdmin} />
+      <a
+        href="https://forms.gle/SAGxeju6tRGtzMgg8"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="fixed bottom-[calc(5rem+env(safe-area-inset-bottom))] right-4 z-40 rounded-full bg-orange-500 px-4 py-2 text-sm font-semibold text-white shadow-lg transition hover:bg-orange-600 lg:hidden"
+      >
+        本の要望
+      </a>
       {/* <AiChatModal /> */}
     </div>
   );
