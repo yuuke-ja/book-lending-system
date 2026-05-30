@@ -71,6 +71,7 @@ async function saveUserMessage(input: {
   intent?: string;
   searchQuery?: string;
 }) {
+  //ユーザーのメッセージを保存する
   await db.query(
     `INSERT INTO "AiChatMessage"
        (id, "userEmail", role, content, metadata, intent, "searchQuery", "updatedAt")
@@ -102,7 +103,7 @@ async function saveAssistantMessage(input: {
   metadata?: AiMessageMetadata;
 }) {
   const metadata = input.metadata ?? input.message.metadata ?? null;
-
+  //AIの返答をDBに保存する関数。
   await db.query(
     `INSERT INTO "AiChatMessage"
        (id, "userEmail", role, content, metadata, intent, "searchQuery", "updatedAt")
@@ -133,9 +134,9 @@ export async function GET() {
   if (!userEmail) {
     return NextResponse.json({ error: "認証が必要です" }, { status: 401 });
   }
-
-	  const messageResult = await db.query<AiChatMessageRow>(
-	    `SELECT *
+  //そのユーザーのチャット履歴
+  const messageResult = await db.query<AiChatMessageRow>(
+    `SELECT *
 	     FROM (
 	       SELECT id, "userEmail", role, content, metadata, "createdAt"
 	       FROM "AiChatMessage"
@@ -147,19 +148,19 @@ export async function GET() {
     [userEmail]
   );
 
-	  return NextResponse.json(
-	    {
-	      messages: messageResult.rows
-	        .filter((message) => message.userEmail === userEmail)
-	        .map((message) =>
-	          createTextMessage(
-	            message.id,
-	            message.role,
-	            message.content,
-	            message.metadata ?? undefined
-	          )
-	        ),
-	    },
+  return NextResponse.json(
+    {
+      messages: messageResult.rows
+        .filter((message) => message.userEmail === userEmail)
+        .map((message) =>
+          createTextMessage(
+            message.id,
+            message.role,
+            message.content,
+            message.metadata ?? undefined
+          )
+        ),
+    },
     { status: 200 }
   );
 }

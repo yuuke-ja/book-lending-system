@@ -3,12 +3,12 @@ import Link from "next/link";
 import MobileHeader from "@/app/(user)/_components/MobileHeader";
 import MobileTabBar from "@/app/(user)/_components/MobileTabBar";
 import UserProfileModal from "@/app/(user)/_components/UserProfileModal";
-// import AiChatModal from "@/app/(user)/_components/AiChatModal";
+import AiChatModal from "@/app/(user)/_components/AiChatModal";
 
 import { getUserProfile } from "@/lib/user-profile";
 import {
   BookListIcon,
-  // AiChatIcon,
+  AiChatIcon,
   CommunityIcon,
   BorrowIcon,
   ReturnIcon,
@@ -61,12 +61,10 @@ export default async function UserSidebarLayout({
                 <BookListIcon className="shrink-0" />
                 本一覧
               </Link>
-              {/*
               <Link href="/ai-chat" className={navLinkClass}>
                 <AiChatIcon className="shrink-0" />
                 AIおすすめ
               </Link>
-              */}
               <Link href="/community" className={navLinkClass}>
                 <CommunityIcon className="shrink-0" />
                 コミュニティ
@@ -129,7 +127,7 @@ export default async function UserSidebarLayout({
       >
         本の要望
       </a>
-      {/* <AiChatModal /> */}
+      <AiChatModal />
     </div>
   );
 }

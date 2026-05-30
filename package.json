@@ -13,7 +13,6 @@
   "dependencies": {
     "@ai-sdk/groq": "^3.0.39",
     "@ai-sdk/react": "^3.0.184",
-    "@huggingface/transformers": "^4.2.0",
     "@radix-ui/react-use-controllable-state": "^1.2.2",
     "@rive-app/react-webgl2": "^4.28.4",
     "@smastrom/react-rating": "^1.5.0",

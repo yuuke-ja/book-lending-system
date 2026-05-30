@@ -364,7 +364,7 @@ export async function GET(request: Request) {
       db.query(
         `SELECT
            event.id,
-           event."occurredAt",
+           to_char(event."occurredAt", 'YYYY-MM-DD"T"HH24:MI:SS.MS"+09:00"') AS "occurredAt",
            event."eventType",
            event."userEmail",
            event."bookId",
