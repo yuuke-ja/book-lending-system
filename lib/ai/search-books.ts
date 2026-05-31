@@ -28,7 +28,7 @@ export async function searchBooks(query: string): Promise<SearchBookResult[]> {
       FROM "BookEmbedding" be
       JOIN "Book" b ON b.id = be."bookId"
       ORDER BY be.embedding <=> $1::vector
-      LIMIT 10
+      LIMIT 5
     ),
     community_items AS (
       SELECT
@@ -77,7 +77,6 @@ export async function searchBooks(query: string): Promise<SearchBookResult[]> {
 
   return result.rows;
 }
-
 
 
 

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { convertToModelMessages, streamText, type UIMessage } from "ai";
+import { streamText, type UIMessage } from "ai";
 import { groq as groqModel } from "@ai-sdk/groq";
 import { groq } from "@/lib/ai/groq";
 import { searchBooks } from "@/lib/ai/search-books";
@@ -182,9 +182,7 @@ export async function POST(request: NextRequest) {
   const originalMessages = messages ?? [fallbackUserMessage];
   const lastUserMessage =
     originalMessages.findLast((message) => message.role === "user") ?? fallbackUserMessage;
-  const modelMessages = messages
-    ? await convertToModelMessages(originalMessages)
-    : [{ role: "user" as const, content: query }];
+  const currentModelMessages = [{ role: "user" as const, content: query }];
 
   const completion = await groq.chat.completions.create({
     model: "openai/gpt-oss-20b",
@@ -358,7 +356,7 @@ export async function POST(request: NextRequest) {
 
     const result = streamText({
       model: groqModel("openai/gpt-oss-20b"),
-      messages: modelMessages,
+      messages: currentModelMessages,
       system: `
         あなたは図書推薦チャットのアシスタントです。
         名前を聞かれた場合だけ「プロマス図書AI」と名乗ってください。
@@ -417,7 +415,7 @@ export async function POST(request: NextRequest) {
     const assistantMessageId = randomUUID();
     const result = streamText({
       model: groqModel("openai/gpt-oss-20b"),
-      messages: modelMessages,
+      messages: currentModelMessages,
       system: `
         あなたはプロマス図書のシステム質問に答えるアシスタントです。
         ユーザーの質問に対して、プロマス図書の使い方を説明してください。
@@ -450,7 +448,7 @@ export async function POST(request: NextRequest) {
     const assistantMessageId = randomUUID();
     const result = streamText({
       model: groqModel("openai/gpt-oss-20b"),
-      messages: modelMessages,
+      messages: currentModelMessages,
       system: `
         あなたは図書推薦チャットです。
         名前を聞かれた場合だけ「プロマス図書AI」と名乗ってください。

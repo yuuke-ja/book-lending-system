@@ -54,7 +54,7 @@ describe("searchBooks", () => {
 
     const [sql, params] = mockedQuery.mock.calls[0];
     expect(String(sql)).toContain("WITH candidate_books AS");
-    expect(String(sql)).toContain("LIMIT 10");
+    expect(String(sql)).toContain("LIMIT 5");
     expect(String(sql)).toContain("community_items AS");
     expect(String(sql)).toContain('FROM "Thread" t');
     expect(String(sql)).toContain('FROM "ThreadComment" tc');
