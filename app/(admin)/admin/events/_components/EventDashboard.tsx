@@ -44,6 +44,8 @@ export default function EventDashboard({
     label: string;
     value: number;
     detail: string;
+    condition?: string;
+    metricCondition?: string;
     impactKey?: ImpactPathKey;
   };
 
@@ -60,13 +62,15 @@ export default function EventDashboard({
       impactKey: "postToLoan",
       label: "投稿経由 → 貸出",
       value: data.paths.postToLoanCount,
-      detail: "投稿閲覧から貸出まで",
+      detail: "-",
+      condition: "投稿閲覧後、同じユーザー・同じ本を影響時間内に貸出した数",
     },
     {
       key: "threadLinkClick",
       label: "投稿内リンククリック",
       value: data.paths.threadLinkClickCount,
-      detail: "投稿・コメント内の本リンク",
+      detail: "-",
+      condition: "投稿・コメント内の本リンククリックログ数",
     },
     {
       key: "threadLinkClickToLoan",
@@ -74,6 +78,8 @@ export default function EventDashboard({
       impactKey: "threadLinkClickToLoan",
       value: data.paths.threadLinkClickToLoanCount,
       detail: `貸出率 ${(data.paths.threadLinkClickToLoanRate * 100).toFixed(1)}%`,
+      condition: "投稿・コメント内リンククリック後、同じユーザー・同じ本を影響時間内に貸出した数",
+      metricCondition: "貸出に至ったクリックまとまり数 ÷ クリックまとまり数",
     },
     {
       key: "bookDetailToLoan",
@@ -81,12 +87,15 @@ export default function EventDashboard({
       label: "本詳細 → 貸出",
       value: data.paths.bookDetailToLoanCount,
       detail: `平均 ${formatSeconds(data.paths.avgBookDetailToLoanSeconds)}`,
+      condition: "本詳細閲覧後、同じユーザー・同じ本を影響時間内に貸出した数",
+      metricCondition: "貸出に紐づいた直近の本詳細閲覧から貸出までの平均時間",
     },
     {
       key: "aiRecommendation",
       label: "AIおすすめ表示",
       value: data.paths.aiRecommendationCount,
-      detail: "AIが表示したおすすめ本",
+      detail: "-",
+      condition: "おすすめ本カードの表示件数",
     },
     {
       key: "aiRecommendationDisplayToLoan",
@@ -94,12 +103,16 @@ export default function EventDashboard({
       impactKey: "aiRecommendationDisplayToLoan",
       value: data.paths.aiRecommendationDisplayToLoanCount,
       detail: `貸出率 ${(data.paths.aiRecommendationDisplayToLoanRate * 100).toFixed(1)}%`,
+      condition: "AIおすすめ表示後、同じユーザー・同じ本を影響時間内に貸出した数",
+      metricCondition: "貸出に至ったおすすめ表示まとまり数 ÷ おすすめ表示まとまり数",
     },
     {
       key: "aiClick",
-      label: "AIおすすめクリック",
+      label: "AIおすすめクリックログ",
       value: data.paths.aiClickCount,
-      detail: `クリック率 ${(data.paths.aiClickRate * 100).toFixed(1)}%`,
+      detail: `おすすめ本カードクリック率 ${(data.paths.aiClickRate * 100).toFixed(1)}%`,
+      condition: "AIおすすめ本カードのクリックログ数",
+      metricCondition: "クリックされたおすすめ本カード数 ÷ 表示されたおすすめ本カード数",
     },
     {
       key: "aiRecommendationToLoan",
@@ -107,6 +120,8 @@ export default function EventDashboard({
       impactKey: "aiRecommendationToLoan",
       value: data.paths.aiRecommendationToLoanCount,
       detail: `貸出率 ${(data.paths.aiRecommendationToLoanRate * 100).toFixed(1)}%`,
+      condition: "AIおすすめクリック後、同じユーザー・同じ本を影響時間内に貸出した数",
+      metricCondition: "貸出に至ったクリックまとまり数 ÷ クリックまとまり数",
     },
   ];
 
@@ -145,73 +160,100 @@ export default function EventDashboard({
           </p>
         </div>
 
-        <div className="mt-4 flex flex-wrap gap-4">
-          {pathItems.map((item) => (
-            <article
-              key={item.key}
-              className="flex min-h-72 w-72 max-w-full flex-none flex-col justify-between rounded-2xl border border-zinc-200 bg-zinc-50 p-5"
-            >
-              <div>
-                <p className="text-sm font-medium text-zinc-600">
-                  {item.label}
-                </p>
-                <p className="mt-2 text-3xl font-semibold text-zinc-950">
-                  {item.value.toLocaleString("ja-JP")}
-                </p>
-                <p className="mt-2 text-xs text-zinc-500">{item.detail}</p>
-              </div>
-
-              {item.impactKey ? (
-                <div className="mt-5 border-t border-zinc-200 pt-4">
-                  <p className="text-xs font-semibold text-zinc-500">影響時間</p>
-                  <div className="mt-2 flex gap-2">
-                    <input
-                      type="number"
-                      min={1}
-                      value={pathImpactTimes[item.impactKey].amount}
-                      onChange={(event) =>
-                        setPathImpactTimes((current) => ({
-                          ...current,
-                          [item.impactKey as ImpactPathKey]: {
-                            ...current[item.impactKey as ImpactPathKey],
-                            amount: event.target.value,
-                          },
-                        }))
-                      }
-                      className="h-10 w-24 rounded-xl border border-zinc-300 bg-white px-3 text-sm text-zinc-800 outline-none transition focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
-                      aria-label={`${item.label}の影響時間`}
-                    />
-                    <select
-                      value={pathImpactTimes[item.impactKey].unit}
-                      onChange={(event) =>
-                        setPathImpactTimes((current) => ({
-                          ...current,
-                          [item.impactKey as ImpactPathKey]: {
-                            ...current[item.impactKey as ImpactPathKey],
-                            unit: event.target.value,
-                          },
-                        }))
-                      }
-                      className="h-10 rounded-xl border border-zinc-300 bg-white px-3 text-sm text-zinc-800 outline-none transition focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
-                      aria-label={`${item.label}の影響時間単位`}
+        <div className="mt-4 overflow-hidden rounded-xl border border-zinc-200">
+          <div className="overflow-x-auto">
+            <table className="min-w-[1080px] w-full text-left text-sm">
+              <thead className="bg-zinc-50 text-xs font-semibold text-zinc-500">
+                <tr>
+                  <th scope="col" className="whitespace-nowrap border-r border-zinc-200 px-4 py-3">
+                    経路
+                  </th>
+                  <th scope="col" className="whitespace-nowrap border-r border-zinc-200 px-4 py-3 text-right">
+                    件数
+                  </th>
+                  <th scope="col" className="min-w-64 border-r border-zinc-200 px-4 py-3">
+                    数値の集計条件
+                  </th>
+                  <th scope="col" className="whitespace-nowrap border-r border-zinc-200 px-4 py-3">
+                    率・平均
+                  </th>
+                  <th scope="col" className="min-w-64 border-r border-zinc-200 px-4 py-3">
+                    率・平均の集計条件
+                  </th>
+                  <th scope="col" className="whitespace-nowrap px-4 py-3">
+                    影響時間
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-zinc-100 bg-white">
+                {pathItems.map((item) => (
+                  <tr key={item.key} className="align-top text-zinc-700">
+                    <th
+                      scope="row"
+                      className="whitespace-nowrap border-r border-zinc-100 px-4 py-4 text-sm font-semibold text-zinc-900"
                     >
-                      <option value="seconds">秒</option>
-                      <option value="minutes">分</option>
-                      <option value="hours">時間</option>
-                      <option value="days">日</option>
-                    </select>
-                  </div>
-                </div>
-              ) : (
-                <div className="mt-5 border-t border-zinc-200 pt-4">
-                  <p className="text-xs font-semibold text-zinc-500">集計条件</p>
-                  <p className="mt-2 text-sm text-zinc-600">
-                    クリック数をそのまま集計
-                  </p>
-                </div>
-              )}
-            </article>
-          ))}
+                      {item.label}
+                    </th>
+                    <td className="whitespace-nowrap border-r border-zinc-100 px-4 py-4 text-right text-lg font-semibold text-zinc-950">
+                      {item.value.toLocaleString("ja-JP")}
+                    </td>
+                    <td className="border-r border-zinc-100 px-4 py-4 text-sm leading-6 text-zinc-600">
+                      {item.condition ?? "-"}
+                    </td>
+                    <td className="whitespace-nowrap border-r border-zinc-100 px-4 py-4 text-sm font-medium text-zinc-900">
+                      {item.detail}
+                    </td>
+                    <td className="border-r border-zinc-100 px-4 py-4 text-sm leading-6 text-zinc-600">
+                      {item.metricCondition ?? "-"}
+                    </td>
+                    <td className="whitespace-nowrap px-4 py-4">
+                      {item.impactKey ? (
+                        <div className="flex gap-2">
+                          <input
+                            type="number"
+                            min={1}
+                            value={pathImpactTimes[item.impactKey].amount}
+                            onChange={(event) =>
+                              setPathImpactTimes((current) => ({
+                                ...current,
+                                [item.impactKey as ImpactPathKey]: {
+                                  ...current[item.impactKey as ImpactPathKey],
+                                  amount: event.target.value,
+                                },
+                              }))
+                            }
+                            className="h-10 w-20 rounded-xl border border-zinc-300 bg-white px-3 text-sm text-zinc-800 outline-none transition focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
+                            aria-label={`${item.label}の影響時間`}
+                          />
+                          <select
+                            value={pathImpactTimes[item.impactKey].unit}
+                            onChange={(event) =>
+                              setPathImpactTimes((current) => ({
+                                ...current,
+                                [item.impactKey as ImpactPathKey]: {
+                                  ...current[item.impactKey as ImpactPathKey],
+                                  unit: event.target.value,
+                                },
+                              }))
+                            }
+                            className="h-10 rounded-xl border border-zinc-300 bg-white px-3 text-sm text-zinc-800 outline-none transition focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
+                            aria-label={`${item.label}の影響時間単位`}
+                          >
+                            <option value="seconds">秒</option>
+                            <option value="minutes">分</option>
+                            <option value="hours">時間</option>
+                            <option value="days">日</option>
+                          </select>
+                        </div>
+                      ) : (
+                        <span className="text-sm text-zinc-400">-</span>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
 
         <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:items-center">

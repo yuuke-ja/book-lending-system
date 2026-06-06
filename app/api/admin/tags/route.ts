@@ -22,16 +22,12 @@ export async function POST(request: NextRequest) {
     }
 
     const result = await db.query(
-      `WITH input_tags AS (
-         SELECT DISTINCT tag
-         FROM unnest($1::text[]) AS t(tag)
-         WHERE tag <> ''
-       )
-       INSERT INTO "TagList" (tag)
-       SELECT tag
-       FROM input_tags
-       ON CONFLICT (tag)
-       DO UPDATE SET tag = EXCLUDED.tag
+      `INSERT INTO "TagList" (tag)
+       SELECT DISTINCT trim(tag)
+       FROM unnest($1::text[]) AS input(tag)
+       WHERE trim(tag) <> ''
+       ON CONFLICT (tag) DO UPDATE
+       SET "updatedAt" = now()
        RETURNING *, (xmax = 0) AS inserted`,
       [data.tags]
     );

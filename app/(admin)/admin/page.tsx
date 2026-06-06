@@ -28,11 +28,6 @@ function createExceptionRule(partial: ExceptionRulePartial = {}): ExceptionRule 
   };
 }
 
-type TagItem = {
-  id: string;
-  tag: string;
-};
-
 export default function AdminPage() {
   const [settings, setSettings] = useState<LoanSettings>({
     fridayOnly: true,
@@ -41,10 +36,6 @@ export default function AdminPage() {
   });
   const [isLoadingSettings, setIsLoadingSettings] = useState(true);
   const [statusMessage, setStatusMessage] = useState("");
-  const [tagInput, setTagInput] = useState("");
-  const [taglist, setTaglist] = useState<TagItem[]>([]);
-  const [isLoadingTags, setIsLoadingTags] = useState(true);
-  const [tagStatusMessage, setTagStatusMessage] = useState("");
   const [selectweek, setSelectweek] = useState<number>(1)
   const week = [{ value: 1, label: "月" }, { value: 2, label: "火" }, { value: 3, label: "水" },]
 
@@ -84,56 +75,6 @@ export default function AdminPage() {
     } catch (error) {
       console.error("エラー:", error);
       setStatusMessage("保存に失敗しました");
-    }
-  }
-
-  async function fetchTagList(options?: { silent?: boolean }) {
-    const silent = options?.silent ?? false;
-    if (!silent) setTagStatusMessage("タグ一覧を取得中...");
-    try {
-      const res = await fetch("/api/admin/tags", { cache: "no-store" });
-      if (!res.ok) throw new Error();
-      const data = await res.json();
-      setTaglist(Array.isArray(data) ? data : []);
-      if (!silent) setTagStatusMessage("");
-    } catch {
-      setTagStatusMessage("タグ一覧の取得に失敗しました");
-    } finally {
-      setIsLoadingTags(false);
-    }
-  }
-
-  async function addTag() {
-    const tag = tagInput.trim();
-    if (!tag) {
-      setTagStatusMessage("タグ名を入力してください");
-      return;
-    }
-
-    setTagStatusMessage("タグを保存中...");
-    try {
-      const res = await fetch("/api/admin/tags", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ tags: [tag] }),
-      });
-      if (!res.ok) {
-        try {
-          const err = await res.json();
-          setTagStatusMessage(
-            typeof err?.error === "string" ? err.error : "タグの保存に失敗しました"
-          );
-        } catch {
-          setTagStatusMessage("タグの保存に失敗しました");
-        }
-        return;
-      }
-
-      setTagInput("");
-      await fetchTagList({ silent: true });
-      setTagStatusMessage("タグを保存しました");
-    } catch {
-      setTagStatusMessage("タグの保存に失敗しました");
     }
   }
 
@@ -228,25 +169,6 @@ export default function AdminPage() {
     fetchSettings();
   }, []);
 
-  useEffect(() => {
-    const fetchInitialTags = async () => {
-      setTagStatusMessage("タグ一覧を取得中...");
-      try {
-        const res = await fetch("/api/admin/tags", { cache: "no-store" });
-        if (!res.ok) throw new Error();
-        const data = await res.json();
-        setTaglist(Array.isArray(data) ? data : []);
-        setTagStatusMessage("");
-      } catch {
-        setTagStatusMessage("タグ一覧の取得に失敗しました");
-      } finally {
-        setIsLoadingTags(false);
-      }
-    };
-
-    fetchInitialTags();
-  }, []);
-
   return (
     <main className="min-h-screen bg-white p-6">
       <h1 className="text-2xl font-semibold text-zinc-900">管理者ページ</h1>
@@ -267,6 +189,12 @@ export default function AdminPage() {
         className="mt-4 ml-4 inline-flex items-center rounded-md bg-black px-4 py-2 text-white hover:bg-zinc-800"
       >
         統計を見る
+      </Link>
+      <Link
+        href="/admin/tags"
+        className="mt-4 ml-4 inline-flex items-center rounded-md bg-black px-4 py-2 text-white hover:bg-zinc-800"
+      >
+        タグ管理
       </Link>
 
       <section className="mt-8 max-w-xl rounded-lg border border-zinc-200 bg-zinc-50 p-5">
@@ -394,67 +322,6 @@ export default function AdminPage() {
             </div>
           ))}
         </div>
-      </section>
-
-      <section className="mt-8 max-w-xl rounded-lg border border-zinc-200 bg-zinc-50 p-5">
-        <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-zinc-900">タグ管理</h2>
-          <button
-            type="button"
-            onClick={() => {
-              fetchTagList();
-            }}
-            disabled={isLoadingTags}
-            className="rounded-md border border-zinc-300 bg-white px-3 py-1 text-sm text-zinc-700 hover:bg-zinc-100 disabled:cursor-not-allowed disabled:bg-zinc-200"
-          >
-            再取得
-          </button>
-        </div>
-
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            addTag();
-          }}
-          className="mt-4 flex items-center gap-2"
-        >
-          <input
-            type="text"
-            value={tagInput}
-            onChange={(e) => setTagInput(e.target.value)}
-            placeholder="追加するタグ名"
-            className="w-full rounded border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-800 outline-none focus:border-zinc-400"
-            disabled={isLoadingTags}
-          />
-          <button
-            type="submit"
-            disabled={isLoadingTags}
-            className="rounded bg-zinc-900 px-3 py-2 text-sm font-medium text-white hover:bg-zinc-700 disabled:cursor-not-allowed disabled:bg-zinc-400"
-          >
-            追加
-          </button>
-        </form>
-
-        <div className="mt-4 rounded-md border border-zinc-200 bg-white p-3">
-          {isLoadingTags ? (
-            <p className="text-sm text-zinc-600">タグを読み込み中...</p>
-          ) : taglist.length === 0 ? (
-            <p className="text-sm text-zinc-600">タグはまだありません。</p>
-          ) : (
-            <div className="flex flex-wrap gap-2">
-              {taglist.map((item) => (
-                <span
-                  key={item.id}
-                  className="rounded-full border border-zinc-200 bg-zinc-100 px-3 py-1 text-xs text-zinc-700"
-                >
-                  #{item.tag}
-                </span>
-              ))}
-            </div>
-          )}
-        </div>
-
-        <p className="mt-3 text-xs text-zinc-600">{tagStatusMessage}</p>
       </section>
 
       {/*貸出履歴*/}

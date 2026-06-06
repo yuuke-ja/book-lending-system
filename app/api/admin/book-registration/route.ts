@@ -4,6 +4,7 @@ import { auth } from "@/lib/auth";
 import { Admin } from "@/lib/admin";
 import { randomUUID } from "crypto";
 import { rebuildBookEmbeddings } from "@/app/api/admin/book-embeddings/book-embedding";
+import { classifyBooks } from "@/lib/tags/classify-books";
 
 type SavedBookRow = {
   id: string;
@@ -11,34 +12,6 @@ type SavedBookRow = {
   authors: string[] | null;
   description: string | null;
 };
-
-type TagTokenRow = {
-  id: string;
-  tag: string;
-  tokens: string[] | null;
-};
-
-type TokenRow = {
-  tokens: string[] | null;
-};
-
-function hasMatchingTagTokens(bookTokens: string[], tagTokens: string[]) {
-  if (tagTokens.length === 0) return false;
-  if (tagTokens.length === 1 && /^[a-z]$/i.test(tagTokens[0])) return false;
-
-  for (let start = 0; start <= bookTokens.length - tagTokens.length; start += 1) {
-    let matched = true;
-    for (let offset = 0; offset < tagTokens.length; offset += 1) {
-      if (bookTokens[start + offset] !== tagTokens[offset]) {
-        matched = false;
-        break;
-      }
-    }
-    if (matched) return true;
-  }
-
-  return false;
-}
 
 export async function POST(_request: NextRequest) {
   const session = await auth();
@@ -54,20 +27,6 @@ export async function POST(_request: NextRequest) {
     const savedBookIds: string[] = [];
 
     await db.transaction(async (tx) => {
-      //タグ単語化
-      const tagRows = await tx.query<TagTokenRow>(
-        `SELECT
-           t.id,
-           t.tag,
-           ARRAY(
-             SELECT lower(token.value)
-             FROM unnest(pgroonga_tokenize(lower(t.tag), 'tokenizer', 'TokenMecab')) AS raw(token_json)
-             CROSS JOIN LATERAL jsonb_to_record(raw.token_json::jsonb) AS token(value text)
-             WHERE coalesce(token.value, '') <> ''
-           ) AS tokens
-         FROM "TagList" t`
-      );
-
       for (const pb of pending.rows) {
         //PendingBookをBookに登録または更新
         const savedbook = await tx.query<SavedBookRow>(
@@ -93,38 +52,12 @@ export async function POST(_request: NextRequest) {
         );
         const book = savedbook.rows[0];
         savedBookIds.push(book.id);
-        const searchText = `${book.title} ${(book.authors ?? []).join(" ")} ${book.description ?? ""}`;
-        //本の情報単語化
-        const tokenResult = await tx.query<TokenRow>(
-          `SELECT ARRAY(
-             SELECT lower(token.value)
-             FROM unnest(pgroonga_tokenize(lower($1), 'tokenizer', 'TokenMecab')) AS raw(token_json)
-             CROSS JOIN LATERAL jsonb_to_record(raw.token_json::jsonb) AS token(value text)
-             WHERE coalesce(token.value, '') <> ''
-           ) AS tokens`,
-          [searchText]
-        );
-        const bookTokens = tokenResult.rows[0]?.tokens ?? [];
-        const matchedTagIds = tagRows.rows
-          .filter((tagRow) => hasMatchingTagTokens(bookTokens, tagRow.tokens ?? []))
-          .map((tagRow) => tagRow.id);
-
-        await tx.query(`DELETE FROM "BookTag" WHERE "bookId" = $1`, [book.id]);
-        if (matchedTagIds.length > 0) {
-          await tx.query(
-            `INSERT INTO "BookTag" ("bookId", "tagId")
-             SELECT $1, tag_id
-             FROM unnest($2::text[]) AS tag_id
-             ON CONFLICT ("bookId", "tagId") DO NOTHING`,
-            [book.id, matchedTagIds]
-          );
-        }
-
       }
       await tx.query(`DELETE FROM "PendingBook"`);
     });
 
     const embeddingCount = await rebuildBookEmbeddings(savedBookIds);
+    await classifyBooks({ bookIds: savedBookIds });
 
     return NextResponse.json(
       {

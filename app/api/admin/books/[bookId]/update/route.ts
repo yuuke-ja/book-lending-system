@@ -3,6 +3,8 @@ import { auth } from "@/lib/auth";
 import { Admin } from "@/lib/admin";
 import { db } from "@/lib/db";
 import { rebuildBookEmbeddings } from "@/app/api/admin/book-embeddings/book-embedding";
+import { classifyBooks } from "@/lib/tags/classify-books";
+
 
 export async function POST(
   request: NextRequest,
@@ -47,6 +49,7 @@ export async function POST(
     }
 
     const embeddingCount = await rebuildBookEmbeddings([bookId]);
+    await classifyBooks({ bookIds: [bookId] });
 
     return NextResponse.json(
       {
