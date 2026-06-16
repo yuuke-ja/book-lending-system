@@ -32,7 +32,7 @@ export default function BookListClient({
   const hasSearched = searchBooks !== null;
   const loanedSet = new Set(loanedBooks);
 
-  const runSearch = useCallback((query: string) => {
+  const runSearch = useCallback((query: string, selectedTags: string[]) => {
     if (!query) {
       setSearchBooks(null);
       return;
@@ -54,6 +54,18 @@ export default function BookListClient({
       .then(([fullBooks, tagBooks]) => {
         const merged = [...(fullBooks as BookListBook[]), ...(tagBooks as BookListBook[])];
         const unique = Array.from(new Map(merged.map((book) => [book.id, book])).values());
+        const resultTagIds = unique.flatMap((book) =>
+          book.tags?.map((tag) => tag.id) ?? []
+        );
+
+        void fetch("/api/book/search/log", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ query, selectedTags, resultTagIds }),
+        }).catch((err) => {
+          console.error("検索ログ保存エラー:", err);
+        });
+
         setSearchBooks(unique);
       })
       .catch((err) => {
@@ -102,7 +114,7 @@ export default function BookListClient({
           onSubmit={(e) => {
             e.preventDefault();
             const mergedQuery = [...selectedTags, searchQuery.trim()].filter(Boolean).join(" ");
-            runSearch(mergedQuery);
+            runSearch(mergedQuery, selectedTags);
           }}
           className="space-y-2"
         >

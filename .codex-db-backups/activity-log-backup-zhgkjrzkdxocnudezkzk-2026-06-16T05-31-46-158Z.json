@@ -1,0 +1,1569 @@
+{
+  "projectRef": "zhgkjrzkdxocnudezkzk",
+  "createdAt": "2026-06-16T05:31:45.812Z",
+  "tables": {
+    "SearchEventTag": [
+      {
+        "searchEventId": "54c54e31-83a6-4368-afcb-8802f53015dd",
+        "tagId": "4cd9a50c-0a64-4945-902d-f85e8b19dc63",
+        "confidence": 0.5,
+        "createdAt": "2026-06-12T01:58:59.413Z"
+      },
+      {
+        "searchEventId": "adf79598-f427-48ab-a78d-60404f3c5ea4",
+        "tagId": "4cd9a50c-0a64-4945-902d-f85e8b19dc63",
+        "confidence": 1,
+        "createdAt": "2026-06-12T02:08:18.376Z"
+      },
+      {
+        "searchEventId": "25bff156-321c-462f-b37c-33e100fda940",
+        "tagId": "4cd9a50c-0a64-4945-902d-f85e8b19dc63",
+        "confidence": 1,
+        "createdAt": "2026-06-12T02:19:43.785Z"
+      }
+    ],
+    "SearchEvent": [
+      {
+        "id": "5faed41f-f2be-432f-8adb-de29119f3334",
+        "userEmail": "yuusuke_24s1103862@nnn.ed.jp",
+        "searchType": "book_list",
+        "query": "競技プログラミングの本",
+        "occurredAt": "2026-06-12T01:57:54.130Z"
+      },
+      {
+        "id": "54c54e31-83a6-4368-afcb-8802f53015dd",
+        "userEmail": "yuusuke_24s1103862@nnn.ed.jp",
+        "searchType": "ai_query",
+        "query": "競技プログラミング 学び 本",
+        "occurredAt": "2026-06-12T01:58:59.413Z"
+      },
+      {
+        "id": "adf79598-f427-48ab-a78d-60404f3c5ea4",
+        "userEmail": "yuusuke_24s1103862@nnn.ed.jp",
+        "searchType": "book_list",
+        "query": "競技プログラミングにおすすめの本",
+        "occurredAt": "2026-06-12T02:08:18.376Z"
+      },
+      {
+        "id": "25bff156-321c-462f-b37c-33e100fda940",
+        "userEmail": "yuusuke_24s1103862@nnn.ed.jp",
+        "searchType": "ai_query",
+        "query": "競技プログラミング 学習 本",
+        "occurredAt": "2026-06-12T02:19:43.785Z"
+      }
+    ],
+    "CommentBookLink": [
+      {
+        "id": "17786443-5f28-4352-a893-9ed53cfd2422",
+        "commentId": "da34052d-a92c-4e98-9e4b-ec57cf6b6a3a",
+        "bookId": "006bc99d-caf0-42ad-9999-422fb1e0ff6f",
+        "createdAt": "2026-03-15T13:55:07.913Z"
+      },
+      {
+        "id": "c1afa374-af63-4341-966d-8ad3cddbb721",
+        "commentId": "d61ca55d-7bba-45a5-9432-c9430e0067c3",
+        "bookId": "786fe0ce-c0d8-46f9-a1b9-cbb84c940e60",
+        "createdAt": "2026-03-16T02:54:37.871Z"
+      },
+      {
+        "id": "1d0a486f-7ade-4086-b8ae-d5eac13e637a",
+        "commentId": "d9f4c513-61f3-44c9-a8d2-470ade09c656",
+        "bookId": "faa3db31-6e45-4c25-86d4-05971b563561",
+        "createdAt": "2026-03-16T13:18:22.869Z"
+      },
+      {
+        "id": "570e53cd-54c8-413e-b7af-b36668182633",
+        "commentId": "d5904c7f-ddd0-4dde-b797-b8098e7bd905",
+        "bookId": "786fe0ce-c0d8-46f9-a1b9-cbb84c940e60",
+        "createdAt": "2026-03-16T14:25:15.306Z"
+      },
+      {
+        "id": "1eda1c9e-052b-4ae1-a298-9b44e2a82cd9",
+        "commentId": "3c98a8ce-f2b6-4fd7-afd2-14b25cb9b3b2",
+        "bookId": "786fe0ce-c0d8-46f9-a1b9-cbb84c940e60",
+        "createdAt": "2026-03-16T14:34:34.268Z"
+      },
+      {
+        "id": "28b5fefd-e2fa-49fa-88d3-132075df3a92",
+        "commentId": "15b2b330-6f86-4687-a52d-1f4d91c4eb4b",
+        "bookId": "006bc99d-caf0-42ad-9999-422fb1e0ff6f",
+        "createdAt": "2026-03-16T14:34:44.936Z"
+      },
+      {
+        "id": "b663741d-10c5-4b47-897d-934c88c39980",
+        "commentId": "b5d9cf30-1a60-4d5c-a8a0-e74057cee613",
+        "bookId": "786fe0ce-c0d8-46f9-a1b9-cbb84c940e60",
+        "createdAt": "2026-03-16T16:14:50.311Z"
+      },
+      {
+        "id": "5da18904-6ee3-4f7a-a487-fd96d29ead45",
+        "commentId": "cb7d3067-79a1-4e60-bbd1-2383c792bb25",
+        "bookId": "006bc99d-caf0-42ad-9999-422fb1e0ff6f",
+        "createdAt": "2026-03-16T16:22:48.182Z"
+      },
+      {
+        "id": "1d2015f3-2269-4d0c-8c79-68f1e8c7e675",
+        "commentId": "b38b02b8-0efe-43be-8dad-5a130ce0ba43",
+        "bookId": "faa3db31-6e45-4c25-86d4-05971b563561",
+        "createdAt": "2026-03-16T16:23:17.350Z"
+      },
+      {
+        "id": "47304af8-2f9e-4e32-a535-1132bf13e725",
+        "commentId": "8ddbd08c-4ca2-45e7-86c5-091da41a24b4",
+        "bookId": "faa3db31-6e45-4c25-86d4-05971b563561",
+        "createdAt": "2026-03-16T16:23:31.508Z"
+      },
+      {
+        "id": "a29c38a1-c3f4-4607-8f0f-e30809fbe89f",
+        "commentId": "f0de6de7-f688-4346-a150-e8372a7437dd",
+        "bookId": "786fe0ce-c0d8-46f9-a1b9-cbb84c940e60",
+        "createdAt": "2026-03-16T16:33:50.131Z"
+      },
+      {
+        "id": "b7c4e607-2ac2-4b17-a9a5-d68bc2b95653",
+        "commentId": "98e25126-ca8c-4814-a1a7-503986a6e80e",
+        "bookId": "faa3db31-6e45-4c25-86d4-05971b563561",
+        "createdAt": "2026-03-16T16:34:05.503Z"
+      },
+      {
+        "id": "ee93bf77-d484-4d82-a28c-ca7c5f685a11",
+        "commentId": "7e4d5d56-40b4-4411-819a-80c1acc6b45c",
+        "bookId": "faa3db31-6e45-4c25-86d4-05971b563561",
+        "createdAt": "2026-04-02T14:44:07.361Z"
+      },
+      {
+        "id": "f9be6ad4-252b-4686-8498-249ed382bea8",
+        "commentId": "1b204796-6d9f-4f14-b83b-f4640accefc6",
+        "bookId": "786fe0ce-c0d8-46f9-a1b9-cbb84c940e60",
+        "createdAt": "2026-04-02T14:44:23.506Z"
+      },
+      {
+        "id": "677ea2d3-c3c7-4b4b-bd79-fd39cc9d4eec",
+        "commentId": "bbd0dbff-f3b6-427c-a06f-02900b2c6043",
+        "bookId": "006bc99d-caf0-42ad-9999-422fb1e0ff6f",
+        "createdAt": "2026-04-02T14:46:46.830Z"
+      },
+      {
+        "id": "37d9c976-b54b-4633-a94e-0be45b346706",
+        "commentId": "d016a09c-00d7-4562-add1-4438a605517e",
+        "bookId": "faa3db31-6e45-4c25-86d4-05971b563561",
+        "createdAt": "2026-04-02T14:47:14.425Z"
+      },
+      {
+        "id": "ec48120e-c008-47b2-a41a-552d43b54c9a",
+        "commentId": "6a2993b4-bc6c-4e82-a6d7-c63038c2c716",
+        "bookId": "006bc99d-caf0-42ad-9999-422fb1e0ff6f",
+        "createdAt": "2026-04-14T15:28:06.985Z"
+      },
+      {
+        "id": "6b621af6-40ed-4e0f-bf36-13252d1f6ad5",
+        "commentId": "1e0aefb5-f43b-4382-bfd0-e32f38688b19",
+        "bookId": "faa3db31-6e45-4c25-86d4-05971b563561",
+        "createdAt": "2026-05-06T16:20:43.588Z"
+      }
+    ],
+    "ThreadComment": [
+      {
+        "id": "b8f545cb-be75-45cb-a10b-36b29628e85d",
+        "threadId": "43c64308-ca39-4a56-ad7a-8ed2dcaa7d5d",
+        "parentCommentId": null,
+        "userEmail": "yuusuke_24s1103862@nnn.ed.jp",
+        "content": "まずはアルゴリズム図鑑が入りやすいと思います",
+        "createdAt": "2026-03-15T03:50:21.938Z",
+        "updatedAt": "2026-03-15T03:50:21.938Z",
+        "aiSummary": null,
+        "aiSummarySourceUpdatedAt": null
+      },
+      {
+        "id": "0ec18a89-4ac4-4021-8e4b-07ccf0a3e326",
+        "threadId": "3dcbdab3-eb27-4a14-a5c4-cba967193d01",
+        "parentCommentId": null,
+        "userEmail": "yuusuke_24s1103862@nnn.ed.jp",
+        "content": "確かに",
+        "createdAt": "2026-03-15T12:39:01.682Z",
+        "updatedAt": "2026-03-15T12:39:01.682Z",
+        "aiSummary": null,
+        "aiSummarySourceUpdatedAt": null
+      },
+      {
+        "id": "5147ab53-d154-426b-916d-ef28c8aea31a",
+        "threadId": "3dcbdab3-eb27-4a14-a5c4-cba967193d01",
+        "parentCommentId": "0ec18a89-4ac4-4021-8e4b-07ccf0a3e326",
+        "userEmail": "yuusuke_24s1103862@nnn.ed.jp",
+        "content": "うん",
+        "createdAt": "2026-03-15T12:39:10.937Z",
+        "updatedAt": "2026-03-15T12:39:10.937Z",
+        "aiSummary": null,
+        "aiSummarySourceUpdatedAt": null
+      },
+      {
+        "id": "e22f9cf7-d5da-4455-a07e-c39b591703a1",
+        "threadId": "3dcbdab3-eb27-4a14-a5c4-cba967193d01",
+        "parentCommentId": null,
+        "userEmail": "yuusuke_24s1103862@nnn.ed.jp",
+        "content": "やあ",
+        "createdAt": "2026-03-15T12:41:17.284Z",
+        "updatedAt": "2026-03-15T12:41:17.284Z",
+        "aiSummary": null,
+        "aiSummarySourceUpdatedAt": null
+      },
+      {
+        "id": "da34052d-a92c-4e98-9e4b-ec57cf6b6a3a",
+        "threadId": "3dcbdab3-eb27-4a14-a5c4-cba967193d01",
+        "parentCommentId": "5147ab53-d154-426b-916d-ef28c8aea31a",
+        "userEmail": "yuusuke_24s1103862@nnn.ed.jp",
+        "content": "これいいね",
+        "createdAt": "2026-03-15T13:55:07.913Z",
+        "updatedAt": "2026-03-15T13:55:07.913Z",
+        "aiSummary": null,
+        "aiSummarySourceUpdatedAt": null
+      },
+      {
+        "id": "70ac4660-fb11-4d80-b8f8-5e90af67f495",
+        "threadId": "3dcbdab3-eb27-4a14-a5c4-cba967193d01",
+        "parentCommentId": "5147ab53-d154-426b-916d-ef28c8aea31a",
+        "userEmail": "yuusuke_24s1103862@nnn.ed.jp",
+        "content": "最高",
+        "createdAt": "2026-03-15T16:06:20.207Z",
+        "updatedAt": "2026-03-15T16:06:20.207Z",
+        "aiSummary": null,
+        "aiSummarySourceUpdatedAt": null
+      },
+      {
+        "id": "d61ca55d-7bba-45a5-9432-c9430e0067c3",
+        "threadId": "3dcbdab3-eb27-4a14-a5c4-cba967193d01",
+        "parentCommentId": "5147ab53-d154-426b-916d-ef28c8aea31a",
+        "userEmail": "yuusuke_24s1103862@nnn.ed.jp",
+        "content": "この本もいい",
+        "createdAt": "2026-03-16T02:54:37.871Z",
+        "updatedAt": "2026-03-16T02:54:37.871Z",
+        "aiSummary": null,
+        "aiSummarySourceUpdatedAt": null
+      },
+      {
+        "id": "917505dc-0e72-4ef1-8202-ca13ef00c329",
+        "threadId": "cf65615d-46f5-4634-80b8-538ff3c4b94a",
+        "parentCommentId": null,
+        "userEmail": "yuusuke_24s1103862@nnn.ed.jp",
+        "content": "いいね",
+        "createdAt": "2026-03-16T02:57:13.744Z",
+        "updatedAt": "2026-03-16T02:57:13.744Z",
+        "aiSummary": null,
+        "aiSummarySourceUpdatedAt": null
+      },
+      {
+        "id": "7e2942f9-9715-4603-bc95-a102af48be89",
+        "threadId": "cf65615d-46f5-4634-80b8-538ff3c4b94a",
+        "parentCommentId": null,
+        "userEmail": "yuusuke_24s1103862@nnn.ed.jp",
+        "content": "いい",
+        "createdAt": "2026-03-16T02:57:17.936Z",
+        "updatedAt": "2026-03-16T02:57:17.936Z",
+        "aiSummary": null,
+        "aiSummarySourceUpdatedAt": null
+      },
+      {
+        "id": "f3c3d5af-6ec7-4736-a137-f8b7022225dd",
+        "threadId": "cf65615d-46f5-4634-80b8-538ff3c4b94a",
+        "parentCommentId": "917505dc-0e72-4ef1-8202-ca13ef00c329",
+        "userEmail": "yuusuke_24s1103862@nnn.ed.jp",
+        "content": "aa",
+        "createdAt": "2026-03-16T02:57:22.607Z",
+        "updatedAt": "2026-03-16T02:57:22.607Z",
+        "aiSummary": null,
+        "aiSummarySourceUpdatedAt": null
+      },
+      {
+        "id": "8e0fc790-0bb9-49c9-a2e9-897a814d3cc8",
+        "threadId": "387d15b8-14c3-4170-85e6-37eb28e220aa",
+        "parentCommentId": null,
+        "userEmail": "yuusuke_24s1103862@nnn.ed.jp",
+        "content": "いいぞ。",
+        "createdAt": "2026-03-16T13:18:06.862Z",
+        "updatedAt": "2026-03-16T13:18:06.862Z",
+        "aiSummary": null,
+        "aiSummarySourceUpdatedAt": null
+      },
+      {
+        "id": "d9f4c513-61f3-44c9-a8d2-470ade09c656",
+        "threadId": "387d15b8-14c3-4170-85e6-37eb28e220aa",
+        "parentCommentId": "8e0fc790-0bb9-49c9-a2e9-897a814d3cc8",
+        "userEmail": "yuusuke_24s1103862@nnn.ed.jp",
+        "content": "いいねこれも",
+        "createdAt": "2026-03-16T13:18:22.869Z",
+        "updatedAt": "2026-03-16T13:18:22.869Z",
+        "aiSummary": null,
+        "aiSummarySourceUpdatedAt": null
+      },
+      {
+        "id": "a9b17e09-d053-4e71-9d68-566259085b38",
+        "threadId": "20fb94e1-2409-4b82-9a71-890363a90ccc",
+        "parentCommentId": null,
+        "userEmail": "yuusuke_24s1103862@nnn.ed.jp",
+        "content": "wsfw",
+        "createdAt": "2026-03-16T14:04:03.606Z",
+        "updatedAt": "2026-03-16T14:04:03.606Z",
+        "aiSummary": null,
+        "aiSummarySourceUpdatedAt": null
+      },
+      {
+        "id": "d5904c7f-ddd0-4dde-b797-b8098e7bd905",
+        "threadId": "20fb94e1-2409-4b82-9a71-890363a90ccc",
+        "parentCommentId": "a9b17e09-d053-4e71-9d68-566259085b38",
+        "userEmail": "yuusuke_24s1103862@nnn.ed.jp",
+        "content": "フィジェをいf",
+        "createdAt": "2026-03-16T14:25:15.306Z",
+        "updatedAt": "2026-03-16T14:25:15.306Z",
+        "aiSummary": null,
+        "aiSummarySourceUpdatedAt": null
+      },
+      {
+        "id": "3c98a8ce-f2b6-4fd7-afd2-14b25cb9b3b2",
+        "threadId": "2d418f74-a514-47f1-8212-994dc453bad8",
+        "parentCommentId": null,
+        "userEmail": "yuusuke_24s1103862@nnn.ed.jp",
+        "content": "右jhにおうhの",
+        "createdAt": "2026-03-16T14:34:34.268Z",
+        "updatedAt": "2026-03-16T14:34:34.268Z",
+        "aiSummary": null,
+        "aiSummarySourceUpdatedAt": null
+      },
+      {
+        "id": "15b2b330-6f86-4687-a52d-1f4d91c4eb4b",
+        "threadId": "2d418f74-a514-47f1-8212-994dc453bad8",
+        "parentCommentId": "3c98a8ce-f2b6-4fd7-afd2-14b25cb9b3b2",
+        "userEmail": "yuusuke_24s1103862@nnn.ed.jp",
+        "content": "いう日うほじょ",
+        "createdAt": "2026-03-16T14:34:44.936Z",
+        "updatedAt": "2026-03-16T14:34:44.936Z",
+        "aiSummary": null,
+        "aiSummarySourceUpdatedAt": null
+      },
+      {
+        "id": "b5d9cf30-1a60-4d5c-a8a0-e74057cee613",
+        "threadId": "3dcbdab3-eb27-4a14-a5c4-cba967193d01",
+        "parentCommentId": null,
+        "userEmail": "yuusuke_24s1103862@nnn.ed.jp",
+        "content": "kmkmk",
+        "createdAt": "2026-03-16T16:14:50.311Z",
+        "updatedAt": "2026-03-16T16:14:50.311Z",
+        "aiSummary": null,
+        "aiSummarySourceUpdatedAt": null
+      },
+      {
+        "id": "cb7d3067-79a1-4e60-bbd1-2383c792bb25",
+        "threadId": "3dcbdab3-eb27-4a14-a5c4-cba967193d01",
+        "parentCommentId": "5147ab53-d154-426b-916d-ef28c8aea31a",
+        "userEmail": "yuusuke_24s1103862@nnn.ed.jp",
+        "content": "あああああああああああああああああああああああああああああああああああ",
+        "createdAt": "2026-03-16T16:22:48.182Z",
+        "updatedAt": "2026-03-16T16:22:48.182Z",
+        "aiSummary": null,
+        "aiSummarySourceUpdatedAt": null
+      },
+      {
+        "id": "b38b02b8-0efe-43be-8dad-5a130ce0ba43",
+        "threadId": "3dcbdab3-eb27-4a14-a5c4-cba967193d01",
+        "parentCommentId": "0ec18a89-4ac4-4021-8e4b-07ccf0a3e326",
+        "userEmail": "yuusuke_24s1103862@nnn.ed.jp",
+        "content": "jんj",
+        "createdAt": "2026-03-16T16:23:17.350Z",
+        "updatedAt": "2026-03-16T16:23:17.350Z",
+        "aiSummary": null,
+        "aiSummarySourceUpdatedAt": null
+      },
+      {
+        "id": "8ddbd08c-4ca2-45e7-86c5-091da41a24b4",
+        "threadId": "3dcbdab3-eb27-4a14-a5c4-cba967193d01",
+        "parentCommentId": "5147ab53-d154-426b-916d-ef28c8aea31a",
+        "userEmail": "yuusuke_24s1103862@nnn.ed.jp",
+        "content": "lmk",
+        "createdAt": "2026-03-16T16:23:31.508Z",
+        "updatedAt": "2026-03-16T16:23:31.508Z",
+        "aiSummary": null,
+        "aiSummarySourceUpdatedAt": null
+      },
+      {
+        "id": "f0de6de7-f688-4346-a150-e8372a7437dd",
+        "threadId": "8b1bd96f-564e-49ff-bc16-61e580a1a2fe",
+        "parentCommentId": null,
+        "userEmail": "yuusuke_24s1103862@nnn.ed.jp",
+        "content": "j",
+        "createdAt": "2026-03-16T16:33:50.131Z",
+        "updatedAt": "2026-03-16T16:33:50.131Z",
+        "aiSummary": null,
+        "aiSummarySourceUpdatedAt": null
+      },
+      {
+        "id": "98e25126-ca8c-4814-a1a7-503986a6e80e",
+        "threadId": "8b1bd96f-564e-49ff-bc16-61e580a1a2fe",
+        "parentCommentId": "f0de6de7-f688-4346-a150-e8372a7437dd",
+        "userEmail": "yuusuke_24s1103862@nnn.ed.jp",
+        "content": "おみk",
+        "createdAt": "2026-03-16T16:34:05.503Z",
+        "updatedAt": "2026-03-16T16:34:05.503Z",
+        "aiSummary": null,
+        "aiSummarySourceUpdatedAt": null
+      },
+      {
+        "id": "3b1415e6-944c-4d83-9cda-1f8e523460b5",
+        "threadId": "8b1bd96f-564e-49ff-bc16-61e580a1a2fe",
+        "parentCommentId": "98e25126-ca8c-4814-a1a7-503986a6e80e",
+        "userEmail": "yuusuke_24s1103862@nnn.ed.jp",
+        "content": "jんm",
+        "createdAt": "2026-03-16T16:34:17.716Z",
+        "updatedAt": "2026-03-16T16:34:17.716Z",
+        "aiSummary": null,
+        "aiSummarySourceUpdatedAt": null
+      },
+      {
+        "id": "d46670a7-0419-4dd0-8fc0-2e83e1cbb842",
+        "threadId": "8b1bd96f-564e-49ff-bc16-61e580a1a2fe",
+        "parentCommentId": null,
+        "userEmail": "yuusuke_24s1103862@nnn.ed.jp",
+        "content": "d",
+        "createdAt": "2026-04-01T16:48:40.653Z",
+        "updatedAt": "2026-04-01T16:48:40.653Z",
+        "aiSummary": null,
+        "aiSummarySourceUpdatedAt": null
+      },
+      {
+        "id": "7e4d5d56-40b4-4411-819a-80c1acc6b45c",
+        "threadId": "8b1bd96f-564e-49ff-bc16-61e580a1a2fe",
+        "parentCommentId": "3b1415e6-944c-4d83-9cda-1f8e523460b5",
+        "userEmail": "yuusuke_24s1103862@nnn.ed.jp",
+        "content": "いいですね",
+        "createdAt": "2026-04-02T14:44:07.361Z",
+        "updatedAt": "2026-04-02T14:44:07.361Z",
+        "aiSummary": null,
+        "aiSummarySourceUpdatedAt": null
+      },
+      {
+        "id": "1b204796-6d9f-4f14-b83b-f4640accefc6",
+        "threadId": "8b1bd96f-564e-49ff-bc16-61e580a1a2fe",
+        "parentCommentId": "d46670a7-0419-4dd0-8fc0-2e83e1cbb842",
+        "userEmail": "yuusuke_24s1103862@nnn.ed.jp",
+        "content": "eqdf",
+        "createdAt": "2026-04-02T14:44:23.506Z",
+        "updatedAt": "2026-04-02T14:44:23.506Z",
+        "aiSummary": null,
+        "aiSummarySourceUpdatedAt": null
+      },
+      {
+        "id": "bbd0dbff-f3b6-427c-a06f-02900b2c6043",
+        "threadId": "8b1bd96f-564e-49ff-bc16-61e580a1a2fe",
+        "parentCommentId": null,
+        "userEmail": "yuusuke_24s1103862@nnn.ed.jp",
+        "content": "これもいいよ",
+        "createdAt": "2026-04-02T14:46:46.830Z",
+        "updatedAt": "2026-04-02T14:46:46.830Z",
+        "aiSummary": null,
+        "aiSummarySourceUpdatedAt": null
+      },
+      {
+        "id": "d016a09c-00d7-4562-add1-4438a605517e",
+        "threadId": "5832e3ec-b238-4ac2-9666-e22f522fb4d9",
+        "parentCommentId": null,
+        "userEmail": "yuusuke_24s1103862@nnn.ed.jp",
+        "content": "ある",
+        "createdAt": "2026-04-02T14:47:14.425Z",
+        "updatedAt": "2026-04-02T14:47:14.425Z",
+        "aiSummary": null,
+        "aiSummarySourceUpdatedAt": null
+      },
+      {
+        "id": "6a2993b4-bc6c-4e82-a6d7-c63038c2c716",
+        "threadId": "9f06f73e-8481-41e7-aa38-0ff421c650d4",
+        "parentCommentId": null,
+        "userEmail": "yuusuke_24s1103862@nnn.ed.jp",
+        "content": "なんやねん",
+        "createdAt": "2026-04-14T15:28:06.985Z",
+        "updatedAt": "2026-04-14T15:28:06.985Z",
+        "aiSummary": null,
+        "aiSummarySourceUpdatedAt": null
+      },
+      {
+        "id": "c75cc440-f6d8-4c8a-9c4e-6cf9c746057b",
+        "threadId": "7d40026c-d715-4ffd-be48-6e2cc0e71d6c",
+        "parentCommentId": null,
+        "userEmail": "yuusuke_24s1103862@nnn.ed.jp",
+        "content": "いけてるか？",
+        "createdAt": "2026-05-06T16:20:32.265Z",
+        "updatedAt": "2026-05-06T16:20:32.265Z",
+        "aiSummary": null,
+        "aiSummarySourceUpdatedAt": null
+      },
+      {
+        "id": "1e0aefb5-f43b-4382-bfd0-e32f38688b19",
+        "threadId": "7d40026c-d715-4ffd-be48-6e2cc0e71d6c",
+        "parentCommentId": "c75cc440-f6d8-4c8a-9c4e-6cf9c746057b",
+        "userEmail": "yuusuke_24s1103862@nnn.ed.jp",
+        "content": "えwfw",
+        "createdAt": "2026-05-06T16:20:43.588Z",
+        "updatedAt": "2026-05-06T16:20:43.588Z",
+        "aiSummary": null,
+        "aiSummarySourceUpdatedAt": null
+      },
+      {
+        "id": "29e68b69-c33c-4800-86d9-fb17ffc0428b",
+        "threadId": "cf65615d-46f5-4634-80b8-538ff3c4b94a",
+        "parentCommentId": null,
+        "userEmail": "yuusuke_24s1103862@nnn.ed.jp",
+        "content": "この本はやめとけ。全然技術古いし",
+        "createdAt": "2026-05-21T06:03:52.581Z",
+        "updatedAt": "2026-05-21T06:03:52.581Z",
+        "aiSummary": null,
+        "aiSummarySourceUpdatedAt": null
+      },
+      {
+        "id": "8804569e-6259-437e-82d1-87dc9a9b07af",
+        "threadId": "cf65615d-46f5-4634-80b8-538ff3c4b94a",
+        "parentCommentId": "29e68b69-c33c-4800-86d9-fb17ffc0428b",
+        "userEmail": "yuusuke_24s1103862@nnn.ed.jp",
+        "content": "それな。マジで読んでみたけどあかんかった。",
+        "createdAt": "2026-05-21T06:04:42.907Z",
+        "updatedAt": "2026-05-21T06:04:42.907Z",
+        "aiSummary": null,
+        "aiSummarySourceUpdatedAt": null
+      },
+      {
+        "id": "d9a8681e-07bb-40b4-aa76-c32df7e27145",
+        "threadId": "cf65615d-46f5-4634-80b8-538ff3c4b94a",
+        "parentCommentId": null,
+        "userEmail": "yuusuke_24s1103862@nnn.ed.jp",
+        "content": "この本はわかりにくい",
+        "createdAt": "2026-05-21T06:05:02.646Z",
+        "updatedAt": "2026-05-21T06:05:02.646Z",
+        "aiSummary": null,
+        "aiSummarySourceUpdatedAt": null
+      },
+      {
+        "id": "d90cf8a8-cd13-4525-a631-bed1822d0c13",
+        "threadId": "cf65615d-46f5-4634-80b8-538ff3c4b94a",
+        "parentCommentId": "917505dc-0e72-4ef1-8202-ca13ef00c329",
+        "userEmail": "yuusuke_24s1103862@nnn.ed.jp",
+        "content": "どこがやねん。まずここに書いている技術古いし。",
+        "createdAt": "2026-05-21T06:07:42.081Z",
+        "updatedAt": "2026-05-21T06:07:42.081Z",
+        "aiSummary": null,
+        "aiSummarySourceUpdatedAt": null
+      },
+      {
+        "id": "d918c755-54fe-4489-8822-c8589da36fcf",
+        "threadId": "27d00d9d-3e0f-4b5d-a210-13a824ea6b92",
+        "parentCommentId": null,
+        "userEmail": "yuusuke_24s1103862@nnn.ed.jp",
+        "content": "は？c++でかかれてないな。",
+        "createdAt": "2026-05-21T06:30:11.384Z",
+        "updatedAt": "2026-05-21T06:30:11.384Z",
+        "aiSummary": null,
+        "aiSummarySourceUpdatedAt": null
+      },
+      {
+        "id": "0abbc139-70aa-4d39-97a1-2932f310dc23",
+        "threadId": "27d00d9d-3e0f-4b5d-a210-13a824ea6b92",
+        "parentCommentId": null,
+        "userEmail": "yuusuke_24s1103862@nnn.ed.jp",
+        "content": "おいc++一切書いていないだろ",
+        "createdAt": "2026-05-21T06:36:13.535Z",
+        "updatedAt": "2026-05-21T06:36:13.535Z",
+        "aiSummary": null,
+        "aiSummarySourceUpdatedAt": null
+      },
+      {
+        "id": "a385d6c6-a44b-42d2-bc65-b29ea1b130b1",
+        "threadId": "27d00d9d-3e0f-4b5d-a210-13a824ea6b92",
+        "parentCommentId": null,
+        "userEmail": "yuusuke_24s1103862@nnn.ed.jp",
+        "content": "炎上やな",
+        "createdAt": "2026-05-21T06:36:20.933Z",
+        "updatedAt": "2026-05-21T06:36:20.933Z",
+        "aiSummary": null,
+        "aiSummarySourceUpdatedAt": null
+      }
+    ],
+    "Thread": [
+      {
+        "id": "43c64308-ca39-4a56-ad7a-8ed2dcaa7d5d",
+        "kind": "BOOK_REQUEST",
+        "bookId": null,
+        "userEmail": "yuusuke_24s1103862@nnn.ed.jp",
+        "content": "競技プログラミング初心者におすすめの本ありますか？",
+        "createdAt": "2026-03-15T03:43:09.170Z",
+        "updatedAt": "2026-03-15T03:43:09.170Z",
+        "aiSummary": null,
+        "aiSummarySourceUpdatedAt": null
+      },
+      {
+        "id": "3dcbdab3-eb27-4a14-a5c4-cba967193d01",
+        "kind": "BOOK_TOPIC",
+        "bookId": "006bc99d-caf0-42ad-9999-422fb1e0ff6f",
+        "userEmail": "yuusuke_24s1103862@nnn.ed.jp",
+        "content": "いい本",
+        "createdAt": "2026-03-15T12:38:41.974Z",
+        "updatedAt": "2026-03-15T12:38:41.974Z",
+        "aiSummary": null,
+        "aiSummarySourceUpdatedAt": null
+      },
+      {
+        "id": "cf65615d-46f5-4634-80b8-538ff3c4b94a",
+        "kind": "BOOK_TOPIC",
+        "bookId": "786fe0ce-c0d8-46f9-a1b9-cbb84c940e60",
+        "userEmail": "yuusuke_24s1103862@nnn.ed.jp",
+        "content": "この本いい",
+        "createdAt": "2026-03-16T02:56:59.320Z",
+        "updatedAt": "2026-03-16T02:56:59.320Z",
+        "aiSummary": null,
+        "aiSummarySourceUpdatedAt": null
+      },
+      {
+        "id": "ca3265c3-e15f-4193-a060-1db4e01c8810",
+        "kind": "BOOK_TOPIC",
+        "bookId": "006bc99d-caf0-42ad-9999-422fb1e0ff6f",
+        "userEmail": "yuusuke_24s1103862@nnn.ed.jp",
+        "content": "こんにちは",
+        "createdAt": "2026-03-16T02:57:47.337Z",
+        "updatedAt": "2026-03-16T02:57:47.337Z",
+        "aiSummary": null,
+        "aiSummarySourceUpdatedAt": null
+      },
+      {
+        "id": "e973895e-98e8-492e-9982-afc2eec0f53d",
+        "kind": "BOOK_TOPIC",
+        "bookId": "faa3db31-6e45-4c25-86d4-05971b563561",
+        "userEmail": "yuusuke_24s1103862@nnn.ed.jp",
+        "content": "バッグっているね",
+        "createdAt": "2026-03-16T05:45:58.237Z",
+        "updatedAt": "2026-03-16T05:45:58.237Z",
+        "aiSummary": null,
+        "aiSummarySourceUpdatedAt": null
+      },
+      {
+        "id": "d88a304d-3599-4cee-95f1-a8ca5b473c27",
+        "kind": "BOOK_REQUEST",
+        "bookId": null,
+        "userEmail": "yuusuke_24s1103862@nnn.ed.jp",
+        "content": "web apiについて知りたい。どの本がいい？",
+        "createdAt": "2026-03-16T13:16:34.097Z",
+        "updatedAt": "2026-03-16T13:16:34.097Z",
+        "aiSummary": null,
+        "aiSummarySourceUpdatedAt": null
+      },
+      {
+        "id": "387d15b8-14c3-4170-85e6-37eb28e220aa",
+        "kind": "BOOK_TOPIC",
+        "bookId": "786fe0ce-c0d8-46f9-a1b9-cbb84c940e60",
+        "userEmail": "yuusuke_24s1103862@nnn.ed.jp",
+        "content": "この本いいね",
+        "createdAt": "2026-03-16T13:16:45.343Z",
+        "updatedAt": "2026-03-16T13:16:45.343Z",
+        "aiSummary": null,
+        "aiSummarySourceUpdatedAt": null
+      },
+      {
+        "id": "20fb94e1-2409-4b82-9a71-890363a90ccc",
+        "kind": "BOOK_TOPIC",
+        "bookId": "006bc99d-caf0-42ad-9999-422fb1e0ff6f",
+        "userEmail": "yuusuke_24s1103862@nnn.ed.jp",
+        "content": "k",
+        "createdAt": "2026-03-16T13:55:28.110Z",
+        "updatedAt": "2026-03-16T13:55:28.110Z",
+        "aiSummary": null,
+        "aiSummarySourceUpdatedAt": null
+      },
+      {
+        "id": "5791e033-a901-4fe9-bb19-d81d87a5563b",
+        "kind": "BOOK_TOPIC",
+        "bookId": "faa3db31-6e45-4c25-86d4-05971b563561",
+        "userEmail": "yuusuke_24s1103862@nnn.ed.jp",
+        "content": "ういgひh",
+        "createdAt": "2026-03-16T14:25:48.575Z",
+        "updatedAt": "2026-03-16T14:25:48.575Z",
+        "aiSummary": null,
+        "aiSummarySourceUpdatedAt": null
+      },
+      {
+        "id": "2d418f74-a514-47f1-8212-994dc453bad8",
+        "kind": "BOOK_TOPIC",
+        "bookId": "faa3db31-6e45-4c25-86d4-05971b563561",
+        "userEmail": "yuusuke_24s1103862@nnn.ed.jp",
+        "content": "おじょpj",
+        "createdAt": "2026-03-16T14:34:19.477Z",
+        "updatedAt": "2026-03-16T14:34:19.477Z",
+        "aiSummary": null,
+        "aiSummarySourceUpdatedAt": null
+      },
+      {
+        "id": "bdad81f8-c4c2-40b5-a3de-e439deeba046",
+        "kind": "BOOK_TOPIC",
+        "bookId": "faa3db31-6e45-4c25-86d4-05971b563561",
+        "userEmail": "yuusuke_24s1103862@nnn.ed.jp",
+        "content": "yぐっg",
+        "createdAt": "2026-03-16T16:01:51.824Z",
+        "updatedAt": "2026-03-16T16:01:51.824Z",
+        "aiSummary": null,
+        "aiSummarySourceUpdatedAt": null
+      },
+      {
+        "id": "8b1bd96f-564e-49ff-bc16-61e580a1a2fe",
+        "kind": "BOOK_TOPIC",
+        "bookId": "faa3db31-6e45-4c25-86d4-05971b563561",
+        "userEmail": "yuusuke_24s1103862@nnn.ed.jp",
+        "content": "やああ",
+        "createdAt": "2026-03-16T16:33:24.988Z",
+        "updatedAt": "2026-03-16T16:33:24.988Z",
+        "aiSummary": null,
+        "aiSummarySourceUpdatedAt": null
+      },
+      {
+        "id": "5832e3ec-b238-4ac2-9666-e22f522fb4d9",
+        "kind": "BOOK_REQUEST",
+        "bookId": null,
+        "userEmail": "yuusuke_24s1103862@nnn.ed.jp",
+        "content": "おすすめの本あるかな",
+        "createdAt": "2026-04-02T14:47:04.776Z",
+        "updatedAt": "2026-04-02T14:47:04.776Z",
+        "aiSummary": null,
+        "aiSummarySourceUpdatedAt": null
+      },
+      {
+        "id": "9f06f73e-8481-41e7-aa38-0ff421c650d4",
+        "kind": "BOOK_REQUEST",
+        "bookId": null,
+        "userEmail": "yuusuke_24s1103862@nnn.ed.jp",
+        "content": "fwfr",
+        "createdAt": "2026-04-12T14:15:53.117Z",
+        "updatedAt": "2026-04-12T14:15:53.117Z",
+        "aiSummary": null,
+        "aiSummarySourceUpdatedAt": null
+      },
+      {
+        "id": "7d40026c-d715-4ffd-be48-6e2cc0e71d6c",
+        "kind": "BOOK_TOPIC",
+        "bookId": "faa3db31-6e45-4c25-86d4-05971b563561",
+        "userEmail": "yuusuke_24s1103862@nnn.ed.jp",
+        "content": "っっっk",
+        "createdAt": "2026-05-06T16:20:23.444Z",
+        "updatedAt": "2026-05-06T16:20:23.444Z",
+        "aiSummary": null,
+        "aiSummarySourceUpdatedAt": null
+      },
+      {
+        "id": "27d00d9d-3e0f-4b5d-a210-13a824ea6b92",
+        "kind": "BOOK_TOPIC",
+        "bookId": "006bc99d-caf0-42ad-9999-422fb1e0ff6f",
+        "userEmail": "yuusuke_24s1103862@nnn.ed.jp",
+        "content": "この本込みだ。パイソンで書いてない。c++だけ",
+        "createdAt": "2026-05-21T06:23:59.503Z",
+        "updatedAt": "2026-05-21T06:23:59.503Z",
+        "aiSummary": null,
+        "aiSummarySourceUpdatedAt": null
+      },
+      {
+        "id": "37beb2d0-c703-4660-8e8f-f79991fecce2",
+        "kind": "BOOK_TOPIC",
+        "bookId": "006bc99d-caf0-42ad-9999-422fb1e0ff6f",
+        "userEmail": "yuusuke_24s1103862@nnn.ed.jp",
+        "content": "この本いい。競プロだしいいううんめちゃいい。c++の言語対応。パイソンあんまりない。競技プログラミングの鉄則 ~アルゴリズム力と思考力を高める77の技術~ (Compass Booksシリーズ) 単行本（ソフトカバー） – 2022/9/16\n米田 優峻 (著)\n4.7 5つ星のうち4.7   (138)\nすべてのフォーマットとエディションを見る\n\"競プロ\" で必要なテクニックを1冊に凝縮！\n\n競技プログラミング（競プロ）は、問題を解くことでプログラミング能力を競う大会です。本書では、競プロで必要なアルゴリズム・データ構造・考察テクニックを丁寧に解説します。さらに、知識を定着させるための例題・演習問題が150問以上掲載されています。\n本書は、競プロのコンテストで勝ちたい、アルゴリズムを本格的に学びたい、技術力向上に繋げたいなど、様々な目的で利用できるものとなっています。\n　\n［本書の特徴］　\n・競プロで必要な77個のテクニックを網羅\n・320点超のフルカラーの図でわかりやすく解説\n・知識を身に付ける演習問題153問\n・全問題が「自動採点システム」に対応\n・新傾向の「ヒューリスティック・最適化」も解説\n　\n［本書の構成］　\n序章 競技プログラミング入門\n第1章 アルゴリズムと計算量\n第2章 累積和\n第3章 二分探索\n第4章 動的計画法\n第5章 数学的問題\n第6章 考察テクニック\n第7章 ヒューリスティック\n第8章 データ構造とクエリ処理\n第9章 グラフアルゴリズム\n第10章 総合問題\n終章 さらに上達するには\n　\n［本書で扱うトピック（抜粋）］　\n全探索／2進法／一次元の累積和／二次元の累積和／配列の二分探索／答えで二分探索／しゃくとり法／半分全列挙／部分和問題／ナップザック問題／ビットDP／最長増加部分列問題／素数判定法／ユークリッドの互除法／繰り返し二乗法／包除原理／ゲーム問題／偶奇を考える／一手先を考える／後ろから考える／山登り法／焼きなまし法／ビームサーチ／スタック／キュー／優先度付きキュー／連想配列／文字列のハッシュ／ダブリング／セグメント木／深さ優先探索／幅優先探索／ダイクストラ法／Union-Find／最小全域木問題／最大フロー問題／二部マッチング問題／ほか多数",
+        "createdAt": "2026-05-22T00:55:31.956Z",
+        "updatedAt": "2026-05-22T00:55:31.956Z",
+        "aiSummary": "本書は競技プログラミングの77テクニックを網羅し、C++での解説が充実している一方、Pythonの内容が少ない点が指摘されている。",
+        "aiSummarySourceUpdatedAt": "2026-05-22T00:55:31.956Z"
+      }
+    ],
+    "AiRecommendation": [
+      {
+        "id": "e964493b-c438-466b-80b2-aef42cd23773",
+        "bookId": "006bc99d-caf0-42ad-9999-422fb1e0ff6f",
+        "createdAt": "2026-05-25T17:07:55.631Z",
+        "userEmail": "yuusuke_24s1103862@nnn.ed.jp",
+        "query": "競プロ おすすめ 本",
+        "reason": "米田優峻著『競技プログラミングの鉄則』は、競プロに必要なテクニックを1冊に凝縮し、77テクニックを網羅しています。\nコミュニティでは、C++での解説が充実しているという声がある一方で、Pythonの内容が少ないと指摘する声もあります。また、総じて「最高」「いい本」という肯定的な評価も見られます。",
+        "rank": 1,
+        "userMessageId": "XwXqL95UjinBFzSh"
+      },
+      {
+        "id": "ea918a6a-a3f1-4948-9566-2449890813a3",
+        "bookId": "786fe0ce-c0d8-46f9-a1b9-cbb84c940e60",
+        "createdAt": "2026-05-26T00:54:55.880Z",
+        "userEmail": "yuusuke_24s1103862@nnn.ed.jp",
+        "query": "webおすすめの本",
+        "reason": "Web APIの設計・開発・運用について解説し、APIを効果的に設計・運用するためのポイントやよくある落とし穴を明らかにする本です。対象はXMLやJSON over HTTPのシンプルなAPIです。\nコミュニティでは技術が古いと指摘する声がある一方で、良いという意見もあります。また、わかりにくいという意見もあります。",
+        "rank": 1,
+        "userMessageId": "rJd9gAmzfUEpFlf3"
+      },
+      {
+        "id": "c74b9dd8-0350-4e78-9236-2f79e49365ee",
+        "bookId": "faa3db31-6e45-4c25-86d4-05971b563561",
+        "createdAt": "2026-05-26T04:45:46.073Z",
+        "userEmail": "yuusuke_24s1103862@nnn.ed.jp",
+        "query": "ゲームおすすめの本",
+        "reason": "本書はUnity 6を使ったゲーム開発入門書で、C#を使わないゲーム（玉転がしゲーム）、C#を使うゲーム（サバイバルゲーム）、判定付きゲーム（鬼ごっこゲーム）、対戦ゲームの4つを通じて、アセットストアの使い方、プレハブの利用方法、AI Navigation、Input SystemなどUnityの基本が網羅されています。",
+        "rank": 1,
+        "userMessageId": "EEIyZM3S7omqTE40"
+      },
+      {
+        "id": "6dafe8f2-e247-4c94-9d86-b32fd81b125a",
+        "bookId": "786fe0ce-c0d8-46f9-a1b9-cbb84c940e60",
+        "createdAt": "2026-05-26T05:00:28.813Z",
+        "userEmail": "yuusuke_24s1103862@nnn.ed.jp",
+        "query": "webにおすすめの本",
+        "reason": "Web APIの設計、開発、運用についての解説書。本書ではAPIをどのように設計し運用すればより効果的なのか、ありがちな罠や落とし穴を避けるにはどういう点に気をつけなければいけないのかを明らかにします。ターゲットは、URIにアクセスするとXMLやJSONなどのデータが返ってくるシンプルなタイプ―XML over HTTP方式やJSON over HTTP方式―のAPIです。\nコミュニティでは「技術が古い」「分かりにくい」などの否定的な声がある一方で、「いいね」「良い」という肯定的な意見も見られる。",
+        "rank": 1,
+        "userMessageId": "FkpUWsZBR8YwAiFV"
+      },
+      {
+        "id": "5d5b27c3-3926-4644-bc38-13674b3ce01e",
+        "bookId": "786fe0ce-c0d8-46f9-a1b9-cbb84c940e60",
+        "createdAt": "2026-05-28T06:32:16.246Z",
+        "userEmail": "yuusuke_24s1103862@nnn.ed.jp",
+        "query": "web",
+        "reason": "『Web API The Good Parts』は、Web APIの設計、開発、運用に関する解説書で、APIがどのように設計・運用されると効果的になるか、よくある罠や落とし穴を避けるためのポイントを明らかにします。主にXMLやJSONを返すシンプルなAPIに焦点を当てている。\nコミュニティではこの本は技術が古く、分かりにくいという声がある一方で、いいね、いいぞという肯定的なコメントもあります。",
+        "rank": 1,
+        "userMessageId": "OXcqKbvqFmeRytPO"
+      },
+      {
+        "id": "80023352-dc86-405d-849a-b8606d472671",
+        "bookId": "006bc99d-caf0-42ad-9999-422fb1e0ff6f",
+        "createdAt": "2026-05-30T06:39:30.698Z",
+        "userEmail": "yuusuke_24s1103862@nnn.ed.jp",
+        "query": "競プロ 本 おすすめ",
+        "reason": "『競技プログラミングの鉄則』は米田優峻による著書で、\"競プロ\"で必要なテクニックを1冊に凝縮しています。\nコミュニティでは本書が競技プログラミングの77テクニックを網羅し、C++での解説が充実していると評価される一方で、Pythonの内容が少ないという指摘もあります",
+        "rank": 1,
+        "userMessageId": "pdVdocsXc17urtfN"
+      },
+      {
+        "id": "304e94af-5b12-40e9-ac72-7d19fb52ba7a",
+        "bookId": "faa3db31-6e45-4c25-86d4-05971b563561",
+        "createdAt": "2026-05-30T08:30:47.564Z",
+        "userEmail": "yuusuke_24s1103862@nnn.ed.jp",
+        "query": "ゲーム 本 おすすめ",
+        "reason": "本書はUnity 6ではじめてゲームを作成してみたい人を対象とした入門書です。Unityの基本操作を学んだあと、C#を利用しないで作成するゲーム(玉転がしゲーム)、C#を利用して作成するゲーム(サバイバルゲーム)、判定のある本格的なゲーム(鬼ごっこゲーム)、対戦が楽しめるゲームの4つのゲームの作成を通じて、『アセットストアの使い方』『プレハブの利用方法』『AI Navigationの活用方法』『Input Systemの活用方法』などUnityの基本が一通りわかります。",
+        "rank": 1,
+        "userMessageId": "y8YfT6Aaqops5izD"
+      },
+      {
+        "id": "9383e737-838c-4550-a355-b9acc45aeffb",
+        "bookId": "faa3db31-6e45-4c25-86d4-05971b563561",
+        "createdAt": "2026-05-31T04:25:51.854Z",
+        "userEmail": "yuusuke_24s1103862@nnn.ed.jp",
+        "query": "開発 本 おすすめ",
+        "reason": "Unity 6を使ってゲームを作る初心者向けの入門書で、C#を使わないゲームからC#を使ったゲームまで4つの実践例を通じて、アセットストアの使い方・プレハブ・AI Navigation・Input SystemなどUnityの基本機能を一通り学べます。",
+        "rank": 1,
+        "userMessageId": "akyhoaKTwZkZXeBD"
+      },
+      {
+        "id": "2096ddce-545f-4d3e-a3e9-8844933cc5fb",
+        "bookId": "786fe0ce-c0d8-46f9-a1b9-cbb84c940e60",
+        "createdAt": "2026-05-31T04:25:51.901Z",
+        "userEmail": "yuusuke_24s1103862@nnn.ed.jp",
+        "query": "開発 本 おすすめ",
+        "reason": "Web APIの設計・開発・運用を解説し、ありがちな罠や落とし穴を避けるポイントを明らかにします。対象は、URIにアクセスしてXMLやJSONが返るシンプルなAPIです。\nコミュニティでは、技術が古いと指摘する声がある一方で、役立つと評価する声もあります。",
+        "rank": 2,
+        "userMessageId": "akyhoaKTwZkZXeBD"
+      },
+      {
+        "id": "93f9a069-23b5-4ab0-b79a-bc250af44b23",
+        "bookId": "006bc99d-caf0-42ad-9999-422fb1e0ff6f",
+        "createdAt": "2026-05-31T04:25:51.919Z",
+        "userEmail": "yuusuke_24s1103862@nnn.ed.jp",
+        "query": "開発 本 おすすめ",
+        "reason": "競技プログラミングで必要なテクニックを1冊に凝縮し、77の実践的なテクニックを紹介します。\nコミュニティでは、C++の内容が少なくPythonがほぼ未カバーという指摘がある一方で、全体的に高評価の声もあります。",
+        "rank": 3,
+        "userMessageId": "akyhoaKTwZkZXeBD"
+      },
+      {
+        "id": "a121aed8-bd1a-46b1-be32-c9d9fe8b162b",
+        "bookId": "006bc99d-caf0-42ad-9999-422fb1e0ff6f",
+        "createdAt": "2026-06-12T01:58:59.128Z",
+        "userEmail": "yuusuke_24s1103862@nnn.ed.jp",
+        "query": "競技プログラミング 学び 本",
+        "reason": "『競技プログラミングの鉄則』は米田優峻著で、競技プログラミングに必要なテクニックを1冊に凝縮した内容です。\nコミュニティでは、C++での解説が充実しているという声がある一方で、Pythonの内容が少なく、C++の説明がないという指摘もあります。",
+        "rank": 1,
+        "userMessageId": "oNYHXd1PRjUSb3re"
+      },
+      {
+        "id": "a85c540c-c6ea-449b-887c-9a1a281956eb",
+        "bookId": "006bc99d-caf0-42ad-9999-422fb1e0ff6f",
+        "createdAt": "2026-06-12T02:19:43.663Z",
+        "userEmail": "yuusuke_24s1103862@nnn.ed.jp",
+        "query": "競技プログラミング 学習 本",
+        "reason": "本書『競技プログラミングの鉄則』は米田優峻氏によって執筆され、\"競プロ\" で必要なテクニックを1冊に凝縮した内容です。\nコミュニティでは、本書は競技プログラミングの77テクニックを網羅しており、C++での解説が充実していると評価する声がある一方で、Pythonの内容が少ない点やC++の解説が不十分だと指摘する声もある。また、ユーザーの間で「最高」や「いい本」という好意的なコメントも見られます。",
+        "rank": 1,
+        "userMessageId": "vK69h9JQj9ei4usd"
+      }
+    ],
+    "AiChatMessage": [
+      {
+        "id": "60ee098e-8271-4d6a-9f4d-666a7f88ab2f",
+        "userEmail": "yuusuke_24s1103862@nnn.ed.jp",
+        "role": "assistant",
+        "content": "よお！",
+        "metadata": null,
+        "intent": "smalltalk",
+        "searchQuery": "よお",
+        "createdAt": "2026-05-30T06:39:13.682Z",
+        "updatedAt": "2026-05-30T06:39:13.682Z"
+      },
+      {
+        "id": "pdVdocsXc17urtfN",
+        "userEmail": "yuusuke_24s1103862@nnn.ed.jp",
+        "role": "user",
+        "content": "おすすめの競プロの本ある？",
+        "metadata": null,
+        "intent": "book_search",
+        "searchQuery": "競プロ 本 おすすめ",
+        "createdAt": "2026-05-30T06:39:27.340Z",
+        "updatedAt": "2026-05-30T06:39:27.340Z"
+      },
+      {
+        "id": "XwXqL95UjinBFzSh",
+        "userEmail": "yuusuke_24s1103862@nnn.ed.jp",
+        "role": "user",
+        "content": "競プロにおすすめの本",
+        "metadata": null,
+        "intent": "book_search",
+        "searchQuery": "競プロ おすすめ 本",
+        "createdAt": "2026-05-25T17:07:51.992Z",
+        "updatedAt": "2026-05-25T17:07:51.992Z"
+      },
+      {
+        "id": "b2973854-038f-49b9-bf18-6a3c973df772",
+        "userEmail": "yuusuke_24s1103862@nnn.ed.jp",
+        "role": "assistant",
+        "content": "『競技プログラミングの鉄則』  \n米田優峻著の一冊で、競プロに必要なテクニックを1冊に凝縮し、77の実践的テクニックを網羅しています。",
+        "metadata": {
+          "recommendedBooks": [
+            {
+              "title": "競技プログラミングの鉄則",
+              "bookId": "006bc99d-caf0-42ad-9999-422fb1e0ff6f",
+              "reason": "米田優峻著『競技プログラミングの鉄則』は、競プロに必要なテクニックを1冊に凝縮し、77テクニックを網羅しています。\nコミュニティでは、C++での解説が充実しているという声がある一方で、Pythonの内容が少ないと指摘する声もあります。また、総じて「最高」「いい本」という肯定的な評価も見られます。",
+              "imageUrl": "http://books.google.com/books/content?id=35BFzwEACAAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api",
+              "recommendationId": "e964493b-c438-466b-80b2-aef42cd23773"
+            }
+          ]
+        },
+        "intent": "book_search",
+        "searchQuery": "競プロ おすすめ 本",
+        "createdAt": "2026-05-25T17:07:58.602Z",
+        "updatedAt": "2026-05-25T17:07:58.602Z"
+      },
+      {
+        "id": "LTMHZJPKJW076TEL",
+        "userEmail": "yuusuke_24s1103862@nnn.ed.jp",
+        "role": "user",
+        "content": "こんにちは",
+        "metadata": null,
+        "intent": "smalltalk",
+        "searchQuery": "こんにちは",
+        "createdAt": "2026-05-26T00:54:44.523Z",
+        "updatedAt": "2026-05-26T00:54:44.523Z"
+      },
+      {
+        "id": "c88c9862-9b4f-4715-b693-85bba1ad2c28",
+        "userEmail": "yuusuke_24s1103862@nnn.ed.jp",
+        "role": "assistant",
+        "content": "こんにちは！",
+        "metadata": null,
+        "intent": "smalltalk",
+        "searchQuery": "こんにちは",
+        "createdAt": "2026-05-26T00:54:45.172Z",
+        "updatedAt": "2026-05-26T00:54:45.172Z"
+      },
+      {
+        "id": "rJd9gAmzfUEpFlf3",
+        "userEmail": "yuusuke_24s1103862@nnn.ed.jp",
+        "role": "user",
+        "content": "webおすすめの本",
+        "metadata": null,
+        "intent": "book_search",
+        "searchQuery": "webおすすめの本",
+        "createdAt": "2026-05-26T00:54:54.241Z",
+        "updatedAt": "2026-05-26T00:54:54.241Z"
+      },
+      {
+        "id": "6e46be26-8ad7-49c5-8a73-68cd339e13dc",
+        "userEmail": "yuusuke_24s1103862@nnn.ed.jp",
+        "role": "assistant",
+        "content": "**Web API The Good Parts**  \nWeb APIの設計・開発・運用をわかりやすく解説し、効果的なAPI設計と落とし穴回避のポイントを示しています。",
+        "metadata": {
+          "recommendedBooks": [
+            {
+              "title": "Web API The Good Parts",
+              "bookId": "786fe0ce-c0d8-46f9-a1b9-cbb84c940e60",
+              "reason": "Web APIの設計・開発・運用について解説し、APIを効果的に設計・運用するためのポイントやよくある落とし穴を明らかにする本です。対象はXMLやJSON over HTTPのシンプルなAPIです。\nコミュニティでは技術が古いと指摘する声がある一方で、良いという意見もあります。また、わかりにくいという意見もあります。",
+              "imageUrl": "http://books.google.com/books/content?id=6ga_rQEACAAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api",
+              "recommendationId": "ea918a6a-a3f1-4948-9566-2449890813a3"
+            }
+          ]
+        },
+        "intent": "book_search",
+        "searchQuery": "webおすすめの本",
+        "createdAt": "2026-05-26T00:54:56.527Z",
+        "updatedAt": "2026-05-26T00:54:56.527Z"
+      },
+      {
+        "id": "EEIyZM3S7omqTE40",
+        "userEmail": "yuusuke_24s1103862@nnn.ed.jp",
+        "role": "user",
+        "content": "ゲームおすすめの本",
+        "metadata": null,
+        "intent": "book_search",
+        "searchQuery": "ゲームおすすめの本",
+        "createdAt": "2026-05-26T04:45:44.466Z",
+        "updatedAt": "2026-05-26T04:45:44.466Z"
+      },
+      {
+        "id": "c277fe74-62ed-4310-9576-d3c46c802b1f",
+        "userEmail": "yuusuke_24s1103862@nnn.ed.jp",
+        "role": "assistant",
+        "content": "**Unity超入門やさしくわかるゲーム開発**  \nUnity 6で初心者がゲームを作るための基本操作と実践的なサンプルを通して、アセットストアやプレハブ、AI Navigation、Input System などUnityの基礎を網羅的に学べる一冊です。",
+        "metadata": {
+          "recommendedBooks": [
+            {
+              "title": "Unity超入門やさしくわかるゲーム開発",
+              "bookId": "faa3db31-6e45-4c25-86d4-05971b563561",
+              "reason": "本書はUnity 6を使ったゲーム開発入門書で、C#を使わないゲーム（玉転がしゲーム）、C#を使うゲーム（サバイバルゲーム）、判定付きゲーム（鬼ごっこゲーム）、対戦ゲームの4つを通じて、アセットストアの使い方、プレハブの利用方法、AI Navigation、Input SystemなどUnityの基本が網羅されています。",
+              "imageUrl": "http://books.google.com/books/content?id=q2PK0AEACAAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api",
+              "recommendationId": "c74b9dd8-0350-4e78-9236-2f79e49365ee"
+            }
+          ]
+        },
+        "intent": "book_search",
+        "searchQuery": "ゲームおすすめの本",
+        "createdAt": "2026-05-26T04:45:46.710Z",
+        "updatedAt": "2026-05-26T04:45:46.710Z"
+      },
+      {
+        "id": "FkpUWsZBR8YwAiFV",
+        "userEmail": "yuusuke_24s1103862@nnn.ed.jp",
+        "role": "user",
+        "content": "webにおすすめの本",
+        "metadata": null,
+        "intent": "book_search",
+        "searchQuery": "webにおすすめの本",
+        "createdAt": "2026-05-26T05:00:26.969Z",
+        "updatedAt": "2026-05-26T05:00:26.969Z"
+      },
+      {
+        "id": "b21ddf31-1582-4cfd-8751-464dcb0542df",
+        "userEmail": "yuusuke_24s1103862@nnn.ed.jp",
+        "role": "assistant",
+        "content": "**Web API The Good Parts**  \nWeb APIの設計・開発・運用に焦点を当て、実践的な設計ポイントや落とし穴を解説する一冊です。",
+        "metadata": {
+          "recommendedBooks": [
+            {
+              "title": "Web API The Good Parts",
+              "bookId": "786fe0ce-c0d8-46f9-a1b9-cbb84c940e60",
+              "reason": "Web APIの設計、開発、運用についての解説書。本書ではAPIをどのように設計し運用すればより効果的なのか、ありがちな罠や落とし穴を避けるにはどういう点に気をつけなければいけないのかを明らかにします。ターゲットは、URIにアクセスするとXMLやJSONなどのデータが返ってくるシンプルなタイプ―XML over HTTP方式やJSON over HTTP方式―のAPIです。\nコミュニティでは「技術が古い」「分かりにくい」などの否定的な声がある一方で、「いいね」「良い」という肯定的な意見も見られる。",
+              "imageUrl": "http://books.google.com/books/content?id=6ga_rQEACAAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api",
+              "recommendationId": "6dafe8f2-e247-4c94-9d86-b32fd81b125a"
+            }
+          ]
+        },
+        "intent": "book_search",
+        "searchQuery": "webにおすすめの本",
+        "createdAt": "2026-05-26T05:00:29.282Z",
+        "updatedAt": "2026-05-26T05:00:29.282Z"
+      },
+      {
+        "id": "9Ik1d0azikUZFSSO",
+        "userEmail": "yuusuke_24s1103862@nnn.ed.jp",
+        "role": "user",
+        "content": "貸し出しの仕方",
+        "metadata": null,
+        "intent": "System-questions",
+        "searchQuery": "貸し出しの仕方",
+        "createdAt": "2026-05-26T05:00:49.629Z",
+        "updatedAt": "2026-05-26T05:00:49.629Z"
+      },
+      {
+        "id": "43e81b46-b3eb-4a51-b1f5-e9ceb7519bd0",
+        "userEmail": "yuusuke_24s1103862@nnn.ed.jp",
+        "role": "assistant",
+        "content": "「本を借りる」画面で本のバーコードを読み取ります。  \n普通の本は978から始まるISBNコードを読み取り、雑誌は491から始まるコードを読み取ると貸し出しできます。",
+        "metadata": null,
+        "intent": "System-questions",
+        "searchQuery": "貸し出しの仕方",
+        "createdAt": "2026-05-26T05:00:50.065Z",
+        "updatedAt": "2026-05-26T05:00:50.065Z"
+      },
+      {
+        "id": "PaoqbDXA0ARMr1MT",
+        "userEmail": "yuusuke_24s1103862@nnn.ed.jp",
+        "role": "user",
+        "content": "こんにちは",
+        "metadata": null,
+        "intent": "smalltalk",
+        "searchQuery": "こんにちは",
+        "createdAt": "2026-05-28T06:32:05.152Z",
+        "updatedAt": "2026-05-28T06:32:05.152Z"
+      },
+      {
+        "id": "a72f0009-4783-4d5d-b4e7-2a2fa0893e20",
+        "userEmail": "yuusuke_24s1103862@nnn.ed.jp",
+        "role": "assistant",
+        "content": "こんにちは！",
+        "metadata": null,
+        "intent": "smalltalk",
+        "searchQuery": "こんにちは",
+        "createdAt": "2026-05-28T06:32:05.739Z",
+        "updatedAt": "2026-05-28T06:32:05.739Z"
+      },
+      {
+        "id": "OXcqKbvqFmeRytPO",
+        "userEmail": "yuusuke_24s1103862@nnn.ed.jp",
+        "role": "user",
+        "content": "webにおすすめの本ある？",
+        "metadata": null,
+        "intent": "book_search",
+        "searchQuery": "web",
+        "createdAt": "2026-05-28T06:32:12.762Z",
+        "updatedAt": "2026-05-28T06:32:12.762Z"
+      },
+      {
+        "id": "e7646df4-22e3-4d3d-af93-af04146bc71d",
+        "userEmail": "yuusuke_24s1103862@nnn.ed.jp",
+        "role": "assistant",
+        "content": "**Web API The Good Parts**  \nWeb APIの設計・開発・運用について、実践的なポイントと落とし穴をわかりやすく解説しています。",
+        "metadata": {
+          "recommendedBooks": [
+            {
+              "title": "Web API The Good Parts",
+              "bookId": "786fe0ce-c0d8-46f9-a1b9-cbb84c940e60",
+              "reason": "『Web API The Good Parts』は、Web APIの設計、開発、運用に関する解説書で、APIがどのように設計・運用されると効果的になるか、よくある罠や落とし穴を避けるためのポイントを明らかにします。主にXMLやJSONを返すシンプルなAPIに焦点を当てている。\nコミュニティではこの本は技術が古く、分かりにくいという声がある一方で、いいね、いいぞという肯定的なコメントもあります。",
+              "imageUrl": "http://books.google.com/books/content?id=6ga_rQEACAAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api",
+              "recommendationId": "5d5b27c3-3926-4644-bc38-13674b3ce01e"
+            }
+          ]
+        },
+        "intent": "book_search",
+        "searchQuery": "web",
+        "createdAt": "2026-05-28T06:32:16.816Z",
+        "updatedAt": "2026-05-28T06:32:16.816Z"
+      },
+      {
+        "id": "UD2wjDUHuPvuSeju",
+        "userEmail": "yuusuke_24s1103862@nnn.ed.jp",
+        "role": "user",
+        "content": "よお",
+        "metadata": null,
+        "intent": "smalltalk",
+        "searchQuery": "よお",
+        "createdAt": "2026-05-30T06:39:13.336Z",
+        "updatedAt": "2026-05-30T06:39:13.336Z"
+      },
+      {
+        "id": "a9cbb133-706f-4135-84e0-881b6c035878",
+        "userEmail": "yuusuke_24s1103862@nnn.ed.jp",
+        "role": "assistant",
+        "content": "『競技プログラミングの鉄則』  \n競プロで必要なテクニックを1冊に凝縮し、77の実践的テクニックを網羅しています。",
+        "metadata": {
+          "recommendedBooks": [
+            {
+              "title": "競技プログラミングの鉄則",
+              "bookId": "006bc99d-caf0-42ad-9999-422fb1e0ff6f",
+              "reason": "『競技プログラミングの鉄則』は米田優峻による著書で、\"競プロ\"で必要なテクニックを1冊に凝縮しています。\nコミュニティでは本書が競技プログラミングの77テクニックを網羅し、C++での解説が充実していると評価される一方で、Pythonの内容が少ないという指摘もあります",
+              "imageUrl": "http://books.google.com/books/content?id=35BFzwEACAAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api",
+              "recommendationId": "80023352-dc86-405d-849a-b8606d472671"
+            }
+          ]
+        },
+        "intent": "book_search",
+        "searchQuery": "競プロ 本 おすすめ",
+        "createdAt": "2026-05-30T06:39:31.141Z",
+        "updatedAt": "2026-05-30T06:39:31.141Z"
+      },
+      {
+        "id": "Bhwqp5SajF99AspB",
+        "userEmail": "yuusuke_24s1103862@nnn.ed.jp",
+        "role": "user",
+        "content": "やあ久しぶり",
+        "metadata": null,
+        "intent": "smalltalk",
+        "searchQuery": "やあ久しぶり",
+        "createdAt": "2026-05-30T08:30:36.495Z",
+        "updatedAt": "2026-05-30T08:30:36.495Z"
+      },
+      {
+        "id": "f0d8dd5f-1702-4aaa-8f75-d3ee55ee7762",
+        "userEmail": "yuusuke_24s1103862@nnn.ed.jp",
+        "role": "assistant",
+        "content": "やあ、久しぶりだね！何か聞きたいことある？",
+        "metadata": null,
+        "intent": "smalltalk",
+        "searchQuery": "やあ久しぶり",
+        "createdAt": "2026-05-30T08:30:36.954Z",
+        "updatedAt": "2026-05-30T08:30:36.954Z"
+      },
+      {
+        "id": "y8YfT6Aaqops5izD",
+        "userEmail": "yuusuke_24s1103862@nnn.ed.jp",
+        "role": "user",
+        "content": "ゲームでおすすめの本",
+        "metadata": null,
+        "intent": "book_search",
+        "searchQuery": "ゲーム 本 おすすめ",
+        "createdAt": "2026-05-30T08:30:44.661Z",
+        "updatedAt": "2026-05-30T08:30:44.661Z"
+      },
+      {
+        "id": "c52e2349-f8c9-40e3-8cc6-35a90f0d8da6",
+        "userEmail": "yuusuke_24s1103862@nnn.ed.jp",
+        "role": "assistant",
+        "content": "**Unity超入門やさしくわかるゲーム開発**  \nUnity 6で初心者がゲームを作るための基本操作と実践的サンプルを通じて、アセットストア、プレハブ、AI Navigation、Input System など、ゲーム開発に必要な基礎を網羅的に学べる一冊です。",
+        "metadata": {
+          "recommendedBooks": [
+            {
+              "title": "Unity超入門やさしくわかるゲーム開発",
+              "bookId": "faa3db31-6e45-4c25-86d4-05971b563561",
+              "reason": "本書はUnity 6ではじめてゲームを作成してみたい人を対象とした入門書です。Unityの基本操作を学んだあと、C#を利用しないで作成するゲーム(玉転がしゲーム)、C#を利用して作成するゲーム(サバイバルゲーム)、判定のある本格的なゲーム(鬼ごっこゲーム)、対戦が楽しめるゲームの4つのゲームの作成を通じて、『アセットストアの使い方』『プレハブの利用方法』『AI Navigationの活用方法』『Input Systemの活用方法』などUnityの基本が一通りわかります。",
+              "imageUrl": "http://books.google.com/books/content?id=q2PK0AEACAAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api",
+              "recommendationId": "304e94af-5b12-40e9-ac72-7d19fb52ba7a"
+            }
+          ]
+        },
+        "intent": "book_search",
+        "searchQuery": "ゲーム 本 おすすめ",
+        "createdAt": "2026-05-30T08:30:47.998Z",
+        "updatedAt": "2026-05-30T08:30:47.998Z"
+      },
+      {
+        "id": "akyhoaKTwZkZXeBD",
+        "userEmail": "yuusuke_24s1103862@nnn.ed.jp",
+        "role": "user",
+        "content": "開発におすすめの本",
+        "metadata": null,
+        "intent": "book_search",
+        "searchQuery": "開発 本 おすすめ",
+        "createdAt": "2026-05-31T04:25:47.533Z",
+        "updatedAt": "2026-05-31T04:25:47.533Z"
+      },
+      {
+        "id": "6fc51866-20d4-49ca-a71b-fe055bdff578",
+        "userEmail": "yuusuke_24s1103862@nnn.ed.jp",
+        "role": "assistant",
+        "content": "以下の本をおすすめします。\n\n- **Unity超入門やさしくわかるゲーム開発**  \n  Unity 6で初心者がゲーム作成を学べる実践例が揃っており、アセットストアやプレハブ、AI Navigation、Input System など基本機能を一通り体験できます。\n\n- **Web API The Good Parts**  \n  Web API の設計・開発・運用でありがちな落とし穴を避けるポイントを解説。URI にアクセスして XML/JSON が返るシンプルな API を対象にしています。\n\n- **競技プログラミングの鉄則**  \n  競技プログラミングに必要なテクニックを 77 個に凝縮。実践的な手法と問題解決のヒントが詰まっています。",
+        "metadata": {
+          "recommendedBooks": [
+            {
+              "title": "Unity超入門やさしくわかるゲーム開発",
+              "bookId": "faa3db31-6e45-4c25-86d4-05971b563561",
+              "reason": "Unity 6を使ってゲームを作る初心者向けの入門書で、C#を使わないゲームからC#を使ったゲームまで4つの実践例を通じて、アセットストアの使い方・プレハブ・AI Navigation・Input SystemなどUnityの基本機能を一通り学べます。",
+              "imageUrl": "http://books.google.com/books/content?id=q2PK0AEACAAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api",
+              "recommendationId": "9383e737-838c-4550-a355-b9acc45aeffb"
+            },
+            {
+              "title": "Web API The Good Parts",
+              "bookId": "786fe0ce-c0d8-46f9-a1b9-cbb84c940e60",
+              "reason": "Web APIの設計・開発・運用を解説し、ありがちな罠や落とし穴を避けるポイントを明らかにします。対象は、URIにアクセスしてXMLやJSONが返るシンプルなAPIです。\nコミュニティでは、技術が古いと指摘する声がある一方で、役立つと評価する声もあります。",
+              "imageUrl": "http://books.google.com/books/content?id=6ga_rQEACAAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api",
+              "recommendationId": "2096ddce-545f-4d3e-a3e9-8844933cc5fb"
+            },
+            {
+              "title": "競技プログラミングの鉄則",
+              "bookId": "006bc99d-caf0-42ad-9999-422fb1e0ff6f",
+              "reason": "競技プログラミングで必要なテクニックを1冊に凝縮し、77の実践的なテクニックを紹介します。\nコミュニティでは、C++の内容が少なくPythonがほぼ未カバーという指摘がある一方で、全体的に高評価の声もあります。",
+              "imageUrl": "http://books.google.com/books/content?id=35BFzwEACAAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api",
+              "recommendationId": "93f9a069-23b5-4ab0-b79a-bc250af44b23"
+            }
+          ]
+        },
+        "intent": "book_search",
+        "searchQuery": "開発 本 おすすめ",
+        "createdAt": "2026-05-31T04:25:52.795Z",
+        "updatedAt": "2026-05-31T04:25:52.795Z"
+      },
+      {
+        "id": "oNYHXd1PRjUSb3re",
+        "userEmail": "yuusuke_24s1103862@nnn.ed.jp",
+        "role": "user",
+        "content": "競技プログラミングについて学べる本",
+        "metadata": null,
+        "intent": "book_search",
+        "searchQuery": "競技プログラミング 学び 本",
+        "createdAt": "2026-06-12T01:56:56.266Z",
+        "updatedAt": "2026-06-12T01:56:56.266Z"
+      },
+      {
+        "id": "vK69h9JQj9ei4usd",
+        "userEmail": "yuusuke_24s1103862@nnn.ed.jp",
+        "role": "user",
+        "content": "競技プログラミングについて学べる本\n\nおすすめの本を聞く",
+        "metadata": null,
+        "intent": "book_search",
+        "searchQuery": "競技プログラミング 学習 本",
+        "createdAt": "2026-06-12T02:19:40.405Z",
+        "updatedAt": "2026-06-12T02:19:40.405Z"
+      },
+      {
+        "id": "484fc5b9-5730-4307-ba4e-fbf09d905acb",
+        "userEmail": "yuusuke_24s1103862@nnn.ed.jp",
+        "role": "assistant",
+        "content": "競技プログラミングの学習におすすめの本は『競技プログラミングの鉄則』です。  \n本書は米田優峻氏による、競技プログラミングに必要な77のテクニックをまとめた一冊で、C++での実装例が豊富に掲載されているため、実践的に学びやすい構成になっています。",
+        "metadata": {
+          "recommendedBooks": [
+            {
+              "title": "競技プログラミングの鉄則",
+              "bookId": "006bc99d-caf0-42ad-9999-422fb1e0ff6f",
+              "reason": "本書『競技プログラミングの鉄則』は米田優峻氏によって執筆され、\"競プロ\" で必要なテクニックを1冊に凝縮した内容です。\nコミュニティでは、本書は競技プログラミングの77テクニックを網羅しており、C++での解説が充実していると評価する声がある一方で、Pythonの内容が少ない点やC++の解説が不十分だと指摘する声もある。また、ユーザーの間で「最高」や「いい本」という好意的なコメントも見られます。",
+              "imageUrl": "http://books.google.com/books/content?id=35BFzwEACAAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api",
+              "recommendationId": "a85c540c-c6ea-449b-887c-9a1a281956eb"
+            }
+          ]
+        },
+        "intent": "book_search",
+        "searchQuery": "競技プログラミング 学習 本",
+        "createdAt": "2026-06-12T02:19:44.458Z",
+        "updatedAt": "2026-06-12T02:19:44.458Z"
+      }
+    ],
+    "ResearchEvent": [
+      {
+        "id": "a25ec1fc-306d-42bf-93d9-4917271f1f1a",
+        "eventType": "book_link_click",
+        "userEmail": "yuusuke_24s1103862@nnn.ed.jp",
+        "bookId": "006bc99d-caf0-42ad-9999-422fb1e0ff6f",
+        "sourceType": "ai_chat",
+        "sourceId": "e964493b-c438-466b-80b2-aef42cd23773",
+        "occurredAt": "2026-05-25T17:07:58.661Z"
+      },
+      {
+        "id": "0b2715ae-4b26-4a5b-ac5e-2f2013ac3073",
+        "eventType": "book_detail_view",
+        "userEmail": "yuusuke_24s1103862@nnn.ed.jp",
+        "bookId": "006bc99d-caf0-42ad-9999-422fb1e0ff6f",
+        "sourceType": "direct",
+        "sourceId": null,
+        "occurredAt": "2026-05-25T17:08:00.771Z"
+      },
+      {
+        "id": "b811bb67-85c5-493e-b977-439fd983920e",
+        "eventType": "book_link_click",
+        "userEmail": "yuusuke_24s1103862@nnn.ed.jp",
+        "bookId": "006bc99d-caf0-42ad-9999-422fb1e0ff6f",
+        "sourceType": "ai_chat",
+        "sourceId": "e964493b-c438-466b-80b2-aef42cd23773",
+        "occurredAt": "2026-05-25T17:08:15.643Z"
+      },
+      {
+        "id": "33c2d020-a652-48d7-a161-a85952637272",
+        "eventType": "book_detail_view",
+        "userEmail": "yuusuke_24s1103862@nnn.ed.jp",
+        "bookId": "006bc99d-caf0-42ad-9999-422fb1e0ff6f",
+        "sourceType": "direct",
+        "sourceId": null,
+        "occurredAt": "2026-05-25T17:08:16.019Z"
+      },
+      {
+        "id": "dbd0f291-26a6-440f-8d58-764cc417a0a9",
+        "eventType": "loan",
+        "userEmail": "yuusuke_24s1103862@nnn.ed.jp",
+        "bookId": "006bc99d-caf0-42ad-9999-422fb1e0ff6f",
+        "sourceType": "direct",
+        "sourceId": null,
+        "occurredAt": "2026-05-25T17:08:32.477Z"
+      },
+      {
+        "id": "ebc286a1-950b-4634-b6f4-dda75411496a",
+        "eventType": "book_link_click",
+        "userEmail": "yuusuke_24s1103862@nnn.ed.jp",
+        "bookId": "006bc99d-caf0-42ad-9999-422fb1e0ff6f",
+        "sourceType": "ai_chat",
+        "sourceId": "e964493b-c438-466b-80b2-aef42cd23773",
+        "occurredAt": "2026-05-25T17:12:37.220Z"
+      },
+      {
+        "id": "87ebc1a5-aecd-4e43-90aa-cec4d0a58b65",
+        "eventType": "book_detail_view",
+        "userEmail": "yuusuke_24s1103862@nnn.ed.jp",
+        "bookId": "006bc99d-caf0-42ad-9999-422fb1e0ff6f",
+        "sourceType": "direct",
+        "sourceId": null,
+        "occurredAt": "2026-05-25T17:12:37.695Z"
+      },
+      {
+        "id": "29466f64-8dd9-4edd-87c0-b9dcb7e3aea0",
+        "eventType": "book_link_click",
+        "userEmail": "yuusuke_24s1103862@nnn.ed.jp",
+        "bookId": "006bc99d-caf0-42ad-9999-422fb1e0ff6f",
+        "sourceType": "ai_chat",
+        "sourceId": "e964493b-c438-466b-80b2-aef42cd23773",
+        "occurredAt": "2026-05-25T17:13:06.889Z"
+      },
+      {
+        "id": "47833466-bd62-44d1-9deb-8f841c8ffe7e",
+        "eventType": "book_detail_view",
+        "userEmail": "yuusuke_24s1103862@nnn.ed.jp",
+        "bookId": "006bc99d-caf0-42ad-9999-422fb1e0ff6f",
+        "sourceType": "direct",
+        "sourceId": null,
+        "occurredAt": "2026-05-25T17:13:07.014Z"
+      },
+      {
+        "id": "f30a32ba-65f4-486a-a3a5-0b44819cb8e6",
+        "eventType": "loan",
+        "userEmail": "yuusuke_24s1103862@nnn.ed.jp",
+        "bookId": "006bc99d-caf0-42ad-9999-422fb1e0ff6f",
+        "sourceType": "direct",
+        "sourceId": null,
+        "occurredAt": "2026-05-25T17:13:13.838Z"
+      },
+      {
+        "id": "c1aeb07a-e31a-4556-914e-1be33cfff622",
+        "eventType": "book_detail_view",
+        "userEmail": "yuusuke_24s1103862@nnn.ed.jp",
+        "bookId": "786fe0ce-c0d8-46f9-a1b9-cbb84c940e60",
+        "sourceType": "direct",
+        "sourceId": null,
+        "occurredAt": "2026-05-26T16:16:37.374Z"
+      },
+      {
+        "id": "3919901a-ac08-4a02-9832-2bf50cd0ff1e",
+        "eventType": "book_detail_view",
+        "userEmail": "yuusuke_24s1103862@nnn.ed.jp",
+        "bookId": "786fe0ce-c0d8-46f9-a1b9-cbb84c940e60",
+        "sourceType": "direct",
+        "sourceId": null,
+        "occurredAt": "2026-05-26T16:16:42.590Z"
+      },
+      {
+        "id": "0b3ad86b-358e-4ad5-ab37-0fe993f092df",
+        "eventType": "book_detail_view",
+        "userEmail": "yuusuke_24s1103862@nnn.ed.jp",
+        "bookId": "006bc99d-caf0-42ad-9999-422fb1e0ff6f",
+        "sourceType": "direct",
+        "sourceId": null,
+        "occurredAt": "2026-06-04T02:54:25.544Z"
+      },
+      {
+        "id": "2c820a01-231f-46e2-80bf-c02996c638ec",
+        "eventType": "book_detail_view",
+        "userEmail": "yuusuke_24s1103862@nnn.ed.jp",
+        "bookId": "006bc99d-caf0-42ad-9999-422fb1e0ff6f",
+        "sourceType": "direct",
+        "sourceId": null,
+        "occurredAt": "2026-06-04T05:30:19.858Z"
+      },
+      {
+        "id": "c569171f-d248-4bb8-a4cd-f3c4c9b81172",
+        "eventType": "book_detail_view",
+        "userEmail": "yuusuke_24s1103862@nnn.ed.jp",
+        "bookId": "786fe0ce-c0d8-46f9-a1b9-cbb84c940e60",
+        "sourceType": "direct",
+        "sourceId": null,
+        "occurredAt": "2026-06-05T04:47:22.790Z"
+      },
+      {
+        "id": "ef0d543b-d822-4c89-b7cb-1abb9c11c0f1",
+        "eventType": "book_detail_view",
+        "userEmail": "yuusuke_24s1103862@nnn.ed.jp",
+        "bookId": "faa3db31-6e45-4c25-86d4-05971b563561",
+        "sourceType": "direct",
+        "sourceId": null,
+        "occurredAt": "2026-06-05T04:47:26.992Z"
+      },
+      {
+        "id": "86ebdea0-a571-4336-a28e-561125f12348",
+        "eventType": "book_detail_view",
+        "userEmail": "yuusuke_24s1103862@nnn.ed.jp",
+        "bookId": "faa3db31-6e45-4c25-86d4-05971b563561",
+        "sourceType": "direct",
+        "sourceId": null,
+        "occurredAt": "2026-06-05T04:48:28.022Z"
+      },
+      {
+        "id": "574d5109-b5f0-494b-924b-2f9e9d71b330",
+        "eventType": "book_detail_view",
+        "userEmail": "yuusuke_24s1103862@nnn.ed.jp",
+        "bookId": "faa3db31-6e45-4c25-86d4-05971b563561",
+        "sourceType": "direct",
+        "sourceId": null,
+        "occurredAt": "2026-06-05T05:27:06.886Z"
+      },
+      {
+        "id": "616636b2-1867-4d08-bf2a-8779c9019d5b",
+        "eventType": "book_detail_view",
+        "userEmail": "yuusuke_24s1103862@nnn.ed.jp",
+        "bookId": "faa3db31-6e45-4c25-86d4-05971b563561",
+        "sourceType": "direct",
+        "sourceId": null,
+        "occurredAt": "2026-06-05T05:27:43.058Z"
+      },
+      {
+        "id": "f1b24140-ec74-4500-95ef-0ee3a866973c",
+        "eventType": "book_detail_view",
+        "userEmail": "yuusuke_24s1103862@nnn.ed.jp",
+        "bookId": "faa3db31-6e45-4c25-86d4-05971b563561",
+        "sourceType": "direct",
+        "sourceId": null,
+        "occurredAt": "2026-06-05T05:28:04.368Z"
+      },
+      {
+        "id": "9e578468-629d-4bac-8554-aac26c8101bf",
+        "eventType": "book_detail_view",
+        "userEmail": "yuusuke_24s1103862@nnn.ed.jp",
+        "bookId": "faa3db31-6e45-4c25-86d4-05971b563561",
+        "sourceType": "direct",
+        "sourceId": null,
+        "occurredAt": "2026-06-05T05:28:28.328Z"
+      },
+      {
+        "id": "7f827f7f-06c6-4beb-923f-ad7365984eaf",
+        "eventType": "book_link_click",
+        "userEmail": "yuusuke_24s1103862@nnn.ed.jp",
+        "bookId": "006bc99d-caf0-42ad-9999-422fb1e0ff6f",
+        "sourceType": "ai_chat",
+        "sourceId": "93f9a069-23b5-4ab0-b79a-bc250af44b23",
+        "occurredAt": "2026-06-12T01:57:25.313Z"
+      },
+      {
+        "id": "8e8087cb-5f79-485e-8af2-034d0ab66981",
+        "eventType": "book_detail_view",
+        "userEmail": "yuusuke_24s1103862@nnn.ed.jp",
+        "bookId": "006bc99d-caf0-42ad-9999-422fb1e0ff6f",
+        "sourceType": "direct",
+        "sourceId": null,
+        "occurredAt": "2026-06-12T01:57:25.766Z"
+      }
+    ],
+    "BookReview": [
+      {
+        "id": "38dee600-9c5a-4bd2-9812-716532b88c34",
+        "bookId": "faa3db31-6e45-4c25-86d4-05971b563561",
+        "userEmail": "yuusuke_24s1103862@nnn.ed.jp",
+        "rating": 4,
+        "createdAt": "2026-05-09T08:46:12.475Z",
+        "updatedAt": "2026-05-09T09:30:12.127Z",
+        "comment": null
+      },
+      {
+        "id": "87cdba66-aae1-4946-9adf-cbc441777ad2",
+        "bookId": "786fe0ce-c0d8-46f9-a1b9-cbb84c940e60",
+        "userEmail": "yuusuke_24s1103862@nnn.ed.jp",
+        "rating": 5,
+        "createdAt": "2026-05-09T09:30:04.818Z",
+        "updatedAt": "2026-05-26T16:16:42.411Z",
+        "comment": null
+      }
+    ],
+    "Loan": [
+      {
+        "id": "4d833847-274b-404e-8d78-e7528491cf87",
+        "userEmail": "yuusuke_24s1103862@nnn.ed.jp",
+        "bookId": "006bc99d-caf0-42ad-9999-422fb1e0ff6f",
+        "loanedAt": "2026-05-25T17:08:32.477Z",
+        "returnedAt": "2026-05-25T17:12:34.864Z",
+        "dueAt": "2026-05-25T14:59:59.999Z"
+      },
+      {
+        "id": "374dd9e4-853f-45f1-85fb-c0ca34260f88",
+        "userEmail": "yuusuke_24s1103862@nnn.ed.jp",
+        "bookId": "006bc99d-caf0-42ad-9999-422fb1e0ff6f",
+        "loanedAt": "2026-05-25T17:13:13.838Z",
+        "returnedAt": null,
+        "dueAt": "2026-05-25T14:59:59.999Z"
+      }
+    ]
+  }
+}

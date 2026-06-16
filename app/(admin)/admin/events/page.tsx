@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import EventActivity from "./_components/EventActivity";
 import EventDashboard from "./_components/EventDashboard";
 import type { EventDashboardData } from "./_components/types";
+import Pointgraph from "./_components/Pointgraph";
 
 const DEFAULT_DASHBOARD_URL =
   "/api/admin/events/dashboard" +
@@ -12,9 +13,23 @@ const DEFAULT_DASHBOARD_URL =
   "&threadLinkClickToLoanImpactTime=7days" +
   "&aiRecommendationDisplayToLoanImpactTime=7days" +
   "&aiRecommendationToLoanImpactTime=7days";
+const GENRE_POINT_URL = "/api/admin/genre-points";
+
+type GenrePointRow = {
+  month: string;
+  tagId: string;
+  tagName: string;
+  points: number;
+};
+
+type GenrePointResponse = {
+  weights: Record<string, number>;
+  rows: GenrePointRow[];
+};
 
 export default function AdminEventsPage() {
   const [data, setData] = useState<EventDashboardData | null>(null);
+  const [point, setpoint] = useState<GenrePointRow[]>([]);
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(true);
 
@@ -23,14 +38,28 @@ export default function AdminEventsPage() {
     setError("");
 
     try {
-      const response = await fetch(url, { cache: "no-store", signal });
+      const [dashboardResponse, genrePointResponse] = await Promise.all([
+        fetch(url, { cache: "no-store", signal }),
+        fetch(GENRE_POINT_URL, { cache: "no-store", signal }),
+      ]);
 
-      if (!response.ok) {
+      if (!dashboardResponse.ok) {
         throw new Error("イベントの取得に失敗しました");
       }
+      if (!genrePointResponse.ok) {
+        throw new Error("ジャンルポイントの取得に失敗しました");
+      }
 
-      const nextData: EventDashboardData = await response.json();
+      const [nextData, genrePointData]: [
+        EventDashboardData,
+        GenrePointResponse
+      ] = await Promise.all([
+        dashboardResponse.json(),
+        genrePointResponse.json(),
+      ]);
+
       setData(nextData);
+      setpoint(Array.isArray(genrePointData.rows) ? genrePointData.rows : []);
     } catch (error) {
       if (signal?.aborted) return;
       console.error(error);
@@ -75,6 +104,9 @@ export default function AdminEventsPage() {
               fetchDashboard(url);
             }}
           />
+          {point.length > 0 ? (
+            <Pointgraph data={point} />
+          ) : null}
           <EventActivity data={data} />
         </>
       ) : null}

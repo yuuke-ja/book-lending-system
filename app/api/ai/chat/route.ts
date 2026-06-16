@@ -3,6 +3,7 @@ import { streamText, type UIMessage } from "ai";
 import { groq as groqModel } from "@ai-sdk/groq";
 import { groq } from "@/lib/ai/groq";
 import { searchBooks } from "@/lib/ai/search-books";
+import { aisearcheventlog } from "@/lib/ai/aisearcheventlog";
 import { librarySystemDocument } from "@/lib/ai/librarySystemDocument";
 import { db } from "@/lib/db";
 import { auth } from "@/lib/auth";
@@ -123,6 +124,7 @@ async function saveAssistantMessage(input: {
       JSON.stringify(metadata),
       input.intent ?? null,
       input.searchQuery ?? null,
+
     ]
   );
 }
@@ -351,6 +353,16 @@ export async function POST(request: NextRequest) {
         ]
       )
       recommendedBooks[index].recommendationId = result.rows[0]?.id;
+    }
+    try {
+      await aisearcheventlog({
+        userEmail,
+        query: r.searchQuery || query,
+        recommendedBooks: recommendedBooks.map((book) => book.bookId).filter((bookId): bookId is string => Boolean(bookId)),
+
+      });
+    } catch (error) {
+      console.error("検索ログ保存に失敗:", error);
     }
     assistantMetadata.recommendedBooks = recommendedBooks;
 
