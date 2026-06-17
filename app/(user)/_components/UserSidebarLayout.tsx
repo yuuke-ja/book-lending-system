@@ -8,7 +8,6 @@ import AiChatModal from "@/app/(user)/_components/AiChatModal";
 import { getUserProfile } from "@/lib/user-profile";
 import {
   BookListIcon,
-  AiChatIcon,
   CommunityIcon,
   BorrowIcon,
   ReturnIcon,
@@ -61,10 +60,6 @@ export default async function UserSidebarLayout({
                 <BookListIcon className="shrink-0" />
                 本一覧
               </Link>
-              <Link href="/ai-chat" className={navLinkClass}>
-                <AiChatIcon className="shrink-0" />
-                AIおすすめ
-              </Link>
               <Link href="/community" className={navLinkClass}>
                 <CommunityIcon className="shrink-0" />
                 コミュニティ
@@ -112,6 +107,15 @@ export default async function UserSidebarLayout({
             userEmail={userEmail}
           />
 
+          <a
+            href="https://forms.gle/SAGxeju6tRGtzMgg8"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="ml-auto flex w-fit rounded-full bg-orange-500 px-4 py-2 text-sm font-semibold text-white shadow-lg transition hover:bg-orange-600 lg:hidden"
+          >
+            本の要望
+          </a>
+
           <main className="min-w-0 rounded-md border border-white/70 bg-white/90 p-4 shadow-xl shadow-slate-200/50 backdrop-blur sm:rounded-lg sm:p-6 lg:h-[calc(100vh-3rem)] lg:overflow-y-auto">
             {children}
           </main>
@@ -119,14 +123,6 @@ export default async function UserSidebarLayout({
       </div>
 
       <MobileTabBar isAdmin={isAdmin} />
-      <a
-        href="https://forms.gle/SAGxeju6tRGtzMgg8"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="fixed bottom-[calc(5rem+env(safe-area-inset-bottom))] right-4 z-40 rounded-full bg-orange-500 px-4 py-2 text-sm font-semibold text-white shadow-lg transition hover:bg-orange-600 lg:hidden"
-      >
-        本の要望
-      </a>
       <AiChatModal />
     </div>
   );
