@@ -3,6 +3,10 @@
     {
       "path": "/api/cron/daily-notification",
       "schedule": "55 6 * * *"
+    },
+    {
+      "path": "/api/cron/embedding-keepalive",
+      "schedule": "0 0 * * *"
     }
   ]
 }
