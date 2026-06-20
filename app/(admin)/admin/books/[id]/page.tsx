@@ -48,7 +48,7 @@ export default async function AdminBookPage({
                   className="h-full w-full object-contain"
                 />
               ) : (
-                <div className="text-sm text-zinc-500">NO IMAGE</div>
+                <span className="text-sm text-zinc-500">NO IMAGE</span>
               )}
             </div>
           </div>

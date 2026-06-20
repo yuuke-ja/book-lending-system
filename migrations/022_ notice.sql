@@ -1,0 +1,14 @@
+CREATE TABLE IF NOT EXISTS "Notice" (
+  id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  title TEXT NOT NULL,
+  content JSONB NOT NULL,
+  "contentText" TEXT NOT NULL DEFAULT '',
+  "bookId" TEXT,
+  "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT "Notice_bookId_fkey"
+    FOREIGN KEY ("bookId")
+    REFERENCES "Book"(id)
+    ON DELETE SET NULL
+    ON UPDATE CASCADE
+);

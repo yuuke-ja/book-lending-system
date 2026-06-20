@@ -1,5 +1,5 @@
 import { db } from "@/lib/db";
-import type { LinkedBook } from "@/lib/community/types";
+import type { LinkedBook, ThreadDetail } from "@/lib/community/types";
 
 type ThreadRow = {
   id: string;
@@ -26,17 +26,6 @@ type CommentBookRow = {
   id: string;
   title: string;
   thumbnail: string | null;
-};
-
-export type ThreadDetail = {
-  thread: ThreadRow & {
-    linkedBook: LinkedBook | null;
-  };
-  comments: Array<
-    CommentRow & {
-      linkedBooks: LinkedBook[];
-    }
-  >;
 };
 
 export async function getThreadDetail(threadId: string): Promise<ThreadDetail | null> {

@@ -213,7 +213,7 @@ export default function BookListClient({
                   className="h-full w-full object-contain"
                 />
               ) : (
-                <div className="text-xs text-zinc-500">NO IMAGE</div>
+                <span className="text-xs text-zinc-500">NO IMAGE</span>
               )}
             </div>
             <div className="mt-2 flex flex-1 flex-col gap-1 md:mt-3">

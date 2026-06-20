@@ -49,7 +49,7 @@ export default function ThreadList({ threads }: { threads: CommunityThread[] }) 
                         className="h-full w-full object-contain"
                       />
                     ) : (
-                      <div className="text-[10px] text-zinc-400">NO IMAGE</div>
+                      <span className="text-[10px] text-zinc-400">NO IMAGE</span>
                     )}
                   </div>
                   <div className="min-w-0 flex-1">
