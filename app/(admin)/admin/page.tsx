@@ -202,6 +202,12 @@ export default function AdminPage() {
       >
         お知らせ管理
       </Link>
+      <Link
+        href="/admin/embedding-test"
+        className="mt-4 ml-4 inline-flex items-center rounded-md bg-black px-4 py-2 text-white hover:bg-zinc-800"
+      >
+        ベクトル精度テスト
+      </Link>
 
       <section className="mt-8 max-w-xl rounded-lg border border-zinc-200 bg-zinc-50 p-5">
         <h2 className="text-lg font-semibold text-zinc-900">通常貸出ルール</h2>
