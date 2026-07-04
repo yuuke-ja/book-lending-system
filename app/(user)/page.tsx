@@ -3,6 +3,7 @@ import ReturnStatus from "@/app/(user)/_components/ReturnStatus";
 import LoanRanking from "@/app/(user)/_components/loanranking";
 import BorrowedBooksList from "@/app/(user)/_components/BorrowedBooksList";
 import BorrowedList from "@/app/(user)/_components/BorrowedList";
+import RecommendedBooksList from "@/app/(user)/_components/RecommendedBooksList";
 import SectionLoadingFallback from "@/app/(user)/_components/SectionLoadingFallback";
 import UserLoanRanking from "@/app/(user)/_components/Userloanranking";
 import NoticeList from "@/app/(user)/_components/NoticeList";
@@ -18,6 +19,17 @@ export default async function Home() {
       <ReturnStatus />
 
       <BorrowedBooksList />
+
+      <Suspense
+        fallback={
+          <SectionLoadingFallback
+            label="RECOMMENDED BOOKS"
+            title="おすすめ本"
+          />
+        }
+      >
+        <RecommendedBooksList />
+      </Suspense>
 
       <BorrowedList />
 

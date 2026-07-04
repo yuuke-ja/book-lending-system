@@ -211,7 +211,8 @@ async function seedAggregationData(client: Client) {
   );
 }
 
-const databaseUrl = readDatabaseUrl();
+const databaseUrl =
+  process.env.RUN_DB_TESTS === "1" ? readDatabaseUrl() : undefined;
 const describeWithDatabase = databaseUrl ? describe : describe.skip;
 
 describeWithDatabase("GET /api/admin/genre-points SQL aggregation", () => {
