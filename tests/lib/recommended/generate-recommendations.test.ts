@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { generateRecommendations } from "@/lib/Recommended/generate-recommendations";
 import { findTagCandidatesFromHistory } from "@/lib/Recommended/tag-candidates-from-history";
+import { findTagCandidatesFromSearchHistory } from "@/lib/Recommended/tag-candidates-from-search-history";
 import { findCandidatesFromHistory } from "@/lib/Recommended/vector-candidates-from-history";
 import { findCandidatesFromSearchHistory } from "@/lib/Recommended/vector-candidates-from-search-history";
 import { db } from "@/lib/db";
@@ -35,17 +36,25 @@ vi.mock("@/lib/Recommended/tag-candidates-from-history", () => ({
   findTagCandidatesFromHistory: vi.fn(),
 }));
 
+vi.mock("@/lib/Recommended/tag-candidates-from-search-history", () => ({
+  findTagCandidatesFromSearchHistory: vi.fn(),
+}));
+
 const mockedFindCandidatesFromHistory = vi.mocked(findCandidatesFromHistory);
 const mockedFindCandidatesFromSearchHistory = vi.mocked(
   findCandidatesFromSearchHistory
 );
 const mockedFindTagCandidatesFromHistory = vi.mocked(findTagCandidatesFromHistory);
+const mockedFindTagCandidatesFromSearchHistory = vi.mocked(
+  findTagCandidatesFromSearchHistory
+);
 const mockedDb = vi.mocked(db);
 
 describe("generateRecommendations", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockedFindTagCandidatesFromHistory.mockResolvedValue([]);
+    mockedFindTagCandidatesFromSearchHistory.mockResolvedValue([]);
   });
 
   it("候補回数、新しさ、距離の各順位点を合算して候補を並べる", async () => {

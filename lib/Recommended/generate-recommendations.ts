@@ -3,6 +3,7 @@ import "server-only";
 import { db } from "@/lib/db";
 
 import { findTagCandidatesFromHistory } from "./tag-candidates-from-history";
+import { findTagCandidatesFromSearchHistory } from "./tag-candidates-from-search-history";
 import { findCandidatesFromHistory } from "./vector-candidates-from-history";
 import { findCandidatesFromSearchHistory } from "./vector-candidates-from-search-history";
 
@@ -174,6 +175,7 @@ export async function generateRecommendations(
 ): Promise<RecommendBook[]> {
   const historyCandidates = await findCandidatesFromHistory(userEmail);
   const tagCandidates = await findTagCandidatesFromHistory(userEmail);
+  const tagSearchCandidates = await findTagCandidatesFromSearchHistory(userEmail);
 
   let searchHistoryCandidates: Awaited<
     ReturnType<typeof findCandidatesFromSearchHistory>
@@ -186,6 +188,7 @@ export async function generateRecommendations(
   }
 
   const vectorResults = [...historyCandidates, ...searchHistoryCandidates];
+  const tagresults = [...tagCandidates, ...tagSearchCandidates];
   const recommendBooks = new Map<string, RecommendBook>();
   const tagRecommendBooks = new Map<string, TagRecommendBook>();
 
@@ -212,7 +215,7 @@ export async function generateRecommendations(
     }
   }
 
-  for (const result of tagCandidates) {
+  for (const result of tagresults) {
     const current = tagRecommendBooks.get(result.bookId);
     if (!current) {
       tagRecommendBooks.set(result.bookId, {
