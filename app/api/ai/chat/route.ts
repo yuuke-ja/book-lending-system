@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import Groq from "groq-sdk";
 import { streamText, type UIMessage } from "ai";
 import { groq as groqModel } from "@ai-sdk/groq";
 import { groq } from "@/lib/ai/groq";
@@ -174,25 +175,27 @@ export async function POST(request: NextRequest) {
   if (!userEmail) {
     return NextResponse.json({ error: "認証が必要です" }, { status: 401 });
   }
-  const body = await request.json();
-  const messages = Array.isArray(body.messages) ? body.messages as UIMessage[] : null;
-  const query = typeof body.query === "string" ? body.query : getLastUserText(messages ?? []);
-  if (!query) {
-    return NextResponse.json({ error: "クエリが必要です" }, { status: 400 });
-  }
-  const fallbackUserMessage = createTextMessage(randomUUID(), "user", query);
-  const originalMessages = messages ?? [fallbackUserMessage];
-  const lastUserMessage =
-    originalMessages.findLast((message) => message.role === "user") ?? fallbackUserMessage;
-  const currentModelMessages = [{ role: "user" as const, content: query }];
+  try {
+    const body = await request.json();
+    const messages = Array.isArray(body.messages) ? body.messages as UIMessage[] : null;
+    const query = typeof body.query === "string" ? body.query : getLastUserText(messages ?? []);
+    if (!query) {
+      return NextResponse.json({ error: "クエリが必要です" }, { status: 400 });
+    }
 
-  const completion = await groq.chat.completions.create({
-    model: "openai/gpt-oss-20b",
-    response_format: { type: "json_object" },
-    messages: [
-      {
-        role: "system",
-        content: `
+    const fallbackUserMessage = createTextMessage(randomUUID(), "user", query);
+    const originalMessages = messages ?? [fallbackUserMessage];
+    const lastUserMessage =
+      originalMessages.findLast((message) => message.role === "user") ?? fallbackUserMessage;
+    const currentModelMessages = [{ role: "user" as const, content: query }];
+
+    const completion = await groq.chat.completions.create({
+      model: "openai/gpt-oss-20b",
+      response_format: { type: "json_object" },
+      messages: [
+        {
+          role: "system",
+          content: `
           あなたは図書推薦チャットの意図判定器です。
           ユーザー入力を次のどれかに分類してください。
 
@@ -214,33 +217,33 @@ export async function POST(request: NextRequest) {
             "reply": "book_search以外のときの返答"
           }
                   `,
-      },
-      {
-        role: "user",
-        content: query,
-      },
-    ],
-  });
-
-  const content = completion.choices[0]?.message?.content ?? "{}";
-
-  const r = JSON.parse(content) as IntentResult;
-  await saveUserMessage({
-    message: lastUserMessage,
-    userEmail,
-    intent: r.intent,
-    searchQuery: r.searchQuery || query,
-  });
-
-  if (r.intent === "book_search") {
-    const books = await searchBooks(r.searchQuery || query);
-    const answer = await groq.chat.completions.create({
-      model: "openai/gpt-oss-20b",
-      response_format: { type: "json_object" },
-      messages: [
+        },
         {
-          role: "system",
-          content: `
+          role: "user",
+          content: query,
+        },
+      ],
+    });
+
+    const content = completion.choices[0]?.message?.content ?? "{}";
+
+    const r = JSON.parse(content) as IntentResult;
+    await saveUserMessage({
+      message: lastUserMessage,
+      userEmail,
+      intent: r.intent,
+      searchQuery: r.searchQuery || query,
+    });
+
+    if (r.intent === "book_search") {
+      const books = await searchBooks(r.searchQuery || query);
+      const answer = await groq.chat.completions.create({
+        model: "openai/gpt-oss-20b",
+        response_format: { type: "json_object" },
+        messages: [
+          {
+            role: "system",
+            content: `
             あなたは図書推薦チャットのアシスタントです。
             ユーザーの質問に対して、候補本の中からおすすめを選んでください。
             ルール:
@@ -279,97 +282,97 @@ export async function POST(request: NextRequest) {
               ]
             }
           `,
-        },
-        {
-          role: "user",
-          content: `
+          },
+          {
+            role: "user",
+            content: `
             ユーザーの質問: ${query}
             候補本: ${JSON.stringify(
-            books.map((b) => ({
-              book: {
-                id: b.id,
-                title: b.title,
-                authors: b.authors,
-                description: b.description,
-                distance: b.distance,
-              },
-              community: b.community,
+              books.map((b) => ({
+                book: {
+                  id: b.id,
+                  title: b.title,
+                  authors: b.authors,
+                  description: b.description,
+                  distance: b.distance,
+                },
+                community: b.community,
 
-            }))
-          )}
+              }))
+            )}
           `,
-        },
-      ],
-    });
-    const answerContent = answer.choices[0]?.message?.content ?? "{}";
-    const parsedAnswer = JSON.parse(answerContent);
-    const recommendedBooks: RecommendedBook[] = [];
+          },
+        ],
+      });
+      const answerContent = answer.choices[0]?.message?.content ?? "{}";
+      const parsedAnswer = JSON.parse(answerContent);
+      const recommendedBooks: RecommendedBook[] = [];
 
-    if (Array.isArray(parsedAnswer.recommendedBooks)) {
-      for (const recommendedBook of parsedAnswer.recommendedBooks) {
-        if (!recommendedBook.bookId) continue;
+      if (Array.isArray(parsedAnswer.recommendedBooks)) {
+        for (const recommendedBook of parsedAnswer.recommendedBooks) {
+          if (!recommendedBook.bookId) continue;
 
-        const book = books.find((book) => book.id === recommendedBook.bookId);
-        if (!book) continue;
+          const book = books.find((book) => book.id === recommendedBook.bookId);
+          if (!book) continue;
 
-        const bookReason =
-          typeof recommendedBook.bookReason === "string"
-            ? recommendedBook.bookReason.trim()
-            : "";
-        const communityReason =
-          typeof recommendedBook.communityReason === "string"
-            ? recommendedBook.communityReason.trim()
-            : "";
-        const reasonParts = [bookReason, communityReason].filter(Boolean);
+          const bookReason =
+            typeof recommendedBook.bookReason === "string"
+              ? recommendedBook.bookReason.trim()
+              : "";
+          const communityReason =
+            typeof recommendedBook.communityReason === "string"
+              ? recommendedBook.communityReason.trim()
+              : "";
+          const reasonParts = [bookReason, communityReason].filter(Boolean);
 
-        recommendedBooks.push({
-          bookId: recommendedBook.bookId,
-          title: book.title,
-          imageUrl: book.thumbnail,
-          reason: reasonParts.join("\n") || recommendedBook.reason || "",
-        });
+          recommendedBooks.push({
+            bookId: recommendedBook.bookId,
+            title: book.title,
+            imageUrl: book.thumbnail,
+            reason: reasonParts.join("\n") || recommendedBook.reason || "",
+          });
+        }
       }
-    }
-    const assistantMessageId = randomUUID();
-    const assistantMetadata: AiMessageMetadata = {
-      recommendedBooks,
-    };
+      const assistantMessageId = randomUUID();
+      const assistantMetadata: AiMessageMetadata = {
+        recommendedBooks,
+      };
 
-    for (const [index, book] of recommendedBooks.entries()) {
-      if (!book.bookId) continue;
-      const result = await db.query(
-        `INSERT INTO "AiRecommendation" 
+      for (const [index, book] of recommendedBooks.entries()) {
+        if (!book.bookId) continue;
+        const result = await db.query(
+          `INSERT INTO "AiRecommendation" 
         ("bookId", "userEmail", "query", "reason", "rank", "userMessageId")
           VALUES ($1, $2, $3, $4, $5, $6)
           RETURNING "id"
           `,
-        [
-          book.bookId,
+          [
+            book.bookId,
+            userEmail,
+            r.searchQuery || query,
+            book.reason ?? "",
+            index + 1,
+            lastUserMessage.id,
+          ]
+        )
+        recommendedBooks[index].recommendationId = result.rows[0]?.id;
+      }
+      try {
+        await aisearcheventlog({
           userEmail,
-          r.searchQuery || query,
-          book.reason ?? "",
-          index + 1,
-          lastUserMessage.id,
-        ]
-      )
-      recommendedBooks[index].recommendationId = result.rows[0]?.id;
-    }
-    try {
-      await aisearcheventlog({
-        userEmail,
-        query: r.searchQuery || query,
-        recommendedBooks: recommendedBooks.map((book) => book.bookId).filter((bookId): bookId is string => Boolean(bookId)),
+          query: r.searchQuery || query,
+          recommendedBooks: recommendedBooks.map((book) => book.bookId).filter((bookId): bookId is string => Boolean(bookId)),
 
-      });
-    } catch (error) {
-      console.error("検索ログ保存に失敗:", error);
-    }
-    assistantMetadata.recommendedBooks = recommendedBooks;
+        });
+      } catch (error) {
+        console.error("検索ログ保存に失敗:", error);
+      }
+      assistantMetadata.recommendedBooks = recommendedBooks;
 
-    const result = streamText({
-      model: groqModel("openai/gpt-oss-20b"),
-      messages: currentModelMessages,
-      system: `
+      const result = streamText({
+        model: groqModel("openai/gpt-oss-20b"),
+        messages: currentModelMessages,
+        system: `
         あなたは図書推薦チャットのアシスタントです。
         名前を聞かれた場合だけ「プロマス図書AI」と名乗ってください。
         名前を聞かれていない場合は名乗らず、回答本文から始めてください。
@@ -381,54 +384,54 @@ export async function POST(request: NextRequest) {
 
         検索文: ${r.searchQuery || query}
         候補本: ${JSON.stringify(
-        books.map((book) => ({
-          id: book.id,
-          title: book.title,
-          authors: book.authors,
-          description: book.description,
-          distance: book.distance,
-        }))
-      )}
+          books.map((book) => ({
+            id: book.id,
+            title: book.title,
+            authors: book.authors,
+            description: book.description,
+            distance: book.distance,
+          }))
+        )}
         選定済みのおすすめ: ${JSON.stringify(recommendedBooks)}
         参考返答: ${parsedAnswer.reply ?? ""}
       `,
-    });
+      });
 
-    if (recommendedBooks.length > 0) {
+      if (recommendedBooks.length > 0) {
+        return result.toUIMessageStreamResponse({
+          originalMessages,
+          generateMessageId: () => assistantMessageId,
+          messageMetadata: () => assistantMetadata,
+          onFinish: async ({ responseMessage }) => {
+            await saveAssistantMessage({
+              message: responseMessage,
+              userEmail,
+              intent: r.intent,
+              searchQuery: r.searchQuery || query,
+              metadata: assistantMetadata,
+            });
+          },
+        });
+      }
+
       return result.toUIMessageStreamResponse({
         originalMessages,
         generateMessageId: () => assistantMessageId,
-        messageMetadata: () => assistantMetadata,
         onFinish: async ({ responseMessage }) => {
           await saveAssistantMessage({
             message: responseMessage,
             userEmail,
             intent: r.intent,
             searchQuery: r.searchQuery || query,
-            metadata: assistantMetadata,
           });
         },
       });
-    }
-
-    return result.toUIMessageStreamResponse({
-      originalMessages,
-      generateMessageId: () => assistantMessageId,
-      onFinish: async ({ responseMessage }) => {
-        await saveAssistantMessage({
-          message: responseMessage,
-          userEmail,
-          intent: r.intent,
-          searchQuery: r.searchQuery || query,
-        });
-      },
-    });
-  } else if (r.intent === "System-questions") {
-    const assistantMessageId = randomUUID();
-    const result = streamText({
-      model: groqModel("openai/gpt-oss-20b"),
-      messages: currentModelMessages,
-      system: `
+    } else if (r.intent === "System-questions") {
+      const assistantMessageId = randomUUID();
+      const result = streamText({
+        model: groqModel("openai/gpt-oss-20b"),
+        messages: currentModelMessages,
+        system: `
         あなたはプロマス図書のシステム質問に答えるアシスタントです。
         ユーザーの質問に対して、プロマス図書の使い方を説明してください。
         必ずドキュメントに書いてある内容だけで答えてください。
@@ -443,25 +446,25 @@ export async function POST(request: NextRequest) {
         ユーザーと同じ言語で短く返答してください。
         ドキュメント:${librarySystemDocument}
       `,
-    });
-    return result.toUIMessageStreamResponse({
-      originalMessages,
-      generateMessageId: () => assistantMessageId,
-      onFinish: async ({ responseMessage }) => {
-        await saveAssistantMessage({
-          message: responseMessage,
-          userEmail,
-          intent: r.intent,
-          searchQuery: r.searchQuery || query,
-        });
-      },
-    });
-  } else {
-    const assistantMessageId = randomUUID();
-    const result = streamText({
-      model: groqModel("openai/gpt-oss-20b"),
-      messages: currentModelMessages,
-      system: `
+      });
+      return result.toUIMessageStreamResponse({
+        originalMessages,
+        generateMessageId: () => assistantMessageId,
+        onFinish: async ({ responseMessage }) => {
+          await saveAssistantMessage({
+            message: responseMessage,
+            userEmail,
+            intent: r.intent,
+            searchQuery: r.searchQuery || query,
+          });
+        },
+      });
+    } else {
+      const assistantMessageId = randomUUID();
+      const result = streamText({
+        model: groqModel("openai/gpt-oss-20b"),
+        messages: currentModelMessages,
+        system: `
         あなたは図書推薦チャットです。
         名前を聞かれた場合だけ「プロマス図書AI」と名乗ってください。
         名前を聞かれていない場合は名乗らず、回答本文から始めてください。
@@ -470,19 +473,50 @@ export async function POST(request: NextRequest) {
         本の推薦ではない場合は、登録済みの本のおすすめやプロマス図書システムに関する質問なら対応できると伝えてください。
         参考返答: ${r.reply ?? ""}
       `,
-    });
+      });
 
-    return result.toUIMessageStreamResponse({
-      originalMessages,
-      generateMessageId: () => assistantMessageId,
-      onFinish: async ({ responseMessage }) => {
-        await saveAssistantMessage({
-          message: responseMessage,
-          userEmail,
-          intent: r.intent,
-          searchQuery: r.searchQuery || query,
-        });
-      },
-    });
+      return result.toUIMessageStreamResponse({
+        originalMessages,
+        generateMessageId: () => assistantMessageId,
+        onFinish: async ({ responseMessage }) => {
+          await saveAssistantMessage({
+            message: responseMessage,
+            userEmail,
+            intent: r.intent,
+            searchQuery: r.searchQuery || query,
+          });
+        },
+      });
+    }
+  } catch (error) {
+    console.error("AIチャット処理中にエラーが発生:", error);
+
+    if (error instanceof Groq.APIConnectionTimeoutError) {
+      return NextResponse.json({ error: "AIチャット処理がタイムアウトしました" }, { status: 504 });
+    }
+
+    if (error instanceof Groq.RateLimitError) {
+      return NextResponse.json(
+        { error: "現在AI機能が混み合っています。時間をおいてもう一度試してください。" },
+        { status: 429 }
+      );
+    }
+
+    if (error instanceof Groq.APIError) {
+      const message = error.message.toLowerCase();
+
+      if (
+        message.includes("token") ||
+        message.includes("context length") ||
+        message.includes("maximum context")
+      ) {
+        return NextResponse.json(
+          { error: "質問や条件が長すぎます。内容を短くしてもう一度試してください。" },
+          { status: 413 }
+        );
+      }
+    }
+
+    return NextResponse.json({ error: "AIチャット処理中にエラーが発生しました" }, { status: 500 });
   }
 }

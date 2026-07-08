@@ -1,5 +1,20 @@
 "use client";
 
+import {
+  ArrowLeft,
+  BarChart2,
+  Bell,
+  BookOpen,
+  Cpu,
+  Folder,
+  History,
+  Plus,
+  RefreshCw,
+  Save,
+  Tags,
+  TrendingUp,
+  type LucideIcon,
+} from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
@@ -27,6 +42,62 @@ function createExceptionRule(partial: ExceptionRulePartial = {}): ExceptionRule 
     loanPeriodDays: p.loanPeriodDays ?? 2,
   };
 }
+
+const adminMenu: {
+  label: string;
+  href: string;
+  icon: LucideIcon;
+  color: string;
+}[] = [
+  {
+    label: "本登録",
+    href: "/admin/registration",
+    icon: BookOpen,
+    color: "border-blue-100 bg-blue-50 text-blue-600",
+  },
+  {
+    label: "本一覧",
+    href: "/admin/books",
+    icon: Folder,
+    color: "border-indigo-100 bg-indigo-50 text-indigo-600",
+  },
+  {
+    label: "タグ管理",
+    href: "/admin/tags",
+    icon: Tags,
+    color: "border-purple-100 bg-purple-50 text-purple-600",
+  },
+  {
+    label: "お知らせ管理",
+    href: "/admin/notices",
+    icon: Bell,
+    color: "border-pink-100 bg-pink-50 text-pink-600",
+  },
+  {
+    label: "統計を見る",
+    href: "/admin/statistics",
+    icon: BarChart2,
+    color: "border-emerald-100 bg-emerald-50 text-emerald-600",
+  },
+  {
+    label: "イベント分析",
+    href: "/admin/events",
+    icon: TrendingUp,
+    color: "border-amber-100 bg-amber-50 text-amber-600",
+  },
+  {
+    label: "ベクトル精度テスト",
+    href: "/admin/embedding-test",
+    icon: Cpu,
+    color: "border-cyan-100 bg-cyan-50 text-cyan-600",
+  },
+  {
+    label: "貸出履歴",
+    href: "/admin/history",
+    icon: History,
+    color: "border-rose-100 bg-rose-50 text-rose-600",
+  },
+];
 
 export default function AdminPage() {
   const [settings, setSettings] = useState<LoanSettings>({
@@ -63,18 +134,23 @@ export default function AdminPage() {
         body: JSON.stringify(payload),
       });
       if (!res.ok) {
+        let message = "保存に失敗しました";
         try {
           const err = await res.json();
-          setStatusMessage(typeof err?.message === "string" ? err.message : "保存に失敗しました");
+          message = typeof err?.message === "string" ? err.message : message;
         } catch {
-          setStatusMessage("保存に失敗しました");
+          // レスポンス本文がJSONでない場合は既定の文言を使う。
         }
+        setStatusMessage("");
+        window.alert(message);
         return;
       }
-      setStatusMessage("保存しました");
+      setStatusMessage("");
+      window.alert("保存しました");
     } catch (error) {
       console.error("エラー:", error);
-      setStatusMessage("保存に失敗しました");
+      setStatusMessage("");
+      window.alert("保存に失敗しました");
     }
   }
 
@@ -170,191 +246,232 @@ export default function AdminPage() {
   }, []);
 
   return (
-    <main className="min-h-screen bg-white p-6">
-      <h1 className="text-2xl font-semibold text-zinc-900">管理者ページ</h1>
-      <Link
-        href="/"
-        className="mt-4 inline-flex items-center rounded-md bg-black px-4 py-2 text-white hover:bg-zinc-800"
-      >
-        トップページに戻る
-      </Link>
-      <Link
-        href="/admin/registration"
-        className="mt-4 ml-4 inline-flex items-center rounded-md bg-black px-4 py-2 text-white hover:bg-zinc-800"
-      >
-        本登録
-      </Link>
-      <Link
-        href="/admin/statistics"
-        className="mt-4 ml-4 inline-flex items-center rounded-md bg-black px-4 py-2 text-white hover:bg-zinc-800"
-      >
-        統計を見る
-      </Link>
-      <Link
-        href="/admin/tags"
-        className="mt-4 ml-4 inline-flex items-center rounded-md bg-black px-4 py-2 text-white hover:bg-zinc-800"
-      >
-        タグ管理
-      </Link>
-      <Link
-        href="/admin/notices"
-        className="mt-4 ml-4 inline-flex items-center rounded-md bg-black px-4 py-2 text-white hover:bg-zinc-800"
-      >
-        お知らせ管理
-      </Link>
-      <Link
-        href="/admin/embedding-test"
-        className="mt-4 ml-4 inline-flex items-center rounded-md bg-black px-4 py-2 text-white hover:bg-zinc-800"
-      >
-        ベクトル精度テスト
-      </Link>
+    <main className="min-h-screen bg-[#f0f4f8] pb-16 text-slate-900">
+      <div className="mx-auto max-w-4xl px-4 pt-8 sm:px-6 sm:pt-10">
+        <header className="mb-8">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+            <div>
+              <h1 className="text-2xl font-extrabold tracking-tight text-slate-950">
+                管理者ダッシュボード
+              </h1>
+              <p className="mt-1 text-sm font-medium text-slate-500">
+                システムの各種設定やデータ管理を直感的に行えます。
+              </p>
+            </div>
+            <Link
+              href="/"
+              className="inline-flex h-11 items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 text-sm font-bold text-slate-700 shadow-sm transition hover:bg-slate-50"
+            >
+              <ArrowLeft className="h-4 w-4" aria-hidden="true" />
+              トップページに戻る
+            </Link>
+          </div>
 
-      <section className="mt-8 max-w-xl rounded-lg border border-zinc-200 bg-zinc-50 p-5">
-        <h2 className="text-lg font-semibold text-zinc-900">通常貸出ルール</h2>
-        <div className="mt-4 space-y-4">
-          <button onClick={() => onLoanSettingsChanged(settings)} className="rounded bg-blue-500 px-2 py-1 text-xs text-white hover:bg-blue-400 disabled:cursor-not-allowed disabled:bg-blue-300">
-            保存
-          </button>
-          <div>
-            <p className="mb-2 text-sm font-medium text-zinc-800">金曜日のみ貸出</p>
-            <label className="inline-flex cursor-pointer items-center">
-              <input
-                type="checkbox"
-                checked={settings.fridayOnly}
-                onChange={(e) => updateLoanSettings("fridayOnly", e.target.checked)}
+          <nav className="mt-8 grid grid-cols-2 gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:grid-cols-4">
+            {adminMenu.map((item) => {
+              const Icon = item.icon;
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className="group flex min-h-24 flex-col items-center justify-center gap-2.5 rounded-xl border border-slate-100 bg-white p-4 text-center transition hover:border-blue-200 hover:bg-blue-50/30"
+                >
+                  <span
+                    className={`inline-flex h-10 w-10 items-center justify-center rounded-lg border transition-transform group-hover:scale-105 ${item.color}`}
+                  >
+                    <Icon className="h-5 w-5" aria-hidden="true" />
+                  </span>
+                  <span className="text-xs font-bold text-slate-700 group-hover:text-slate-950">
+                    {item.label}
+                  </span>
+                </Link>
+              );
+            })}
+          </nav>
+        </header>
+
+        <div className="space-y-6">
+          <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
+            <div className="mb-6 flex items-center justify-between gap-4 border-b border-slate-100 pb-4">
+              <div>
+                <p className="mb-1 text-[10px] font-extrabold uppercase tracking-[0.18em] text-blue-600">
+                  NORMAL LENDING RULES
+                </p>
+                <h2 className="text-lg font-bold text-slate-900">
+                  通常貸出ルール
+                </h2>
+              </div>
+              <button
+                type="button"
+                onClick={() => onLoanSettingsChanged(settings)}
                 disabled={isLoadingSettings}
-                className="sr-only peer"
-              />
-              <div
-                className="
-                  relative h-7 w-12 rounded-full bg-gray-300 transition-colors
-                  peer-checked:bg-blue-500
-                  after:absolute after:left-[2px] after:top-[2px]
-                  after:h-6 after:w-6 after:rounded-full after:bg-white after:shadow
-                  after:content-[''] after:transition-transform
-                  peer-checked:after:translate-x-5
-                "
-              />
-            </label>
-          </div>
+                className="inline-flex h-11 items-center justify-center gap-1.5 rounded-xl bg-blue-600 px-5 text-sm font-bold text-white shadow-sm transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-blue-300"
+              >
+                <Save className="h-4 w-4" aria-hidden="true" />
+                保存
+              </button>
+            </div>
 
-          <div>
-            {week.map((d) => (
-              <label key={d.value}>
-                <input
-                  type="radio"
-                  name="returnWeekday"
-                  value={d.value}
-                  checked={selectweek === d.value}
-                  onChange={() => setSelectweek(d.value)}
-                />
-                {d.label}
-              </label>
-            ))}
-          </div>
-        </div>
-      </section>
+            <div className="space-y-6">
+              <div className="flex max-w-sm items-center justify-between gap-4">
+                <p className="text-sm font-medium text-slate-700">
+                  金曜日のみ貸出
+                </p>
+                <label className="inline-flex cursor-pointer items-center">
+                  <input
+                    type="checkbox"
+                    checked={settings.fridayOnly}
+                    onChange={(e) => updateLoanSettings("fridayOnly", e.target.checked)}
+                    disabled={isLoadingSettings}
+                    className="peer sr-only"
+                  />
+                  <span
+                    className="
+                      relative h-6 w-11 rounded-full bg-slate-200 transition-colors
+                      peer-checked:bg-blue-600
+                      peer-disabled:cursor-not-allowed peer-disabled:opacity-60
+                      after:absolute after:left-[2px] after:top-[2px]
+                      after:h-5 after:w-5 after:rounded-full after:bg-white after:shadow
+                      after:content-[''] after:transition-transform
+                      peer-checked:after:translate-x-5
+                    "
+                  />
+                </label>
+              </div>
 
-      <section className="mt-8 max-w-xl rounded-lg border border-zinc-200 bg-zinc-50 p-5">
+              <div className="space-y-2">
+                <p className="text-xs font-bold uppercase tracking-[0.14em] text-slate-400">
+                  曜日指定
+                </p>
+                <div className="flex flex-wrap items-center gap-3">
+                  {week.map((d) => (
+                    <label
+                      key={d.value}
+                      className="inline-flex h-10 cursor-pointer items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-4 transition hover:bg-slate-100"
+                    >
+                      <input
+                        type="radio"
+                        name="returnWeekday"
+                        value={d.value}
+                        checked={selectweek === d.value}
+                        onChange={() => setSelectweek(d.value)}
+                        disabled={isLoadingSettings}
+                        className="h-4 w-4 border-slate-300 text-blue-600 focus:ring-blue-500"
+                      />
+                      <span className="text-sm font-bold text-slate-700">
+                        {d.label}曜日
+                      </span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </section>
 
-        <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-zinc-900">例外貸出ルール</h2>
-          <button
-            type="button"
-            onClick={addExceptionRule}
-            disabled={isLoadingSettings}
-            className="rounded-md bg-zinc-900 px-3 py-1 text-sm text-white hover:bg-zinc-700 disabled:cursor-not-allowed disabled:bg-zinc-400"
-          >
-            追加
-          </button>
-        </div>
-        <div className="mb-2 flex items-center justify-between">
-          <button
-            type="button"
-            onClick={() => onLoanSettingsChanged(settings)}
-            disabled={isLoadingSettings}
-            className="rounded bg-red-500 px-2 py-1 text-xs text-white hover:bg-red-400 disabled:cursor-not-allowed disabled:bg-red-300"
-          >
-            更新
-          </button>
-        </div>
-
-        <div className="mt-4 space-y-4">
-          {settings.exceptionRules.length === 0 && (
-            <p className="text-sm text-zinc-600">例外ルールはまだありません。</p>
-          )}
-
-          {settings.exceptionRules.map((rule, index) => (
-            <div key={rule.id} className="rounded-md border border-zinc-200 bg-white p-3">
-              <div className="mb-2 flex items-center justify-between">
-                <p className="text-sm font-semibold text-zinc-800">例外ルール {index + 1}</p>
+          <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
+            <div className="mb-6 flex flex-col gap-4 border-b border-slate-100 pb-4 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <p className="mb-1 text-[10px] font-extrabold uppercase tracking-[0.18em] text-blue-600">
+                  EXCEPTIONAL RULES
+                </p>
+                <h2 className="text-lg font-bold text-slate-900">
+                  例外貸出ルール
+                </h2>
+              </div>
+              <div className="flex flex-wrap gap-2">
                 <button
                   type="button"
-                  onClick={() => removeExceptionRule(rule.id)}
+                  onClick={() => onLoanSettingsChanged(settings)}
                   disabled={isLoadingSettings}
-                  className="rounded bg-red-500 px-2 py-1 text-xs text-white hover:bg-red-400 disabled:cursor-not-allowed disabled:bg-red-300"
+                  className="inline-flex h-10 items-center justify-center gap-1.5 rounded-xl bg-red-500 px-4 text-sm font-bold text-white shadow-sm transition hover:bg-red-600 disabled:cursor-not-allowed disabled:bg-red-300"
                 >
-                  削除
+                  <RefreshCw className="h-3.5 w-3.5" aria-hidden="true" />
+                  更新
+                </button>
+                <button
+                  type="button"
+                  onClick={addExceptionRule}
+                  disabled={isLoadingSettings}
+                  className="inline-flex h-10 items-center justify-center gap-1.5 rounded-xl bg-slate-950 px-4 text-sm font-bold text-white shadow-sm transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:bg-slate-400"
+                >
+                  <Plus className="h-4 w-4" aria-hidden="true" />
+                  追加
                 </button>
               </div>
-
-
-              <p className="mb-2 text-sm font-medium text-zinc-800">長期休みの貸出期間</p>
-              <div className="flex flex-wrap items-center gap-2 text-sm">
-                <input
-                  type="date"
-                  value={rule.startDate}
-                  onChange={(e) => updateExceptionRuleLocal(rule.id, "startDate", e.target.value)}
-                  disabled={isLoadingSettings}
-                />
-                <span className="text-zinc-500">〜</span>
-                <input
-                  type="date"
-                  value={rule.endDate}
-                  onChange={(e) => updateExceptionRuleLocal(rule.id, "endDate", e.target.value)}
-                  disabled={isLoadingSettings}
-                />
-              </div>
-
-              <label className="mt-3 block text-sm font-medium text-zinc-800">
-                例外期間中の貸出日数
-                <input
-                  type="number"
-                  min={1}
-                  value={rule.loanPeriodDays}
-                  onChange={(e) => {
-                    const num = Number(e.target.value);
-                    updateExceptionRuleLocal(rule.id, "loanPeriodDays", Number.isFinite(num) && num > 0 ? num : 1);
-                  }}
-                  disabled={isLoadingSettings}
-                  className="ml-2 w-24 rounded border border-zinc-300 bg-white px-2 py-1"
-                />
-                <span className="ml-1 text-sm text-zinc-600">日</span>
-              </label>
             </div>
-          ))}
+
+            <div className="space-y-4">
+              {settings.exceptionRules.length === 0 && (
+                <div className="rounded-xl border border-slate-200 bg-slate-50 p-6 text-center text-sm font-medium text-slate-500">
+                  例外ルールはまだありません。
+                </div>
+              )}
+
+              {settings.exceptionRules.map((rule, index) => (
+                <div
+                  key={rule.id}
+                  className="rounded-xl border border-slate-200 bg-slate-50 p-4"
+                >
+                  <div className="mb-4 flex items-center justify-between gap-3">
+                    <p className="text-sm font-bold text-slate-800">
+                      例外ルール {index + 1}
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => removeExceptionRule(rule.id)}
+                      disabled={isLoadingSettings}
+                      className="rounded-lg bg-red-500 px-3 py-1.5 text-xs font-bold text-white transition hover:bg-red-600 disabled:cursor-not-allowed disabled:bg-red-300"
+                    >
+                      削除
+                    </button>
+                  </div>
+
+                  <p className="mb-2 text-sm font-medium text-slate-700">
+                    長期休みの貸出期間
+                  </p>
+                  <div className="flex flex-wrap items-center gap-2 text-sm">
+                    <input
+                      type="date"
+                      value={rule.startDate}
+                      onChange={(e) => updateExceptionRuleLocal(rule.id, "startDate", e.target.value)}
+                      disabled={isLoadingSettings}
+                      className="h-10 rounded-lg border border-slate-300 bg-white px-3 text-sm text-slate-700 disabled:bg-slate-100"
+                    />
+                    <span className="text-slate-500">〜</span>
+                    <input
+                      type="date"
+                      value={rule.endDate}
+                      onChange={(e) => updateExceptionRuleLocal(rule.id, "endDate", e.target.value)}
+                      disabled={isLoadingSettings}
+                      className="h-10 rounded-lg border border-slate-300 bg-white px-3 text-sm text-slate-700 disabled:bg-slate-100"
+                    />
+                  </div>
+
+                  <label className="mt-4 block text-sm font-medium text-slate-700">
+                    例外期間中の貸出日数
+                    <input
+                      type="number"
+                      min={1}
+                      value={rule.loanPeriodDays}
+                      onChange={(e) => {
+                        const num = Number(e.target.value);
+                        updateExceptionRuleLocal(rule.id, "loanPeriodDays", Number.isFinite(num) && num > 0 ? num : 1);
+                      }}
+                      disabled={isLoadingSettings}
+                      className="ml-2 h-10 w-24 rounded-lg border border-slate-300 bg-white px-3 text-sm text-slate-700 disabled:bg-slate-100"
+                    />
+                    <span className="ml-1 text-sm text-slate-600">日</span>
+                  </label>
+                </div>
+              ))}
+            </div>
+          </section>
         </div>
-      </section>
 
-      {/*貸出履歴*/}
-      <section className="mt-8 max-w-xl rounded-lg border border-zinc-200 bg-zinc-50 p-5">
-        <h2 className="text-lg font-semibold text-zinc-900">貸出履歴</h2>
-        <p className="mt-3 text-sm text-zinc-600">
-          貸出中ユーザー一覧は貸出履歴ページで確認できます。
-        </p>
-        <Link
-          href="/admin/history"
-          className="mt-4 inline-flex items-center rounded-md bg-black px-4 py-2 text-white hover:bg-zinc-800"
-        >
-          貸出履歴を見る
-        </Link>
-      </section>
-
-
-
-
-      <p className="mt-4 max-w-xl text-xs text-zinc-600">{statusMessage}</p>
-
+        {statusMessage && (
+          <p className="mt-4 text-xs font-medium text-slate-500">{statusMessage}</p>
+        )}
+      </div>
     </main>
   );
 }

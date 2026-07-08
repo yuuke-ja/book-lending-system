@@ -174,8 +174,11 @@ export async function generateRecommendations(
   userEmail: string
 ): Promise<RecommendBook[]> {
   const historyCandidates = await findCandidatesFromHistory(userEmail);
-  const tagCandidates = await findTagCandidatesFromHistory(userEmail);
-  const tagSearchCandidates = await findTagCandidatesFromSearchHistory(userEmail);
+
+  const [tagCandidates, tagSearchCandidates] = await Promise.all([
+    findTagCandidatesFromHistory(userEmail),
+    findTagCandidatesFromSearchHistory(userEmail),
+  ]);
 
   let searchHistoryCandidates: Awaited<
     ReturnType<typeof findCandidatesFromSearchHistory>

@@ -219,6 +219,52 @@ describe("generateRecommendations", () => {
     expect(mockedDb.transaction).not.toHaveBeenCalled();
   });
 
+  it("タグ候補2系統を並列に取得する", async () => {
+    const calls: string[] = [];
+    let resolveHistoryTag: ((value: []) => void) | undefined;
+    let resolveSearchTag: ((value: []) => void) | undefined;
+
+    mockedFindCandidatesFromHistory.mockResolvedValue([]);
+    mockedFindCandidatesFromSearchHistory.mockResolvedValue([]);
+    mockedFindTagCandidatesFromHistory.mockImplementation(
+      () =>
+        new Promise<[]>((resolve) => {
+          calls.push("history-tag:start");
+          resolveHistoryTag = resolve;
+        }).then((result) => {
+          calls.push("history-tag:end");
+          return result;
+        })
+    );
+    mockedFindTagCandidatesFromSearchHistory.mockImplementation(
+      () =>
+        new Promise<[]>((resolve) => {
+          calls.push("search-tag:start");
+          resolveSearchTag = resolve;
+        }).then((result) => {
+          calls.push("search-tag:end");
+          return result;
+        })
+    );
+
+    const recommendations = generateRecommendations("user@example.com");
+
+    await vi.waitFor(() => {
+      expect(calls).toEqual(["history-tag:start", "search-tag:start"]);
+    });
+
+    resolveHistoryTag?.([]);
+    resolveSearchTag?.([]);
+    await recommendations;
+
+    expect(calls).toEqual([
+      "history-tag:start",
+      "search-tag:start",
+      "history-tag:end",
+      "search-tag:end",
+    ]);
+  });
+
   it("ベクトル候補とタグ候補をbookIdで合算して順位を決める", async () => {
     mockedFindCandidatesFromHistory.mockResolvedValue([
       {

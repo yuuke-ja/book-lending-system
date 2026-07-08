@@ -45,6 +45,13 @@ type AiBookChatProps = {
   className?: string;
 };
 
+function aiChatPost(input: RequestInfo | URL, init?: RequestInit) {
+  return fetch(input, {
+    ...init,
+    method: init?.method ?? "POST",
+  });
+}
+
 function aiBookLinkClick(bookId: string | undefined, sourceId: string | undefined) {
   if (!bookId || !sourceId) return;
 
@@ -75,11 +82,33 @@ function AiBookChatInner({
 }) {
   const [input, setInput] = useState("");
 
-  const { messages, sendMessage, status } = useChat({
+  const { messages, sendMessage, setMessages, status } = useChat({
     messages: initialMessages,
     transport: new DefaultChatTransport({
       api: "/api/ai/chat",
+      fetch: aiChatPost,
     }),
+    onError: (error) => {
+      let message = error.message;
+
+      try {
+        const data = JSON.parse(error.message);
+        if (typeof data.error === "string") {
+          message = data.error;
+        }
+      } catch {
+
+      }
+
+      setMessages((messages) => [
+        ...messages,
+        {
+          id: crypto.randomUUID(),
+          role: "assistant",
+          parts: [{ type: "text", text: message }],
+        },
+      ]);
+    },
   });
 
   const isLoading = status === "submitted" || status === "streaming";
@@ -177,7 +206,7 @@ export default function AiBookChat({ className }: AiBookChatProps) {
   useEffect(() => {
     let ignore = false;
 
-    fetch("/api/ai/chat", { cache: "no-store" })
+    fetch("/api/ai/chat", { method: "GET", cache: "no-store" })
       .then((response) => {
         if (!response.ok) throw new Error("AIチャット履歴の取得に失敗しました");
         return response.json() as Promise<AiChatHistoryResponse>;
