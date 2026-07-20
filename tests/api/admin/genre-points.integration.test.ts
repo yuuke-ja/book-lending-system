@@ -21,6 +21,12 @@ type GenrePointResponse = {
     tagName: string;
     points: number;
   }[];
+  predictions: {
+    month: string;
+    tagId: string;
+    tagName: string;
+    points: number;
+  }[];
 };
 
 const mockedAuth = auth as unknown as ReturnType<typeof vi.fn>;
@@ -68,6 +74,7 @@ function findRow(body: GenrePointResponse, monthKey: string, tagName: string) {
 }
 
 async function createTempTables(client: Client) {
+  await client.query(`DROP TABLE IF EXISTS pg_temp."GenrePointPrediction"`);
   await client.query(`DROP TABLE IF EXISTS pg_temp."CommentBookLink"`);
   await client.query(`DROP TABLE IF EXISTS pg_temp."ThreadComment"`);
   await client.query(`DROP TABLE IF EXISTS pg_temp."Thread"`);
@@ -83,6 +90,13 @@ async function createTempTables(client: Client) {
     `CREATE TEMP TABLE "TagList" (
        id TEXT PRIMARY KEY,
        tag TEXT NOT NULL
+     )`
+  );
+  await client.query(
+    `CREATE TEMP TABLE "GenrePointPrediction" (
+       "predictionMonth" DATE NOT NULL,
+       "tagId" TEXT NOT NULL,
+       "predictedPoints" DOUBLE PRECISION NOT NULL
      )`
   );
   await client.query(
@@ -241,6 +255,13 @@ describeWithDatabase("GET /api/admin/genre-points SQL aggregation", () => {
 
   it("同じ月の同じタグを1行にまとめてpointsを合計する", async () => {
     await seedAggregationData(client);
+    await client.query(
+      `INSERT INTO "GenrePointPrediction"
+         ("predictionMonth", "tagId", "predictedPoints")
+       VALUES
+         ('2026-05-01', 'tag-design', 12.5),
+         ('2026-05-01', 'tag-tech', 8.25)`
+    );
 
     const response = await GET(
       new Request("http://localhost/api/admin/genre-points")
@@ -270,5 +291,19 @@ describeWithDatabase("GET /api/admin/genre-points SQL aggregation", () => {
     });
     expect(designMay?.points).toBeCloseTo(10);
     expect(body.rows).toHaveLength(3);
+    expect(body.predictions).toEqual([
+      {
+        month: "2026-05-01",
+        tagId: "tag-design",
+        tagName: "デザイン",
+        points: 12.5,
+      },
+      {
+        month: "2026-05-01",
+        tagId: "tag-tech",
+        tagName: "技術書",
+        points: 8.25,
+      },
+    ]);
   });
 });

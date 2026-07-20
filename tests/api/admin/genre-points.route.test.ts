@@ -144,7 +144,17 @@ describe("GET /api/admin/genre-points", () => {
         points: 19.1,
       },
     ];
-    mockedQuery.mockResolvedValueOnce({ rows: dbRows });
+    const predictionRows = [
+      {
+        month: "2026-08-01",
+        tagId: "tag-tech",
+        tagName: "技術書",
+        points: 18.25,
+      },
+    ];
+    mockedQuery
+      .mockResolvedValueOnce({ rows: dbRows })
+      .mockResolvedValueOnce({ rows: predictionRows });
 
     const res = await GET(createRequest());
     const data = await res.json();
@@ -165,7 +175,15 @@ describe("GET /api/admin/genre-points", () => {
     });
     expect(data.rows).toEqual(expectedRows);
     expect(data.rows).toHaveLength(6);
-    expect(mockedQuery).toHaveBeenCalledWith(expect.any(String), [
+    expect(data.predictions).toEqual([
+      {
+        month: "2026-08-01",
+        tagId: "tag-tech",
+        tagName: "技術書",
+        points: 18.25,
+      },
+    ]);
+    expect(mockedQuery).toHaveBeenNthCalledWith(1, expect.any(String), [
       1,
       1,
       10,
@@ -178,10 +196,13 @@ describe("GET /api/admin/genre-points", () => {
       3,
       1,
     ]);
+    expect(mockedQuery).toHaveBeenNthCalledWith(2, expect.any(String));
   });
 
   it("クエリパラメータで重みを変更できる", async () => {
-    mockedQuery.mockResolvedValueOnce({ rows: [] });
+    mockedQuery
+      .mockResolvedValueOnce({ rows: [] })
+      .mockResolvedValueOnce({ rows: [] });
 
     const res = await GET(
       createRequest(
@@ -215,7 +236,8 @@ describe("GET /api/admin/genre-points", () => {
       commentCreate: 12,
     });
     expect(data.rows).toEqual([]);
-    expect(mockedQuery).toHaveBeenCalledWith(expect.any(String), [
+    expect(data.predictions).toEqual([]);
+    expect(mockedQuery).toHaveBeenNthCalledWith(1, expect.any(String), [
       2,
       3,
       4,
@@ -228,5 +250,6 @@ describe("GET /api/admin/genre-points", () => {
       11,
       12,
     ]);
+    expect(mockedQuery).toHaveBeenNthCalledWith(2, expect.any(String));
   });
 });

@@ -4,6 +4,7 @@ import {
   Legend,
   Line,
   LineChart,
+  ReferenceLine,
   ResponsiveContainer,
   Tooltip,
   XAxis,
@@ -19,6 +20,7 @@ type GenrePointRow = {
 
 type PointgraphProps = {
   data: GenrePointRow[];
+  predictions: GenrePointRow[];
 };
 
 const LINE_COLORS = [
@@ -65,7 +67,7 @@ function toMonthKey(value: string) {
 }
 
 // / 選択された期間分の月一覧
-function getRecentMonthKeys(months: number) {
+function getRecentMonthKeys(months: number, newpredictionMonthKey: string | null) {
   const now = new Date();
   const base = new Date(now.getFullYear(), now.getMonth(), 1);
   const monthKeys: string[] = [];
@@ -76,6 +78,15 @@ function getRecentMonthKeys(months: number) {
 
     date.setMonth(base.getMonth() - monthsAgo);
     monthKeys.push(toMonthKey(date.toISOString()));
+  }
+
+  const lastMonthKey = monthKeys[monthKeys.length - 1];
+  if (
+    newpredictionMonthKey &&
+    lastMonthKey &&
+    newpredictionMonthKey > lastMonthKey
+  ) {
+    monthKeys.push(newpredictionMonthKey);
   }
 
   return monthKeys;
@@ -92,14 +103,21 @@ function chunkMonths(monthKeys: string[], bucketSize: number) {
   return buckets;
 }
 
-export default function Pointgraph({ data }: PointgraphProps) {
+// この関数の引数がデータの入口。dataで実績、predictionsで予測を受け取る。
+export default function Pointgraph({ data, predictions }: PointgraphProps) {
   const [period, setPeriod] = useState<Period>("y1");
+  const newpredictionMonthKey = useMemo(() => {
+    const monthKeys = predictions.map((row) => toMonthKey(row.month)).sort();
+    return monthKeys[monthKeys.length - 1] ?? null;
+  }, [predictions]);
   const tagNames = useMemo(() => {
-    const totals = new Map<string, number>();
-
-    for (const row of data) {
-      totals.set(row.tagName, (totals.get(row.tagName) ?? 0) + row.points);
-    }
+    const totals = data.reduce((nextTotals, row) => {
+      nextTotals.set(
+        row.tagName,
+        (nextTotals.get(row.tagName) ?? 0) + row.points
+      );
+      return nextTotals;
+    }, new Map<string, number>());
 
     return Array.from(totals.entries())
       .sort((a, b) => b[1] - a[1])
@@ -111,40 +129,34 @@ export default function Pointgraph({ data }: PointgraphProps) {
   const chartData = useMemo(() => {
     const config = PERIOD_CONFIG[period];
 
-    const monthKeys = getRecentMonthKeys(config.months);
+    const monthKeys = getRecentMonthKeys(config.months, newpredictionMonthKey);
     const buckets = chunkMonths(monthKeys, config.bucketSize);
+    const bucketIndexByMonth = new Map<string, number>(
+      monthKeys.map(
+        (month, index) =>
+          [month, Math.floor(index / config.bucketSize)] as const
+      )
+    );
+    const visibleTagNames = new Set(tagNames);
+    const initialTagPoints = Object.fromEntries(
+      tagNames.map((tagName) => [tagName, 0])
+    );
 
-    const nextChartData = buckets.map((bucket) => {
+    const nextChartData: Record<string, string | number>[] = buckets.map((bucket) => {
       const labelMonth = bucket[bucket.length - 1] ?? "";
-      const item: Record<string, string | number> = {
+      return {
         month: labelMonth,
+        ...initialTagPoints,
       };
-
-      // 各タグの初期値を0にする。
-      for (const tagName of tagNames) {
-        item[tagName] = 0;
-      }
-
-      return item;
     });
 
     // APIの各行を該当する月のまとまりに加算する。
-    for (const row of data) {
+    data.forEach((row) => {
       const rowMonth = toMonthKey(row.month);
-      let bucketIndex = -1;
+      const bucketIndex = bucketIndexByMonth.get(rowMonth);
 
-      // この行の月が入るまとまりを探す。
-      for (let index = 0; index < buckets.length; index += 1) {
-        const bucket = buckets[index];
-
-        if (bucket.includes(rowMonth)) {
-          bucketIndex = index;
-          break;
-        }
-      }
-
-      if (bucketIndex === -1) continue;
-      if (!tagNames.includes(row.tagName)) continue;
+      if (bucketIndex === undefined) return;
+      if (!visibleTagNames.has(row.tagName)) return;
 
       const currentPoint = nextChartData[bucketIndex][row.tagName];
       const currentPointNumber =
@@ -152,10 +164,21 @@ export default function Pointgraph({ data }: PointgraphProps) {
 
       nextChartData[bucketIndex][row.tagName] =
         currentPointNumber + row.points;
-    }
+    });
+
+    // 最新の予測値を、実績期間の次の月へ追加する。
+    predictions.forEach((prediction) => {
+      const rowMonth = toMonthKey(prediction.month);
+      const bucketIndex = bucketIndexByMonth.get(rowMonth);
+
+      if (bucketIndex === undefined) return;
+      if (!visibleTagNames.has(prediction.tagName)) return;
+
+      nextChartData[bucketIndex][prediction.tagName] = prediction.points;
+    });
 
     return nextChartData;
-  }, [data, period, tagNames]);
+  }, [data, period, newpredictionMonthKey, predictions, tagNames]);
 
   if (data.length === 0) {
     return null;
@@ -168,7 +191,7 @@ export default function Pointgraph({ data }: PointgraphProps) {
           ジャンルポイント推移
         </h2>
         <p className="mt-1 text-sm text-zinc-600">
-          月ごとのタグ別ポイントです。
+          月ごとのタグ別ポイントと翌月予測です。
         </p>
       </div>
       <div className="mt-4 flex gap-2">
@@ -199,8 +222,27 @@ export default function Pointgraph({ data }: PointgraphProps) {
               tickFormatter={(value) => formatMonth(String(value))}
             />
             <YAxis />
-            <Tooltip labelFormatter={(value) => formatMonth(String(value))} />
+            <Tooltip
+              labelFormatter={(value) => {
+                const monthKey = String(value);
+                const suffix = monthKey === newpredictionMonthKey ? "（予測）" : "";
+                return `${formatMonth(monthKey)}${suffix}`;
+              }}
+            />
             <Legend />
+            {newpredictionMonthKey ? (
+              <ReferenceLine
+                x={newpredictionMonthKey}
+                stroke="#71717a"
+                strokeDasharray="4 4"
+                label={{
+                  value: "予測",
+                  position: "insideTopRight",
+                  fill: "#52525b",
+                  fontSize: 12,
+                }}
+              />
+            ) : null}
             {tagNames.map((tagName, index) => (
               <Line
                 key={tagName}

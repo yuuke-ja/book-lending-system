@@ -24,6 +24,13 @@ type GenrePointRow = {
   points: number;
 };
 
+type GenrePointPredictionRow = {
+  month: string;
+  tagId: string;
+  tagName: string;
+  points: number;
+};
+
 function parseWeight(value: string, defaultValue: number) {
   if (value === "") return defaultValue;
 
@@ -112,7 +119,7 @@ export async function GET(request: Request) {
       { status: 400 }
     );
   }
-
+  //ジャンルポイント取得
   const result = await db.query<GenrePointRow>(
     `WITH point_events AS (
        SELECT
@@ -258,6 +265,24 @@ export async function GET(request: Request) {
       commentCreatePoint,
     ]
   );
+  //最新予想ポイント取得
+  const predictionResult = await db.query<GenrePointPredictionRow>(
+    `SELECT
+       TO_CHAR(prediction."predictionMonth", 'YYYY-MM-DD') AS month,
+       prediction."tagId" AS "tagId",
+       tag.tag AS "tagName",
+       prediction."predictedPoints"::float AS points
+     FROM "GenrePointPrediction" prediction
+     JOIN "TagList" tag
+       ON tag.id = prediction."tagId"
+     WHERE prediction."predictionMonth" = (
+       SELECT MAX("predictionMonth")
+       FROM "GenrePointPrediction"
+     )
+     ORDER BY
+       points DESC,
+       tag.tag ASC`
+  );
 
   return NextResponse.json(
     {
@@ -275,6 +300,7 @@ export async function GET(request: Request) {
         commentCreate: commentCreatePoint,
       },
       rows: result.rows,
+      predictions: predictionResult.rows,
     },
     { status: 200 }
   );

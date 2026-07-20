@@ -25,11 +25,13 @@ type GenrePointRow = {
 type GenrePointResponse = {
   weights: Record<string, number>;
   rows: GenrePointRow[];
+  predictions: GenrePointRow[];
 };
 
 export default function AdminEventsPage() {
   const [data, setData] = useState<EventDashboardData | null>(null);
   const [point, setpoint] = useState<GenrePointRow[]>([]);
+  const [predictions, setPredictions] = useState<GenrePointRow[]>([]);
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(true);
 
@@ -60,6 +62,11 @@ export default function AdminEventsPage() {
 
       setData(nextData);
       setpoint(Array.isArray(genrePointData.rows) ? genrePointData.rows : []);
+      setPredictions(
+        Array.isArray(genrePointData.predictions)
+          ? genrePointData.predictions
+          : []
+      );
     } catch (error) {
       if (signal?.aborted) return;
       console.error(error);
@@ -105,7 +112,7 @@ export default function AdminEventsPage() {
             }}
           />
           {point.length > 0 ? (
-            <Pointgraph data={point} />
+            <Pointgraph data={point} predictions={predictions} />
           ) : null}
           <EventActivity data={data} />
         </>

@@ -42,3 +42,8 @@ yarn-error.log*
 next-env.d.ts
 
 /app/generated/prisma
+
+# Python forecasting environment
+/py/.venv/
+__pycache__/
+*.pyc
