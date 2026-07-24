@@ -36,13 +36,21 @@ const SCAN_MIN_HEIGHT = 90;
 
 // カメラの真ん中を読む範囲を作る。
 function getScanRect(videoWidth: number, videoHeight: number): ScanRect {
+  const isDesktop = window.innerWidth >= 768;
+
+  // スマホは現在の設定、PCでは読み取り範囲を小さくする。
+  const widthRatio = isDesktop ? 0.40 : SCAN_WIDTH_RATIO;
+  const heightRatio = isDesktop ? 0.20 : SCAN_HEIGHT_RATIO;
+  const minWidth = isDesktop ? 240 : SCAN_MIN_WIDTH;
+  const minHeight = isDesktop ? 75 : SCAN_MIN_HEIGHT;
+
   const sourceWidth = Math.min(
     videoWidth,
-    Math.max(SCAN_MIN_WIDTH, Math.floor(videoWidth * SCAN_WIDTH_RATIO))
+    Math.max(minWidth, Math.floor(videoWidth * widthRatio))
   );
   const sourceHeight = Math.min(
     videoHeight,
-    Math.max(SCAN_MIN_HEIGHT, Math.floor(videoHeight * SCAN_HEIGHT_RATIO))
+    Math.max(minHeight, Math.floor(videoHeight * heightRatio))
   );
   const sourceX = Math.floor((videoWidth - sourceWidth) / 2);
   const sourceY = Math.floor((videoHeight - sourceHeight) / 2);
