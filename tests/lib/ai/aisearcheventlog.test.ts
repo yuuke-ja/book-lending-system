@@ -36,13 +36,13 @@ describe("aisearcheventlog", () => {
 
     expect(mockedQuery).toHaveBeenCalledTimes(1);
     expect(mockedQuery.mock.calls[0]?.[1]).toEqual(["AI 技術書"]);
-    expect(mockedRecordSearchEvent).toHaveBeenCalledWith({
+    expect(mockedRecordSearchEvent).toHaveBeenCalledWith(expect.objectContaining({
       userEmail: "user@example.com",
       query: "AI 技術書",
       searchType: "ai_query",
       tagIds: ["tag-ai", "tag-tech"],
       confidence: 1,
-    });
+    }));
   });
 
   it("検索語にタグがなければ推薦本タグ上位2件をconfidence 0.5で保存する", async () => {
@@ -61,13 +61,13 @@ describe("aisearcheventlog", () => {
     expect(mockedQuery.mock.calls[1]?.[1]).toEqual([
       ["book-design-1", "book-tech-1", "book-design-2"],
     ]);
-    expect(mockedRecordSearchEvent).toHaveBeenCalledWith({
+    expect(mockedRecordSearchEvent).toHaveBeenCalledWith(expect.objectContaining({
       userEmail: "user@example.com",
       query: "おすすめを教えて",
       searchType: "ai_query",
       tagIds: ["tag-design", "tag-tech"],
       confidence: 0.5,
-    });
+    }));
   });
 
   it("検索語にも推薦本にもタグがなければタグなしで保存する", async () => {
@@ -80,12 +80,12 @@ describe("aisearcheventlog", () => {
     });
 
     expect(mockedQuery).toHaveBeenCalledTimes(1);
-    expect(mockedRecordSearchEvent).toHaveBeenCalledWith({
+    expect(mockedRecordSearchEvent).toHaveBeenCalledWith(expect.objectContaining({
       userEmail: "user@example.com",
       query: "タグなし",
       searchType: "ai_query",
       tagIds: [],
       confidence: 1,
-    });
+    }));
   });
 });

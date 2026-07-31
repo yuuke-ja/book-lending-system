@@ -11,6 +11,7 @@ import {
   Plus,
   RefreshCw,
   Save,
+  Search,
   Tags,
   TrendingUp,
   type LucideIcon,
@@ -96,6 +97,12 @@ const adminMenu: {
     href: "/admin/history",
     icon: History,
     color: "border-rose-100 bg-rose-50 text-rose-600",
+  },
+  {
+    label: "検索履歴",
+    href: "/admin/seachhistory",
+    icon: Search,
+    color: "border-sky-100 bg-sky-50 text-sky-600",
   },
 ];
 

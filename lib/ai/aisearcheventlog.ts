@@ -69,5 +69,6 @@ export async function aisearcheventlog({
     searchType: "ai_query",
     tagIds,
     confidence,
+    count: recommendedBooks.length,
   });
 }

@@ -53,20 +53,20 @@ export default function BookListClient({
     Promise.all([full, tag])
       .then(([fullBooks, tagBooks]) => {
         const merged = [...(fullBooks as BookListBook[]), ...(tagBooks as BookListBook[])];
-        const unique = Array.from(new Map(merged.map((book) => [book.id, book])).values());
-        const resultTagIds = unique.flatMap((book) =>
+        const uniqueBookList = Array.from(new Map(merged.map((book) => [book.id, book])).values());
+        const resultTagIds = uniqueBookList.flatMap((book) =>
           book.tags?.map((tag) => tag.id) ?? []
         );
 
         void fetch("/api/book/search/log", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ query, selectedTags, resultTagIds }),
+          body: JSON.stringify({ query, selectedTags, resultTagIds, count: uniqueBookList.length }),
         }).catch((err) => {
           console.error("検索ログ保存エラー:", err);
         });
 
-        setSearchBooks(unique);
+        setSearchBooks(uniqueBookList);
       })
       .catch((err) => {
         console.error("検索エラー:", err);

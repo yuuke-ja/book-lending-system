@@ -7,6 +7,7 @@ type SearchLogBody = {
   query?: unknown;
   selectedTags?: unknown;
   resultTagIds?: unknown;
+  count?: unknown;
 };
 
 function getTopTagIds(tagIds: string[], limit: number) {
@@ -38,6 +39,9 @@ export async function POST(request: Request) {
     const resultTagIds = Array.isArray(body.resultTagIds)
       ? body.resultTagIds.filter((tagId): tagId is string => typeof tagId === "string")
       : [];
+    const count = typeof body.count === "number" && Number.isInteger(body.count) && body.count >= 0
+      ? body.count
+      : 0;
 
     const terms = Array.from(
       new Set([...selectedTags, query].map((term) => term.trim()).filter(Boolean))
@@ -83,6 +87,7 @@ export async function POST(request: Request) {
       searchType: "book_list",
       tagIds,
       confidence,
+      count,
     });
 
     return NextResponse.json(

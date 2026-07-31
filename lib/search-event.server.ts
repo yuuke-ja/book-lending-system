@@ -18,6 +18,7 @@ type RecordSearchEventInput = {
   searchType: SearchType;
   tagIds?: string[];
   confidence?: number;
+  count: number;
 };
 
 export async function recordSearchEvent({
@@ -26,15 +27,16 @@ export async function recordSearchEvent({
   searchType,
   tagIds = [],
   confidence = 1,
+  count
 }: RecordSearchEventInput) {
   const uniqueTagIds = Array.from(new Set(tagIds.filter(Boolean)));
 
   return db.transaction(async (tx) => {
     const eventResult = await tx.query<SearchEventRow>(
-      `INSERT INTO "SearchEvent" ("userEmail", "searchType", query)
-       VALUES ($1, $2, $3)
+      `INSERT INTO "SearchEvent" ("userEmail", "searchType", query, "count")
+       VALUES ($1, $2, $3, $4)
        RETURNING id, "userEmail", "searchType", query, "occurredAt"`,
-      [userEmail, searchType, query]
+      [userEmail, searchType, query, count]
     );
     const searchEvent = eventResult.rows[0];
 
