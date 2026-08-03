@@ -1,4 +1,5 @@
 import { loanranking } from "@/lib/ranking/loan";
+import Image from "next/image";
 
 type LoanRankingProps = {
   sectionId?: string;
@@ -110,9 +111,12 @@ export default async function LoanRanking({
               >
                 <div className="flex h-28 w-20 shrink-0 items-center justify-center overflow-hidden rounded-md bg-zinc-100">
                   {item.thumbnail ? (
-                    <img
+                    <Image
                       src={item.thumbnail}
                       alt={item.title}
+                      width={80}
+                      height={112}
+                      sizes="80px"
                       className="h-full w-full object-contain"
                     />
                   ) : (

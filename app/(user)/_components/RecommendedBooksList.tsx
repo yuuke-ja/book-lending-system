@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 
 import { auth } from "@/lib/auth";
 import { refreshAndGetUserRecommendations } from "@/lib/Recommended/refresh-and-get-user-recommendations";
@@ -60,9 +61,12 @@ export default async function RecommendedBooksList({
               >
                 <div className="flex h-28 w-20 shrink-0 items-center justify-center overflow-hidden rounded-md bg-zinc-100">
                   {book.thumbnail ? (
-                    <img
+                    <Image
                       src={book.thumbnail}
                       alt={book.title}
+                      width={80}
+                      height={112}
+                      sizes="80px"
                       className="h-full w-full object-contain"
                     />
                   ) : (

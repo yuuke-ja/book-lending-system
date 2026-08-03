@@ -2,6 +2,7 @@
 
 import AvatarEditor, { type AvatarEditorRef } from "react-avatar-editor";
 import { useRef, useState, useEffect } from "react";
+import Image from "next/image";
 import { useNotificationManager } from "@/hooks/use-notification-manager";
 
 export default function NotificationsPage() {
@@ -125,9 +126,12 @@ export default function NotificationsPage() {
     <section className="mx-auto max-w-lg space-y-4 rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm">
       <h1 className="text-xl font-semibold text-zinc-900">ユーザープロフィール</h1>
       <div className="flex items-center space-x-4">
-        <img
+        <Image
           src={avatarUrl || "/default-avatar.svg"}
           alt="Avatar"
+          width={64}
+          height={64}
+          sizes="64px"
           className="h-16 w-16 rounded-full object-cover"
         />
 
@@ -236,9 +240,12 @@ export default function NotificationsPage() {
                     rotate={0}
                   />
                 ) : (
-                  <img
+                  <Image
                     src={avatarUrl || "/default-avatar.svg"}
                     alt="Avatar preview"
+                    width={240}
+                    height={240}
+                    sizes="240px"
                     className="h-60 w-60 rounded-full object-cover"
                   />
                 )}

@@ -1,6 +1,7 @@
 "use client";
 
 import type { JSONContent } from "@tiptap/core";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import NoticeEditor from "./NoticeEditor";
@@ -174,9 +175,12 @@ export default function NoticeForm() {
           <div className="flex items-center gap-3 rounded-md border border-zinc-200 bg-zinc-50 p-3">
             <div className="flex h-16 w-12 shrink-0 items-center justify-center overflow-hidden rounded border border-zinc-200 bg-white">
               {selectedBook.thumbnail ? (
-                <img
+                <Image
                   src={selectedBook.thumbnail}
                   alt={selectedBook.title}
+                  width={48}
+                  height={64}
+                  sizes="48px"
                   className="h-full w-full object-contain"
                 />
               ) : (

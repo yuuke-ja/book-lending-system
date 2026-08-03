@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { Suspense } from "react";
+import Image from "next/image";
 import { auth } from "@/lib/auth";
 import { Admin } from "@/lib/admin";
 import LoginButton from "@/app/(user)/_components/LoginButton";
@@ -24,9 +25,12 @@ async function UserGuard({ children }: { children: ReactNode }) {
     return (
       <main className="grid min-h-screen place-items-center bg-zinc-50 p-6">
         <div className="space-y-4 text-center">
-          <img
+          <Image
             src="/icon/favicon.png"
             alt="Logo"
+            width={64}
+            height={64}
+            sizes="64px"
             className="mx-auto h-16 w-16"
           />
           <h1 className="text-2xl font-semibold text-zinc-900">

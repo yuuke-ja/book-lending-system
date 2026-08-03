@@ -1,4 +1,5 @@
 import { auth } from "@/lib/auth";
+import Image from "next/image";
 import { getThreadDetail } from "@/lib/community/get-thread-detail";
 import { recordResearchEvent } from "@/lib/research-event.server";
 import CommentComposer from "./_components/CommentComposer";
@@ -82,9 +83,12 @@ export default async function ThreadPage({
             THREAD
           </p>
           <div className="mt-4 flex items-center gap-3">
-            <img
+            <Image
               src={thread.authorAvatarUrl || "/default-avatar.svg"}
               alt={thread.nickname ?? "投稿者"}
+              width={48}
+              height={48}
+              sizes="48px"
               className="h-12 w-12 rounded-full border border-zinc-200 bg-zinc-100 object-cover"
             />
             <div>

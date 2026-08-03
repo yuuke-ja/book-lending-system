@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { getBookList } from "@/lib/books/get-book-list";
 import type { BookListBook } from "@/lib/books/book-list-types";
 import { getBookEmbeddingCount } from "@/lib/books/get-book-embedding-count";
@@ -99,12 +100,14 @@ export default async function AdminBooksPage({
             className="flex h-full min-w-0 flex-col rounded-md border border-zinc-200 bg-white p-2 shadow-sm transition hover:border-zinc-300 hover:bg-zinc-50 md:p-3"
             aria-label={`${book.title}の詳細`}
           >
-            <div className="flex h-32 w-full items-center justify-center overflow-hidden rounded bg-zinc-100 sm:h-40 md:h-56">
+            <div className="relative flex h-32 w-full items-center justify-center overflow-hidden rounded bg-zinc-100 sm:h-40 md:h-56">
               {book.thumbnail ? (
-                <img
+                <Image
                   src={book.thumbnail}
                   alt={book.title}
-                  className="h-full w-full object-contain"
+                  fill
+                  sizes="(max-width: 639px) 33vw, (max-width: 767px) 25vw, (max-width: 1023px) 33vw, 220px"
+                  className="object-contain"
                 />
               ) : (
                 <span className="text-xs text-zinc-500">NO IMAGE</span>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { type LinkedBook } from "../../_components/types";
 import type { ThreadCommentNode } from "./types";
@@ -244,9 +245,12 @@ function CommentTreeItem({
         {/*投稿日時と本文を表示*/}
         <div className="min-w-0">
           <div className="flex items-center gap-3">
-            <img
+            <Image
               src={comment.authorAvatarUrl || "/default-avatar.svg"}
               alt={comment.nickname ?? "投稿者"}
+              width={40}
+              height={40}
+              sizes="40px"
               className="h-10 w-10 rounded-full border border-zinc-200 bg-zinc-100 object-cover"
             />
             <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
@@ -281,9 +285,12 @@ function CommentTreeItem({
                 >
                   <div className="flex h-24 w-16 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-zinc-200 bg-zinc-50">
                     {book.thumbnail ? (
-                      <img
+                      <Image
                         src={book.thumbnail}
                         alt={book.title}
+                        width={64}
+                        height={96}
+                        sizes="64px"
                         className="h-full w-full object-contain"
                       />
                     ) : (
@@ -347,9 +354,12 @@ function CommentTreeItem({
               >
                 <div className="flex h-16 w-12 shrink-0 items-center justify-center overflow-hidden rounded-md border border-zinc-200 bg-zinc-50">
                   {book.thumbnail ? (
-                    <img
+                    <Image
                       src={book.thumbnail}
                       alt={book.title}
+                      width={48}
+                      height={64}
+                      sizes="48px"
                       className="h-full w-full object-contain"
                     />
                   ) : (

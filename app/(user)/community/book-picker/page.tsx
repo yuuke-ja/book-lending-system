@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Rating } from "@smastrom/react-rating";
 import "@smastrom/react-rating/style.css";
@@ -216,12 +217,14 @@ export default function CommunityBookPickerPage() {
             tabIndex={0}
             aria-label={`${book.title}を選択`}
           >
-            <div className="flex h-32 w-full items-center justify-center overflow-hidden rounded bg-zinc-100 sm:h-40 md:h-56">
+            <div className="relative flex h-32 w-full items-center justify-center overflow-hidden rounded bg-zinc-100 sm:h-40 md:h-56">
               {book.thumbnail ? (
-                <img
+                <Image
                   src={book.thumbnail}
                   alt={book.title}
-                  className="h-full w-full object-contain"
+                  fill
+                  sizes="(max-width: 639px) 33vw, (max-width: 767px) 25vw, (max-width: 1023px) 33vw, 220px"
+                  className="object-contain"
                 />
               ) : (
                 <span className="text-xs text-zinc-500">NO IMAGE</span>

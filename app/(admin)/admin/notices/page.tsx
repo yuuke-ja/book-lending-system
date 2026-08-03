@@ -1,5 +1,6 @@
 import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
+import Image from "next/image";
 import { Trash2 } from "lucide-react";
 import NoticeForm from "./_components/NoticeForm";
 import { getNotices } from "@/lib/notices/get-notices";
@@ -136,9 +137,12 @@ export default async function AdminNoticesPage() {
                     <div className="mt-4 flex items-center gap-3 border-t border-zinc-100 pt-3">
                       <div className="flex h-14 w-10 shrink-0 items-center justify-center overflow-hidden rounded border border-zinc-200 bg-zinc-50">
                         {notice.linkedBook.thumbnail ? (
-                          <img
+                          <Image
                             src={notice.linkedBook.thumbnail}
                             alt={notice.linkedBook.title}
+                            width={40}
+                            height={56}
+                            sizes="40px"
                             className="h-full w-full object-contain"
                           />
                         ) : (

@@ -1,6 +1,7 @@
 "use client";
 
 import { ChevronRight, Megaphone, X } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import type { Notice } from "@/lib/notices/type";
@@ -46,9 +47,12 @@ export default function NoticeList({ notices }: NoticeListProps) {
                 >
                   <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-md bg-zinc-100">
                     {notice.linkedBook?.thumbnail ? (
-                      <img
+                      <Image
                         src={notice.linkedBook.thumbnail}
                         alt=""
+                        width={40}
+                        height={40}
+                        sizes="40px"
                         className="h-full w-full object-contain"
                       />
                     ) : (
@@ -128,9 +132,12 @@ export default function NoticeList({ notices }: NoticeListProps) {
                 >
                   <div className="flex h-24 w-16 shrink-0 items-center justify-center overflow-hidden rounded-md border border-zinc-200 bg-zinc-50">
                     {openedNotice.linkedBook.thumbnail ? (
-                      <img
+                      <Image
                         src={openedNotice.linkedBook.thumbnail}
                         alt={openedNotice.linkedBook.title}
+                        width={64}
+                        height={96}
+                        sizes="64px"
                         className="h-full w-full object-contain"
                       />
                     ) : (

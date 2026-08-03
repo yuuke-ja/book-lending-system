@@ -3,6 +3,7 @@
 import ISBNScanGuide from "@/app/_components/ISBNScanGuide";
 import ISBNImportModal from "@/app/_components/ISBNImportModal";
 import { useCallback, useState } from "react";
+import Image from "next/image";
 
 type Book = {
   id: string;
@@ -102,9 +103,12 @@ export default function LoanQrPage() {
             <p className="text-sm font-semibold text-zinc-900">この本を貸し出しますか？</p>
             <div className="flex flex-col gap-4 sm:flex-row">
               {book.thumbnail && (
-                <img
+                <Image
                   src={book.thumbnail}
                   alt={book.title}
+                  width={112}
+                  height={160}
+                  sizes="112px"
                   className="h-40 w-28 rounded object-contain"
                 />
               )}

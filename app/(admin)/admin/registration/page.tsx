@@ -2,6 +2,7 @@
 
 import ISBNImportModal from "@/app/_components/ISBNImportModal";
 import { useCallback, useEffect, useState, type SVGProps } from "react";
+import Image from "next/image";
 
 type PendingBook = {
   id: string;
@@ -227,12 +228,14 @@ export default function QRCodeReader() {
               </button>
 
               <div className="mx-auto w-32 shrink-0 sm:mx-0 sm:w-40">
-                <div className="aspect-[1/1.4] overflow-hidden rounded-xl border border-slate-200 bg-slate-100 shadow-sm">
+                <div className="relative aspect-[1/1.4] overflow-hidden rounded-xl border border-slate-200 bg-slate-100 shadow-sm">
                   {pb.thumbnail ? (
-                    <img
+                    <Image
                       src={pb.thumbnail}
                       alt={pb.title}
-                      className="h-full w-full object-cover"
+                      fill
+                      sizes="(max-width: 639px) 128px, 160px"
+                      className="object-cover"
                     />
                   ) : (
                     <div className="flex h-full items-center justify-center text-slate-300">

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Image from "next/image";
 
 type Loan = {
   id: string;
@@ -104,9 +105,12 @@ export default function BorrowedBooksList({
                 >
                   <div className="flex h-28 w-20 shrink-0 items-center justify-center overflow-hidden rounded-md bg-zinc-100">
                     {borrowed.book.thumbnail ? (
-                      <img
+                      <Image
                         src={borrowed.book.thumbnail}
                         alt={borrowed.book.title}
+                        width={80}
+                        height={112}
+                        sizes="80px"
                         className="h-full w-full object-contain"
                       />
                     ) : (

@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import Image from "next/image";
 import StarRating from "@/app/(user)/book-list/_components/Rating";
 import { getBookById } from "@/lib/books/get-book-by-id";
 import { auth } from "@/lib/auth";
@@ -40,9 +41,12 @@ export default async function BookPage({
           <div className="flex items-start justify-center">
             <div className="flex h-72 w-full max-w-[220px] items-center justify-center overflow-hidden rounded-xl border border-zinc-200 bg-zinc-50">
               {book.thumbnail ? (
-                <img
+                <Image
                   src={book.thumbnail}
                   alt={book.title}
+                  width={220}
+                  height={288}
+                  sizes="220px"
                   className="h-full w-full object-contain"
                 />
               ) : (

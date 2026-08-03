@@ -1,7 +1,6 @@
 "use client";
 
 import LoadingSpinner from "@/app/_components/LoadingSpinner";
-import Link from "next/link";
 import { useEffect, useState } from "react";
 
 type TagItem = {
@@ -292,12 +291,6 @@ export default function AdminTagsPage() {
   return (
     <main className="min-h-screen bg-white p-6">
       <h1 className="text-2xl font-semibold text-zinc-900">タグ管理</h1>
-      <Link
-        href="/admin"
-        className="mt-4 inline-flex items-center rounded-md bg-black px-4 py-2 text-white hover:bg-zinc-800"
-      >
-        管理者ページに戻る
-      </Link>
 
       <div
         className={`mt-8 grid gap-4 lg:items-start ${

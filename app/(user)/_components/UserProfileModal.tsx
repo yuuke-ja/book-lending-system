@@ -2,6 +2,7 @@
 
 import { useEffect, useId, useState } from "react";
 import { createPortal } from "react-dom";
+import Image from "next/image";
 import SingOutButton from "@/app/(user)/_components/SignOutButton";
 import Link from "next/link";
 import { SettingIcon, } from "@/app/(user)/_components/LibraryNavIcons";
@@ -47,9 +48,12 @@ export default function UserProfileModal({
         aria-haspopup="dialog"
         aria-expanded={isProfileModalOpen}
       >
-        <img
+        <Image
           src={avatarUrl || "/default-avatar.svg"}
           alt={userName || "ユーザー"}
+          width={64}
+          height={64}
+          sizes="(max-width: 767px) 40px, 64px"
           className={triggerImageClassName ?? "h-16 w-16 rounded-full object-cover"}
         />
       </button>
@@ -86,9 +90,12 @@ export default function UserProfileModal({
                   ×
                 </button>
               </div>
-              <img
+              <Image
                 src={avatarUrl || "/default-avatar.svg"}
                 alt={userName || "ユーザー"}
+                width={96}
+                height={96}
+                sizes="96px"
                 className="mx-auto mb-4 h-24 w-24 rounded-full object-cover"
               />
               <p className="text-center text-sm text-gray-500">ユーザー名</p>

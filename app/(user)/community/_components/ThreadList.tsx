@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import type { CommunityThread } from "./types";
 
 const JST_TIMEZONE = "Asia/Tokyo";
@@ -18,9 +19,12 @@ export default function ThreadList({ threads }: { threads: CommunityThread[] }) 
             className="block border-b border-zinc-200 p-7 transition last:border-b-0 hover:bg-zinc-50"
           >
             <div className="flex items-center gap-3">
-              <img
+              <Image
                 src={thread.authorAvatarUrl || "/default-avatar.svg"}
                 alt={thread.nickname ?? "投稿者"}
+                width={40}
+                height={40}
+                sizes="40px"
                 className="h-10 w-10 rounded-full border border-zinc-200 bg-zinc-100 object-cover"
               />
               <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
@@ -43,9 +47,12 @@ export default function ThreadList({ threads }: { threads: CommunityThread[] }) 
                 <div className="flex items-center gap-5">
                   <div className="flex h-32 w-24 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-zinc-200 bg-zinc-50">
                     {thread.linkedBook.thumbnail ? (
-                      <img
+                      <Image
                         src={thread.linkedBook.thumbnail}
                         alt={thread.linkedBook.title}
+                        width={96}
+                        height={128}
+                        sizes="96px"
                         className="h-full w-full object-contain"
                       />
                     ) : (

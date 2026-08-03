@@ -18,6 +18,8 @@ export async function getSearchHistory() {
 
   return result.rows;
 }
+
+
 export async function getzerokSearchHistory() {
   const rsult = await db.query<SearchHistoryRow>(
     `SELECT "searchType","query","occurredAt","count"   

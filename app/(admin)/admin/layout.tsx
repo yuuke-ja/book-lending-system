@@ -3,6 +3,7 @@ import { Suspense } from "react";
 import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { Admin } from "@/lib/admin";
+import { AdminBackLink } from "./_components/AdminBackLink";
 
 export default function AdminLayout({
   children,
@@ -11,7 +12,10 @@ export default function AdminLayout({
 }) {
   return (
     <Suspense fallback={null}>
-      <AdminGuard>{children}</AdminGuard>
+      <AdminGuard>
+        <AdminBackLink />
+        {children}
+      </AdminGuard>
     </Suspense>
   );
 }

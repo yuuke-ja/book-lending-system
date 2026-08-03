@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { DefaultChatTransport, type UIMessage } from "ai";
 import { useChat } from "@ai-sdk/react";
+import Image from "next/image";
 import { cn } from "@/lib/utils";
 
 import {
@@ -143,9 +144,12 @@ function AiBookChatInner({
                               href={`/book/${book.bookId}`}
                               onClick={() => aiBookLinkClick(book.bookId, book.recommendationId)}
                             >
-                              <img
+                              <Image
                                 src={book.imageUrl}
                                 alt={book.title ?? "おすすめ本"}
+                                width={96}
+                                height={128}
+                                sizes="96px"
                                 className="mt-2 h-32 w-24 rounded border border-zinc-200 object-contain"
                               />
                             </a>

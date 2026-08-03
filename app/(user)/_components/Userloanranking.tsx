@@ -1,4 +1,5 @@
 import { userranking } from "@/lib/ranking/user";
+import Image from "next/image";
 export default async function UserLoanRanking() {
   const loading = false;
   let error: string | null = null;
@@ -60,15 +61,21 @@ export default async function UserLoanRanking() {
                 <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full border border-zinc-200 bg-zinc-100">
 
                   {item.avatarUrl ? (
-                    <img
+                    <Image
                       src={item.avatarUrl}
                       alt={item.nickname ?? "未設定"}
+                      width={40}
+                      height={40}
+                      sizes="40px"
                       className="h-full w-full object-cover"
                     />
                   ) : (
-                    <img
+                    <Image
                       src="/default-avatar.svg"
                       alt={item.nickname ?? "未設定"}
+                      width={40}
+                      height={40}
+                      sizes="40px"
                       className="h-full w-full object-cover"
                     />
                   )}
