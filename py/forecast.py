@@ -4,6 +4,7 @@ import os
 
 import pandas as pd
 from sklearn.linear_model import Ridge
+from sklearn.metrics import r2_score
 import psycopg
 from psycopg.rows import dict_row
 
@@ -163,6 +164,11 @@ SELECT
 FROM point_events point_event
 JOIN "TagList" tag
   ON tag.id = point_event.tag_id
+WHERE point_event.occurred_at
+  < date_trunc(
+      'month',
+      CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Tokyo'
+    )
 GROUP BY
   date_trunc('month', point_event.occurred_at),
   tag.id,

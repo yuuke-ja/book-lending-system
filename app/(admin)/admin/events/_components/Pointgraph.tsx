@@ -33,6 +33,7 @@ const LINE_COLORS = [
   "#4f46e5",
   "#be123c",
 ];
+const PREDICTION_MONTH_KEY_SUFFIX = "__prediction";
 const PERIOD_CONFIG = {
   w6: { label: "6ヶ月", months: 6, bucketSize: 1 },
   y1: { label: "1年", months: 12, bucketSize: 2 },
@@ -40,6 +41,21 @@ const PERIOD_CONFIG = {
 } as const;
 
 type Period = keyof typeof PERIOD_CONFIG;
+
+function getPredictionMonthKey(monthKey: string) {
+  return `${monthKey}${PREDICTION_MONTH_KEY_SUFFIX}`;
+}
+
+function parseChartMonthKey(value: string) {
+  const isPrediction = value.endsWith(PREDICTION_MONTH_KEY_SUFFIX);
+
+  return {
+    monthKey: isPrediction
+      ? value.slice(0, -PREDICTION_MONTH_KEY_SUFFIX.length)
+      : value,
+    isPrediction,
+  };
+}
 
 // 月をグラフ表示用の文字列に整える。
 function formatMonth(value: string) {
@@ -67,7 +83,7 @@ function toMonthKey(value: string) {
 }
 
 // / 選択された期間分の月一覧
-function getRecentMonthKeys(months: number, newpredictionMonthKey: string | null) {
+function getRecentMonthKeys(months: number) {
   const now = new Date();
   const base = new Date(now.getFullYear(), now.getMonth(), 1);
   const monthKeys: string[] = [];
@@ -78,15 +94,6 @@ function getRecentMonthKeys(months: number, newpredictionMonthKey: string | null
 
     date.setMonth(base.getMonth() - monthsAgo);
     monthKeys.push(toMonthKey(date.toISOString()));
-  }
-
-  const lastMonthKey = monthKeys[monthKeys.length - 1];
-  if (
-    newpredictionMonthKey &&
-    lastMonthKey &&
-    newpredictionMonthKey > lastMonthKey
-  ) {
-    monthKeys.push(newpredictionMonthKey);
   }
 
   return monthKeys;
@@ -129,7 +136,7 @@ export default function Pointgraph({ data, predictions }: PointgraphProps) {
   const chartData = useMemo(() => {
     const config = PERIOD_CONFIG[period];
 
-    const monthKeys = getRecentMonthKeys(config.months, newpredictionMonthKey);
+    const monthKeys = getRecentMonthKeys(config.months);
     const buckets = chunkMonths(monthKeys, config.bucketSize);
     const bucketIndexByMonth = new Map<string, number>(
       monthKeys.map(
@@ -142,13 +149,15 @@ export default function Pointgraph({ data, predictions }: PointgraphProps) {
       tagNames.map((tagName) => [tagName, 0])
     );
 
-    const nextChartData: Record<string, string | number>[] = buckets.map((bucket) => {
-      const labelMonth = bucket[bucket.length - 1] ?? "";
-      return {
-        month: labelMonth,
-        ...initialTagPoints,
-      };
-    });
+    const nextChartData: Record<string, string | number | null>[] = buckets.map(
+      (bucket) => {
+        const labelMonth = bucket[bucket.length - 1] ?? "";
+        return {
+          month: labelMonth,
+          ...initialTagPoints,
+        };
+      }
+    );
 
     // APIの各行を該当する月のまとまりに加算する。
     data.forEach((row) => {
@@ -166,16 +175,20 @@ export default function Pointgraph({ data, predictions }: PointgraphProps) {
         currentPointNumber + row.points;
     });
 
-    // 最新の予測値を、実績期間の次の月へ追加する。
-    predictions.forEach((prediction) => {
-      const rowMonth = toMonthKey(prediction.month);
-      const bucketIndex = bucketIndexByMonth.get(rowMonth);
+    // 当月途中実績の右隣へ、予測専用の点を追加する。
+    if (newpredictionMonthKey) {
+      const predictionRow: Record<string, string | number | null> = {
+        month: getPredictionMonthKey(newpredictionMonthKey),
+        ...Object.fromEntries(tagNames.map((tagName) => [tagName, null])),
+      };
 
-      if (bucketIndex === undefined) return;
-      if (!visibleTagNames.has(prediction.tagName)) return;
+      predictions.forEach((prediction) => {
+        if (!visibleTagNames.has(prediction.tagName)) return;
+        predictionRow[prediction.tagName] = prediction.points;
+      });
 
-      nextChartData[bucketIndex][prediction.tagName] = prediction.points;
-    });
+      nextChartData.push(predictionRow);
+    }
 
     return nextChartData;
   }, [data, period, newpredictionMonthKey, predictions, tagNames]);
@@ -219,20 +232,29 @@ export default function Pointgraph({ data, predictions }: PointgraphProps) {
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis
               dataKey="month"
-              tickFormatter={(value) => formatMonth(String(value))}
+              tickFormatter={(value) => {
+                const { monthKey, isPrediction } = parseChartMonthKey(
+                  String(value)
+                );
+                const suffix = isPrediction ? "（予測）" : "";
+
+                return `${formatMonth(monthKey)}${suffix}`;
+              }}
             />
             <YAxis />
             <Tooltip
               labelFormatter={(value) => {
-                const monthKey = String(value);
-                const suffix = monthKey === newpredictionMonthKey ? "（予測）" : "";
+                const { monthKey, isPrediction } = parseChartMonthKey(
+                  String(value)
+                );
+                const suffix = isPrediction ? "（予測）" : "";
                 return `${formatMonth(monthKey)}${suffix}`;
               }}
             />
             <Legend />
             {newpredictionMonthKey ? (
               <ReferenceLine
-                x={newpredictionMonthKey}
+                x={getPredictionMonthKey(newpredictionMonthKey)}
                 stroke="#71717a"
                 strokeDasharray="4 4"
                 label={{
