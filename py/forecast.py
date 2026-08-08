@@ -4,7 +4,7 @@ import os
 
 import pandas as pd
 from sklearn.linear_model import Ridge
-from sklearn.metrics import r2_score
+from sklearn.metrics import (r2_score, root_mean_squared_error, mean_absolute_error)
 import psycopg
 from psycopg.rows import dict_row
 
@@ -246,6 +246,14 @@ if not data.empty:
 
     clf = Ridge(alpha=1.0)
     clf.fit(X, y)
+
+    r2 = r2_score(y, clf.predict(X))
+    rmse = root_mean_squared_error(y, clf.predict(X))
+    mae = mean_absolute_error(y, clf.predict(X))
+    print(f"R^2 スコア: {r2:.4f}")
+    print(f"RMSE: {rmse:.4f}")
+    print(f"MAE: {mae:.4f}")
+
     month_columns = data["month"]
     last_month = month_columns.max()
     last_month_data = data[data["month"] == last_month].copy()
