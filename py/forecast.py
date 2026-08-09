@@ -3,7 +3,7 @@
 import os
 
 import pandas as pd
-from sklearn.linear_model import Ridge
+from sklearn import ensemble, linear_model
 from sklearn.metrics import (r2_score, root_mean_squared_error, mean_absolute_error)
 import psycopg
 from psycopg.rows import dict_row
@@ -243,22 +243,40 @@ if not data.empty:
     training_data = data.dropna(subset=["next_points"])
     X = training_data[feature_columns]
     y = training_data["next_points"]
+    ridge_model = linear_model.Ridge(alpha=1.0)
+    linear_regression_model = linear_model.LinearRegression()
+    random_forest_model = ensemble.RandomForestRegressor(
+        n_estimators=100,
+        random_state=42,
+    )
+    ridge_model.fit(X, y)
+    linear_regression_model.fit(X, y)
+    random_forest_model.fit(X, y)
 
-    clf = Ridge(alpha=1.0)
-    clf.fit(X, y)
-
-    r2 = r2_score(y, clf.predict(X))
-    rmse = root_mean_squared_error(y, clf.predict(X))
-    mae = mean_absolute_error(y, clf.predict(X))
-    print(f"R^2 スコア: {r2:.4f}")
-    print(f"RMSE: {rmse:.4f}")
-    print(f"MAE: {mae:.4f}")
+    ridge_r2 = r2_score(y, ridge_model.predict(X))
+    ridge_rmse = root_mean_squared_error(y, ridge_model.predict(X))
+    ridge_mae = mean_absolute_error(y, ridge_model.predict(X))
+    print(f"R^2 スコア(リッジ回帰): {ridge_r2:.4f}")
+    print(f"RMSE(リッジ回帰): {ridge_rmse:.4f}")
+    print(f"MAE(リッジ回帰): {ridge_mae:.4f}")
+    regression_r2 = r2_score(y, linear_regression_model.predict(X))
+    regression_rmse = root_mean_squared_error(y, linear_regression_model.predict(X))
+    regression_mae = mean_absolute_error(y, linear_regression_model.predict(X))
+    print(f"R^2 スコア (線形回帰): {regression_r2:.4f}")
+    print(f"RMSE (線形回帰): {regression_rmse:.4f}")
+    print(f"MAE (線形回帰): {regression_mae:.4f}")
+    random_forest_r2 = r2_score(y, random_forest_model.predict(X))
+    random_forest_rmse = root_mean_squared_error(y, random_forest_model.predict(X))
+    random_forest_mae = mean_absolute_error(y, random_forest_model.predict(X))
+    print(f"R^2 スコア (ランダムフォレスト): {random_forest_r2:.4f}")
+    print(f"RMSE (ランダムフォレスト): {random_forest_rmse:.4f}")
+    print(f"MAE (ランダムフォレスト): {random_forest_mae:.4f}")
 
     month_columns = data["month"]
     last_month = month_columns.max()
     last_month_data = data[data["month"] == last_month].copy()
     X_last_month = last_month_data[feature_columns]
-    next_month_predictions = clf.predict(X_last_month).clip(0, None)
+    next_month_predictions = ridge_model.predict(X_last_month).clip(0, None)
     prediction_month = (last_month + pd.DateOffset(months=1)).date()
     last_month_data["prediction_month"] = prediction_month
     last_month_data["predicted_points"] = next_month_predictions
