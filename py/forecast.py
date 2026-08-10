@@ -244,7 +244,7 @@ if not data.empty:
     X = training_data[feature_columns]
     y = training_data["next_points"]
     ridge_model = linear_model.RidgeCV(
-        alphas=[0.1, 1.0, 10.0,20.0, 50.0, 100.0],
+        alphas=[0.1, 1.0, 10.0,20.0, 50.0, 100.0, 200.0, 500.0, 1000.0],
         )
     linear_regression_model = linear_model.LinearRegression()
     random_forest_model = ensemble.RandomForestRegressor(
