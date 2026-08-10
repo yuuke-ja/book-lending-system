@@ -243,13 +243,16 @@ if not data.empty:
     training_data = data.dropna(subset=["next_points"])
     X = training_data[feature_columns]
     y = training_data["next_points"]
-    ridge_model = linear_model.Ridge(alpha=1.0)
+    ridge_model = linear_model.RidgeCV(
+        alphas=[0.1, 1.0, 10.0,20.0, 50.0, 100.0],
+        )
     linear_regression_model = linear_model.LinearRegression()
     random_forest_model = ensemble.RandomForestRegressor(
         n_estimators=100,
         random_state=42,
     )
     ridge_model.fit(X, y)
+    print(f"選んだalpha: {ridge_model.alpha_}")
     linear_regression_model.fit(X, y)
     random_forest_model.fit(X, y)
 
