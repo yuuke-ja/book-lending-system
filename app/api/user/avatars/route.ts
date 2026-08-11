@@ -5,7 +5,11 @@ import { auth } from '@/lib/auth';
 const url = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!; // server only
 const supabase = createClient(url, serviceKey);
-const allowedTypes = ['image/png', 'image/jpeg', 'image/webp'];
+const extensionByType: Record<string, string> = {
+  'image/png': 'png',
+  'image/jpeg': 'jpg',
+  'image/webp': 'webp',
+};
 
 export async function POST(req: Request) {
   const session = await auth();
@@ -22,7 +26,8 @@ export async function POST(req: Request) {
     );
   }
 
-  if (!allowedTypes.includes(file.type)) {
+  const extension = extensionByType[file.type];
+  if (!extension) {
     return NextResponse.json(
       { error: 'PNG、JPEG、WebP形式の画像のみアップロードできます' },
       { status: 400 }
@@ -36,7 +41,7 @@ export async function POST(req: Request) {
   }
 
   const arrayBuffer = await file.arrayBuffer();
-  const key = `uploads/${crypto.randomUUID()}-${file.name}`;
+  const key = `uploads/${crypto.randomUUID()}.${extension}`;
 
   const { error } = await supabase.storage
     .from('avatars')

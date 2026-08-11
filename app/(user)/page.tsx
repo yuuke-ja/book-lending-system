@@ -9,12 +9,22 @@ import UserLoanRanking from "@/app/(user)/_components/Userloanranking";
 import NoticeList from "@/app/(user)/_components/NoticeList";
 import { getNotices } from "@/lib/notices/get-notices";
 
-export default async function Home() {
+async function NoticesSection() {
   const notices = await getNotices();
 
+  return <NoticeList notices={notices} />;
+}
+
+export default function Home() {
   return (
     <section className="space-y-6">
-      <NoticeList notices={notices} />
+      <Suspense
+        fallback={
+          <SectionLoadingFallback label="NOTICES" title="お知らせ" />
+        }
+      >
+        <NoticesSection />
+      </Suspense>
 
       <ReturnStatus />
 

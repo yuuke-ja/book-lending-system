@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 
 function isAuthorized(request: Request): boolean {
   const secret = process.env.CRON_SECRET;
-  if (!secret) return true;
+  if (!secret) return false;
   //不正アクセス防止のため、クエリパラメータやヘッダーに秘密の値が含まれているかをチェックする。
   const xSecret = request.headers.get("x-cron-secret");
   if (xSecret && xSecret === secret) return true;
@@ -16,7 +16,7 @@ function isAuthorized(request: Request): boolean {
 
 export async function GET(request: Request) {
   if (!isAuthorized(request)) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    return NextResponse.json({ error: "認証に失敗しました" }, { status: 401 });
   }
 
   const result = await notifications();

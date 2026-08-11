@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 
 function isAuthorized(request: Request): boolean {
   const secret = process.env.CRON_SECRET;
-  if (!secret) return true;
+  if (!secret) return false;
   const xSecret = request.headers.get("x-cron-secret");
   if (xSecret && xSecret === secret) return true;
   const authHeader = request.headers.get("authorization");
