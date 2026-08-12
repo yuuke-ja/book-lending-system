@@ -3,6 +3,7 @@ import { Suspense } from "react";
 import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { Admin } from "@/lib/admin";
+import IdleSurveillance from "@/app/_components/IdleSurveillance";
 import { AdminBackLink } from "./_components/AdminBackLink";
 
 export default function AdminLayout({
@@ -29,5 +30,10 @@ async function AdminGuard({ children }: { children: ReactNode }) {
     redirect("/");
   }
 
-  return <>{children}</>;
+  return (
+    <>
+      <IdleSurveillance timeoutMinutes={30} />
+      {children}
+    </>
+  );
 }

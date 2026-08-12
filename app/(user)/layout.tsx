@@ -5,6 +5,7 @@ import { auth } from "@/lib/auth";
 import { Admin } from "@/lib/admin";
 import LoginButton from "@/app/(user)/_components/LoginButton";
 import UserSidebarLayout from "@/app/(user)/_components/UserSidebarLayout";
+import IdleSurveillance from "@/app/_components/IdleSurveillance";
 
 export default function UserLayout({
   children,
@@ -49,12 +50,15 @@ async function UserGuard({ children }: { children: ReactNode }) {
   const isAdmin = email ? await Admin(email) : false;
 
   return (
-    <UserSidebarLayout
-      isAdmin={isAdmin}
-      userName={session.user?.name ?? null}
-      userEmail={email}
-    >
-      {children}
-    </UserSidebarLayout>
+    <>
+      <IdleSurveillance timeoutMinutes={isAdmin ? 30 : 60} />
+      <UserSidebarLayout
+        isAdmin={isAdmin}
+        userName={session.user?.name ?? null}
+        userEmail={email}
+      >
+        {children}
+      </UserSidebarLayout>
+    </>
   );
 }

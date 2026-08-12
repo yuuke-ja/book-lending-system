@@ -102,7 +102,10 @@ export async function GET(request: Request) {
     if (isbn.startsWith("491") && axios.isAxiosError(error) && error.response?.status === 404) {
       return NextResponse.json({ error: "雑誌が見つかりません" }, { status: 404 });
     }
-    console.error(error);
+    console.error(
+      "書籍APIの取得に失敗しました:",
+      error instanceof Error ? error.stack : String(error)
+    );
     return NextResponse.json({ error: "サーバー側でエラーが発生しました" }, {
       status: 500,
     });

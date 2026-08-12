@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { auth } from '@/lib/auth';
+import { db } from '@/lib/db';
 
 const url = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!; // server only
@@ -17,6 +18,7 @@ export async function POST(req: Request) {
   if (!userEmail) {
     return NextResponse.json({ error: '認証していません' }, { status: 401 });
   }
+
   const form = await req.formData();
   const file = form.get('file') as File | null;
   if (!file) {
@@ -33,6 +35,7 @@ export async function POST(req: Request) {
       { status: 400 }
     );
   }
+
   if (file.size > 5 * 1024 * 1024) {
     return NextResponse.json(
       { error: '画像サイズは5MB以下にしてください' },
@@ -40,17 +43,33 @@ export async function POST(req: Request) {
     );
   }
 
-  const arrayBuffer = await file.arrayBuffer();
-  const key = `uploads/${crypto.randomUUID()}.${extension}`;
+  const userResult = await db.query<{ id: string }>(
+    `SELECT id
+     FROM "User"
+     WHERE email = $1
+     LIMIT 1`,
+    [userEmail]
+  );
+  const userId = userResult.rows[0]?.id;
 
-  const { error } = await supabase.storage
+  if (!userId) {
+    return NextResponse.json(
+      { error: 'ユーザーが見つかりません' },
+      { status: 404 }
+    );
+  }
+
+  const arrayBuffer = await file.arrayBuffer();
+  const key = `uploads/${userId}/avatar`;
+
+  const { error: uploadError } = await supabase.storage
     .from('avatars')
     .upload(key, Buffer.from(arrayBuffer), {
       contentType: file.type,
-      upsert: false,
+      upsert: true,
     });
 
-  if (error) {
+  if (uploadError) {
     return NextResponse.json(
       { error: '画像のアップロードに失敗しました' },
       { status: 500 }
@@ -60,6 +79,11 @@ export async function POST(req: Request) {
   const { data } = supabase.storage
     .from('avatars')
     .getPublicUrl(key);
+  const publicUrl = new URL(data.publicUrl);
+  publicUrl.searchParams.set('v', Date.now().toString());
 
-  return NextResponse.json({ url: data?.publicUrl, path: key });
+  return NextResponse.json({
+    url: publicUrl.toString(),
+    path: key,
+  });
 }
