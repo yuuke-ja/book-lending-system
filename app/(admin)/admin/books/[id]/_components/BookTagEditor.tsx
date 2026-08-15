@@ -1,6 +1,7 @@
 "use client";
 
 import LoadingSpinner from "@/app/_components/LoadingSpinner";
+import { updateBookTags } from "@/lib/action/admin/book-tags";
 import { useCallback, useEffect, useState } from "react";
 
 type TagItem = {
@@ -67,17 +68,11 @@ export default function BookTagEditor({
             .map((item) => item.tagId)
         )
       );
-      const res = await fetch("/api/admin/updatetags", {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          bookId: targetBookId,
-          tags,
-        }),
+      const result = await updateBookTags({
+        bookId: targetBookId,
+        tags,
       });
-      if (!res.ok) throw new Error("タグの保存に失敗しました");
+      if (!result.ok) throw new Error(result.error);
 
       const nextTags = allTags.filter((tag) => tags.includes(tag.id));
       setCurrentTags(nextTags);

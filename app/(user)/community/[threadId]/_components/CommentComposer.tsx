@@ -3,20 +3,8 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { createComment } from "@/lib/action/comment";
 import type { LinkedBook } from "../../_components/types";
-
-const getErrorMessage = async (res: Response, fallback: string) => {
-  try {
-    const data = await res.json();
-    if (typeof data?.error === "string" && data.error.trim() !== "") {
-      return data.error;
-    }
-  } catch {
-    // ignore
-  }
-
-  return fallback;
-};
 
 function getScrollTop() {
   const main = document.querySelector("main");
@@ -115,20 +103,14 @@ export default function CommentComposer({ threadId }: { threadId: string }) {
       setIsSubmittingComment(true);
       setError(null);
 
-      const res = await fetch("/api/community/comment", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          threadId,
-          content: commentInput.trim(),
-          bookIds: linkedBooks.map((book) => book.id),
-        }),
+      const result = await createComment({
+        threadId,
+        content: commentInput.trim(),
+        bookIds: linkedBooks.map((book) => book.id),
       });
 
-      if (!res.ok) {
-        throw new Error(await getErrorMessage(res, "コメントの投稿に失敗しました"));
+      if (result.status !== 200) {
+        throw new Error(result.error);
       }
 
       setCommentInput("");

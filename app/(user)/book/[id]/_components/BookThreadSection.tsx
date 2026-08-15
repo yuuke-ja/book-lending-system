@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
+import { createThread } from "@/lib/action/thread";
 
 type Thread = {
   id: string;
@@ -47,20 +48,14 @@ export default function BookThreadSection({ bookId }: { bookId: string }) {
     try {
       setIsSubmittingThread(true);
 
-      const res = await fetch("/api/community/thread", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          kind: "BOOK_TOPIC",
-          bookId,
-          content: threadInput.trim(),
-        }),
+      const result = await createThread({
+        kind: "BOOK_TOPIC",
+        bookId,
+        content: threadInput.trim(),
       });
 
-      if (!res.ok) {
-        throw new Error("投稿の作成に失敗しました");
+      if (result.status !== 200) {
+        throw new Error(result.error);
       }
 
       setThreadInput("");

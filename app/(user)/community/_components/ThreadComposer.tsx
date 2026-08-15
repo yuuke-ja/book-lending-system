@@ -3,22 +3,10 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { createThread } from "@/lib/action/thread";
 import type { LinkedBook } from "./types";
 
 const COMMUNITY_DRAFT_STATE_KEY = "communityDraftState";
-
-const getErrorMessage = async (res: Response, fallback: string) => {
-  try {
-    const data = await res.json();
-    if (typeof data?.error === "string" && data.error.trim() !== "") {
-      return data.error;
-    }
-  } catch {
-    // ignore
-  }
-
-  return fallback;
-};
 
 function getScrollTop() {
   const main = document.querySelector("main");
@@ -111,20 +99,14 @@ export default function ThreadComposer() {
       setIsSubmittingThread(true);
       setSubmitError(null);
 
-      const res = await fetch("/api/community/thread", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          kind: submitKind,
-          bookId: selectedBook?.id ?? null,
-          content: threadInput.trim(),
-        }),
+      const result = await createThread({
+        kind: submitKind,
+        bookId: selectedBook?.id ?? null,
+        content: threadInput.trim(),
       });
 
-      if (!res.ok) {
-        throw new Error(await getErrorMessage(res, "投稿の作成に失敗しました"));
+      if (result.status !== 200) {
+        throw new Error(result.error);
       }
 
       setThreadInput("");

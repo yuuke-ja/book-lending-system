@@ -5,6 +5,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import NoticeEditor from "./NoticeEditor";
+import { createNotice } from "@/lib/action/admin/notices";
 
 const NOTICE_DRAFT_KEY = "noticeDraft";
 
@@ -93,26 +94,18 @@ export default function NoticeForm() {
     try {
       setIsSubmitting(true);
 
-      const response = await fetch("/api/admin/notices", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          title,
-          content,
-          bookId: selectedBook?.id ?? null,
-        }),
+      const result = await createNotice({
+        title,
+        content,
+        bookId: selectedBook?.id ?? null,
       });
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        window.alert(`エラー: ${data.error ?? "登録に失敗しました"}`);
+      if (!result.ok) {
+        window.alert(`エラー: ${result.error}`);
         return;
       }
 
-      window.alert("お知らせが保存されました");
+      window.alert(result.message);
       setTitle("");
       setContent(null);
       setInitialContent(null);

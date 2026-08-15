@@ -1,5 +1,9 @@
 "use client";
 
+import {
+  createMissingEmbeddings,
+  rebuildAllEmbeddings,
+} from "@/lib/action/admin/book-embeddings";
 import { useState } from "react";
 
 export default function BookEmbeddingStatusBar({
@@ -15,16 +19,17 @@ export default function BookEmbeddingStatusBar({
     setLoading(path);
     setMessage("");
     try {
-      const res = await fetch(`/api/admin/book-embeddings/${path}`, {
-        method: "POST",
-      });
-      const data = await res.json();
-      if (!res.ok) {
-        setMessage(data.error ?? "更新に失敗しました");
+      const result =
+        path === "missing"
+          ? await createMissingEmbeddings()
+          : await rebuildAllEmbeddings();
+      if (!result.ok) {
+        setMessage(result.error);
         return;
       }
-      setCount((prev) => path === "rebuild" ? data.count : prev + data.count);
-      setMessage(`${data.count ?? 0}件更新しました`);
+      const updatedCount = result.data?.count ?? 0;
+      setCount((prev) => path === "rebuild" ? updatedCount : prev + updatedCount);
+      setMessage(result.message);
     } catch (error) {
       console.error("Error occurred while updating embeddings:", error);
       setMessage("更新に失敗しました");

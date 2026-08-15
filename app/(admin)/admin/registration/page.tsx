@@ -3,6 +3,11 @@
 import ISBNImportModal from "@/app/_components/ISBNImportModal";
 import { useCallback, useEffect, useState, type SVGProps } from "react";
 import Image from "next/image";
+import { registerPendingBooks } from "@/lib/action/admin/book-registration";
+import {
+  createPendingBook,
+  deletePendingBook,
+} from "@/lib/action/admin/pending-books";
 
 type PendingBook = {
   id: string;
@@ -91,25 +96,21 @@ export default function QRCodeReader() {
         throw new Error(typeof data?.error === "string" ? data.error : "本の情報を取得できませんでした");
       }
       const data = await res.json();
-      const resbook = await fetch("/api/admin/pendingbook", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          googleBookId: data.googleBookId,
-          isbn13: data.isbn13,
-          title: data.title,
-          authors: data.authors,
-          description: data.description,
-          thumbnail: data.thumbnail,
-        }),
+      const result = await createPendingBook({
+        googleBookId: data.googleBookId,
+        isbn13: data.isbn13,
+        title: data.title,
+        authors: data.authors,
+        description: data.description,
+        thumbnail: data.thumbnail,
       });
-      if (!resbook.ok) {
-        const data = await resbook.json().catch(() => null);
-        throw new Error(typeof data?.error === "string" ? data.error : "仮登録に失敗しました");
+      if (!result.ok) {
+        throw new Error(result.error);
       }
-      const saved = await resbook.json();
+      const saved = result.data;
+      if (!saved) {
+        throw new Error("仮登録に失敗しました");
+      }
       //置き換える
       setPending((prev) => {
         const double = prev.some((pb) => pb.isbn13 === saved.isbn13);
@@ -126,38 +127,30 @@ export default function QRCodeReader() {
     }
   }, [isDetecting]);
 
-  function pendingdelete(id: string) {
-    fetch("/api/admin/pendingbook", {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ id }),
-    }).then((res) => {
-      if (!res.ok) throw new Error();
+  async function pendingdelete(id: string) {
+    try {
+      const result = await deletePendingBook(id);
+      if (!result.ok) throw new Error(result.error);
       setPending((prev) => prev.filter((pb) => pb.id !== id));
-    });
+    } catch (error) {
+      setError(error instanceof Error ? error.message : "仮登録の削除に失敗しました");
+    }
   }
 
-  function Bookregistration() {
+  async function Bookregistration() {
     if (isRegistering) return;
     setIsRegistering(true);
-    fetch("/api/admin/book-registration", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    }).then(async (res) => {
-      if (!res.ok) {
-        const data = await res.json().catch(() => null);
-        throw new Error(typeof data?.error === "string" ? data.error : "本登録に失敗しました");
+    try {
+      const result = await registerPendingBooks();
+      if (!result.ok) {
+        throw new Error(result.error);
       }
       setPending([]);
-    }).catch((error) => {
+    } catch (error) {
       setError(error instanceof Error ? error.message : "本登録に失敗しました");
-    }).finally(() => {
+    } finally {
       setIsRegistering(false);
-    });
+    }
   }
 
   return (

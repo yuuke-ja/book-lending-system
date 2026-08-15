@@ -1,6 +1,7 @@
 "use client";
 
 import LoadingSpinner from "@/app/_components/LoadingSpinner";
+import { updateBookInfo } from "@/lib/action/admin/book-info";
 import { useState } from "react";
 
 type BookInfoEditorProps = {
@@ -22,22 +23,17 @@ export default function BookInfoEditor({
     try {
       setIsSaving(true);
 
-      const res = await fetch(`/api/admin/books/${bookId}/update`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          title,
-          description,
-        }),
+      const result = await updateBookInfo({
+        bookId,
+        title,
+        description,
       });
 
-      if (!res.ok) {
-        throw new Error("変更に失敗しました");
+      if (!result.ok) {
+        throw new Error(result.error);
       }
 
-      alert("変更しました");
+      alert(result.message);
     } catch (error) {
       console.error("変更失敗", error);
       alert("変更に失敗しました");

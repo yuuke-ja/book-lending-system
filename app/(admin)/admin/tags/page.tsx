@@ -1,7 +1,19 @@
 "use client";
 
 import LoadingSpinner from "@/app/_components/LoadingSpinner";
-import { useEffect, useState } from "react";
+import {
+  createTags,
+  deleteTag as deleteTagAction,
+} from "@/lib/action/admin/tag-list";
+import {
+  createTagSubterms,
+  deleteTagSubterm,
+} from "@/lib/action/admin/tag-subterms";
+import {
+  classifyAllBooks,
+  classifyBooksForTag,
+} from "@/lib/action/admin/tag-classification";
+import { useCallback, useEffect, useState } from "react";
 
 type TagItem = {
   id: string;
@@ -27,10 +39,10 @@ export default function AdminTagsPage() {
   const [subtermInputs, setSubtermInputs] = useState([""]);
   const [isSavingSubterms, setIsSavingSubterms] = useState(false);
 
-  function showAlertMessage(message: string) {
+  const showAlertMessage = useCallback((message: string) => {
     setTagStatusMessage("");
     alert(message);
-  }
+  }, []);
 
   async function fetchTagList(options?: { silent?: boolean }) {
     const silent = options?.silent ?? false;
@@ -60,20 +72,9 @@ export default function AdminTagsPage() {
     setIsAddingTags(true);
     setTagStatusMessage("タグを保存中...");
     try {
-      const res = await fetch("/api/admin/tags", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ tags }),
-      });
-      if (!res.ok) {
-        try {
-          const err = await res.json();
-          showAlertMessage(
-            typeof err?.error === "string" ? err.error : "タグの保存に失敗しました"
-          );
-        } catch {
-          showAlertMessage("タグの保存に失敗しました");
-        }
+      const result = await createTags(tags);
+      if (!result.ok) {
+        showAlertMessage(result.error);
         return;
       }
 
@@ -91,23 +92,13 @@ export default function AdminTagsPage() {
 
     setIsReclassifyingTags(true);
     try {
-      const res = await fetch(`/api/admin/tags/${tagId}/classify-books`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-      });
-      if (!res.ok) {
-        try {
-          const err = await res.json();
-          showAlertMessage(
-            typeof err?.error === "string" ? err.error : "タグの付け直しに失敗しました"
-          );
-        } catch {
-          showAlertMessage("タグの付け直しに失敗しました");
-        }
+      const result = await classifyBooksForTag(tagId);
+      if (!result.ok) {
+        showAlertMessage(result.error);
         return;
       }
 
-      showAlertMessage("タグを付け直しました");
+      showAlertMessage(result.message);
     } catch {
       showAlertMessage("タグの付け直しに失敗しました");
     } finally {
@@ -120,23 +111,13 @@ export default function AdminTagsPage() {
 
     setIsReclassifyingTags(true);
     try {
-      const res = await fetch("/api/admin/tags/classify-books", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-      });
-      if (!res.ok) {
-        try {
-          const err = await res.json();
-          showAlertMessage(
-            typeof err?.error === "string" ? err.error : "全タグの付け直しに失敗しました"
-          );
-        } catch {
-          showAlertMessage("全タグの付け直しに失敗しました");
-        }
+      const result = await classifyAllBooks();
+      if (!result.ok) {
+        showAlertMessage(result.error);
         return;
       }
 
-      showAlertMessage("全タグを付け直しました");
+      showAlertMessage(result.message);
     } catch {
       showAlertMessage("全タグの付け直しに失敗しました");
     } finally {
@@ -149,18 +130,9 @@ export default function AdminTagsPage() {
 
     setTagStatusMessage("タグを削除中...");
     try {
-      const res = await fetch(`/api/admin/tags/${tag.id}`, {
-        method: "DELETE",
-      });
-      if (!res.ok) {
-        try {
-          const err = await res.json();
-          showAlertMessage(
-            typeof err?.error === "string" ? err.error : "タグの削除に失敗しました"
-          );
-        } catch {
-          showAlertMessage("タグの削除に失敗しました");
-        }
+      const result = await deleteTagAction(tag.id);
+      if (!result.ok) {
+        showAlertMessage(result.error);
         return;
       }
 
@@ -175,7 +147,7 @@ export default function AdminTagsPage() {
     }
   }
 
-  async function fetchSubterms(tagId: string) {
+  const fetchSubterms = useCallback(async (tagId: string) => {
     setIsLoadingSubterms(true);
     try {
       const res = await fetch(`/api/admin/tags/${tagId}/subterms`, {
@@ -189,7 +161,7 @@ export default function AdminTagsPage() {
     } finally {
       setIsLoadingSubterms(false);
     }
-  }
+  }, [showAlertMessage]);
 
   async function addSubterms() {
     if (!selectedTag) return;
@@ -204,20 +176,9 @@ export default function AdminTagsPage() {
     setIsSavingSubterms(true);
     setTagStatusMessage("小要素を保存中...");
     try {
-      const res = await fetch(`/api/admin/tags/${selectedTag.id}/subterms`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ subterms }),
-      });
-      if (!res.ok) {
-        try {
-          const err = await res.json();
-          showAlertMessage(
-            typeof err?.error === "string" ? err.error : "小要素の保存に失敗しました"
-          );
-        } catch {
-          showAlertMessage("小要素の保存に失敗しました");
-        }
+      const result = await createTagSubterms(selectedTag.id, subterms);
+      if (!result.ok) {
+        showAlertMessage(result.error);
         return;
       }
 
@@ -237,19 +198,9 @@ export default function AdminTagsPage() {
 
     setTagStatusMessage("小要素を削除中...");
     try {
-      const res = await fetch(
-        `/api/admin/tags/${selectedTag.id}/subterms/${subterm.id}`,
-        { method: "DELETE" }
-      );
-      if (!res.ok) {
-        try {
-          const err = await res.json();
-          showAlertMessage(
-            typeof err?.error === "string" ? err.error : "小要素の削除に失敗しました"
-          );
-        } catch {
-          showAlertMessage("小要素の削除に失敗しました");
-        }
+      const result = await deleteTagSubterm(selectedTag.id, subterm.id);
+      if (!result.ok) {
+        showAlertMessage(result.error);
         return;
       }
 
@@ -277,7 +228,7 @@ export default function AdminTagsPage() {
     };
 
     fetchInitialTags();
-  }, []);
+  }, [showAlertMessage]);
 
   useEffect(() => {
     if (!selectedTag) {
@@ -286,7 +237,7 @@ export default function AdminTagsPage() {
     }
 
     fetchSubterms(selectedTag.id);
-  }, [selectedTag]);
+  }, [selectedTag, fetchSubterms]);
 
   return (
     <main className="min-h-screen bg-white p-6">

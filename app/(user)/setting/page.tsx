@@ -4,6 +4,7 @@ import AvatarEditor, { type AvatarEditorRef } from "react-avatar-editor";
 import { useRef, useState, useEffect } from "react";
 import Image from "next/image";
 import { useNotificationManager } from "@/hooks/use-notification-manager";
+import { updateUserProfile } from "@/lib/action/user-profile";
 
 export default function NotificationsPage() {
   const [isRegistering, setIsRegistering] = useState(false);
@@ -65,17 +66,16 @@ export default function NotificationsPage() {
     }
 
     const data = await res.json();
-    const profileRes = await fetch("/api/user/profile", {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
+    try {
+      const profileResult = await updateUserProfile({
         nickname,
-        avatarUrl: data.url
-      })
-    });
-    if (!profileRes.ok) {
+        avatarUrl: data.url,
+      });
+      if (profileResult.status !== 200) {
+        alert("プロフィールの更新に失敗しました");
+        return;
+      }
+    } catch {
       alert("プロフィールの更新に失敗しました");
       return;
     }
@@ -88,19 +88,17 @@ export default function NotificationsPage() {
   ) => {
     event.preventDefault();
 
-    const res = await fetch("/api/user/profile", {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
+    try {
+      const result = await updateUserProfile({
         nickname,
-      }),
-    });
+      });
 
-    if (!res.ok) {
+      if (result.status !== 200) {
+        alert("ニックネームの更新に失敗しました");
+        return;
+      }
+    } catch {
       alert("ニックネームの更新に失敗しました");
-      return;
     }
   };
 

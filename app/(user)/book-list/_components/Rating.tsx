@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { saveBookReview } from "@/lib/action/book-review";
 import { Rating } from "@smastrom/react-rating";
 import "@smastrom/react-rating/style.css";
 
@@ -74,18 +75,12 @@ export default function StarRating({
 
     setIsPostingReview(true);
     try {
-      const res = await fetch("/api/book/review", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          bookId,
-          rating: draftRating,
-        }),
+      const result = await saveBookReview({
+        bookId,
+        rating: draftRating,
       });
 
-      if (!res.ok) {
+      if (result.status !== 200) {
         throw new Error("レビューの送信に失敗しました");
       }
       setOpenStarModal(false);

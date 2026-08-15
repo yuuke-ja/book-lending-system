@@ -2,6 +2,7 @@
 
 import ISBNScanGuide from "@/app/_components/ISBNScanGuide";
 import ISBNImportModal from "@/app/_components/ISBNImportModal";
+import { loanBook } from "@/lib/action/loan";
 import { useCallback, useState } from "react";
 import Image from "next/image";
 
@@ -17,13 +18,15 @@ type Book = {
 export default function LoanQrPage() {
   const [isScannerOpen, setIsScannerOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [book, setBook] = useState<Book | null>(null);
   const [successTitle, setSuccessTitle] = useState<string | null>(null);
 
+  const showError = useCallback((message: string) => {
+    window.alert(message);
+  }, []);
+
   // スキャン開始時に画面状態を初期化してカメラを開く。
   const startScan = () => {
-    setError(null);
     setBook(null);
     setSuccessTitle(null);
     setIsScannerOpen(true);
@@ -34,44 +37,34 @@ export default function LoanQrPage() {
     try {
       const res = await fetch(`/api/book/borrow?isbn13=${encodeURIComponent(isbn)}`);
       if (res.status === 404) {
-        setError("この本は未登録です");
+        showError("この本は未登録です");
         setBook(null);
         return;
       }
       if (!res.ok) throw new Error();
       const found: Book = await res.json();
-      setError(null);
       setBook(found);
     } catch {
-      setError("本情報の取得に失敗しました");
+      showError("本情報の取得に失敗しました");
     }
-  }, []);
+  }, [showError]);
 
-  // 確認中の本を貸出APIに送信して、成功時は完了表示に切り替える。
+  // 確認中の本をServer Actionで貸し出し、成功時は完了表示に切り替える。
   const borrowBook = async () => {
     if (!book || isSubmitting) return;
     try {
       setIsSubmitting(true);
-      setError(null);
-      const res = await fetch("/api/book/loan", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ bookId: book.id }),
-      });
+      const result = await loanBook(book.id);
 
-      if (!res.ok) {
-        if (res.status === 409) {
-          throw new Error("この本はすでに貸出中です");
-        }
-        throw new Error("貸出に失敗しました");
+      if (result.status !== 200) {
+        throw new Error(result.error);
       }
 
       setSuccessTitle(book.title);
       setBook(null);
     } catch (e) {
-      setError(e instanceof Error ? e.message : "貸出に失敗しました");
+      const message = e instanceof Error ? e.message : "貸出に失敗しました";
+      showError(message);
     } finally {
       setIsSubmitting(false);
     }
@@ -155,7 +148,6 @@ export default function LoanQrPage() {
           </div>
         )}
 
-        {error && <p className="text-sm text-red-600">{error}</p>}
       </section>
 
       <ISBNImportModal

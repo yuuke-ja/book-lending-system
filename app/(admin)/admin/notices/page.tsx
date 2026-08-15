@@ -1,11 +1,10 @@
-import { revalidatePath } from "next/cache";
-import { headers } from "next/headers";
 import Image from "next/image";
 import { Trash2 } from "lucide-react";
 import NoticeForm from "./_components/NoticeForm";
 import { getNotices } from "@/lib/notices/get-notices";
+import { deleteNotice } from "@/lib/action/admin/notices";
 
-async function deleteNotice(formData: FormData) {
+async function deleteNoticeFromForm(formData: FormData) {
   "use server";
 
   const noticeId = formData.get("noticeId");
@@ -13,28 +12,10 @@ async function deleteNotice(formData: FormData) {
     return;
   }
 
-  const requestHeaders = await headers();
-  const host = requestHeaders.get("host");
-  const cookie = requestHeaders.get("cookie");
-  const protocol = requestHeaders.get("x-forwarded-proto") ?? "http";
-
-  if (!host) {
-    return;
+  const result = await deleteNotice(noticeId);
+  if (!result.ok) {
+    throw new Error(result.error);
   }
-
-  const response = await fetch(
-    `${protocol}://${host}/api/admin/notices/${encodeURIComponent(noticeId)}`,
-    {
-      method: "DELETE",
-      headers: cookie ? { cookie } : undefined,
-    }
-  );
-
-  if (!response.ok) {
-    throw new Error("お知らせの削除に失敗しました");
-  }
-
-  revalidatePath("/admin/notices");
 }
 
 function extractText(value: unknown): string {
@@ -111,7 +92,7 @@ export default async function AdminNoticesPage() {
                           timeZone: "Asia/Tokyo",
                         })}
                       </time>
-                      <form action={deleteNotice}>
+                      <form action={deleteNoticeFromForm}>
                         <input
                           type="hidden"
                           name="noticeId"

@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { saveLoanSettings } from "@/lib/action/admin/loan-settings";
 
 type ExceptionRule = {
   id: string;
@@ -135,25 +136,14 @@ export default function AdminPage() {
           })),
       };
 
-      const res = await fetch("/api/admin/loan-settings", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-      if (!res.ok) {
-        let message = "保存に失敗しました";
-        try {
-          const err = await res.json();
-          message = typeof err?.message === "string" ? err.message : message;
-        } catch {
-          // レスポンス本文がJSONでない場合は既定の文言を使う。
-        }
+      const result = await saveLoanSettings(payload);
+      if (!result.ok) {
         setStatusMessage("");
-        window.alert(message);
+        window.alert(result.error);
         return;
       }
       setStatusMessage("");
-      window.alert("保存しました");
+      window.alert(result.message);
     } catch (error) {
       console.error("エラー:", error);
       setStatusMessage("");

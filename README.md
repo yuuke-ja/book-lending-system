@@ -16,6 +16,19 @@ bun dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
+## CSRF対策
+
+Route Handlerでデータを変更するリクエストは、`proxy.ts`でブラウザの
+`Origin`ヘッダーを検証します。開発中のlocalhostは自動的に許可されます。
+本番環境では、公開するアプリのOriginをカンマ区切りで設定してください。
+
+```bash
+ALLOWED_ORIGINS=https://library.example.com
+```
+
+VercelのPreview URLと本番Deployment URLは、Vercelのシステム環境変数からも
+取得します。独自ドメインは`ALLOWED_ORIGINS`への設定が必要です。
+
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.

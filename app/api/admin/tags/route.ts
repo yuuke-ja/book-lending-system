@@ -1,48 +1,10 @@
-import { NextRequest, NextResponse } from "next/server";
+import { connection, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { Admin } from "@/lib/admin";
 import { db } from "@/lib/db";
 
-export async function POST(request: NextRequest) {
-  try {
-    const session = await auth();
-    if (!session) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    const email = session.user?.email;
-    const isAdmin = email ? await Admin(email) : false;
-    if (!isAdmin) {
-      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-    }
-
-    const data = await request.json();
-    if (!Array.isArray(data.tags) || data.tags.length === 0) {
-      return NextResponse.json({ error: "Invalid tags" }, { status: 400 });
-    }
-
-    const result = await db.query(
-      `INSERT INTO "TagList" (tag)
-       SELECT DISTINCT trim(tag)
-       FROM unnest($1::text[]) AS input(tag)
-       WHERE trim(tag) <> ''
-       ON CONFLICT (tag) DO UPDATE
-       SET "updatedAt" = now()
-       RETURNING *, (xmax = 0) AS inserted`,
-      [data.tags]
-    );
-    const rows = result.rows;
-
-    return NextResponse.json(rows, {
-      status: rows.some((row) => row.inserted) ? 201 : 200,
-    });
-  } catch (error) {
-    console.error(error);
-    return NextResponse.json({ error: "Failed to create tag" }, { status: 500 });
-  }
-}
-
 export async function GET() {
+  await connection();
   try {
     const session = await auth();
     if (!session) {

@@ -2,6 +2,7 @@
 
 import { FormEvent, useState } from "react";
 
+import { runEmbeddingTest } from "@/lib/action/admin/book-embeddings";
 import type {
   EmbeddingTestBook,
   EmbeddingTestMode,
@@ -27,20 +28,14 @@ export default function EmbeddingTestClient({
     setError("");
 
     try {
-      const response = await fetch("/api/admin/book-embeddings/test", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ mode, query, bookId, limit }),
-      });
-      const data = await response.json();
-
-      if (!response.ok) {
+      const result = await runEmbeddingTest({ mode, query, bookId, limit });
+      if (!result.ok) {
         setResults([]);
-        setError(data.error ?? "テストに失敗しました");
+        setError(result.error);
         return;
       }
 
-      setResults(data.results ?? []);
+      setResults(result.data?.results ?? []);
     } catch (testError) {
       console.error("Embedding test request failed:", testError);
       setResults([]);

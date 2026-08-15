@@ -3,22 +3,10 @@
 import { useEffect, useState, useRef } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { createComment } from "@/lib/action/comment";
 import { type LinkedBook } from "../../_components/types";
 import type { ThreadCommentNode } from "./types";
 export type { ThreadCommentNode } from "./types";
-
-const getErrorMessage = async (res: Response, fallback: string) => {
-  try {
-    const data = await res.json();
-    if (typeof data?.error === "string" && data.error.trim() !== "") {
-      return data.error;
-    }
-  } catch {
-    // レスポンス本文がJSONでない場合は既定メッセージを使う。
-  }
-
-  return fallback;
-};
 
 function CommentTreeItem({
   comment,
@@ -197,21 +185,15 @@ function CommentTreeItem({
     try {
       setIsSubmittingReply(true);
 
-      const res = await fetch("/api/community/comment", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          threadId,
-          parentCommentId: comment.id,
-          content: replyInput.trim(),
-          bookIds: linkedBooks.map((book) => book.id),
-        }),
+      const result = await createComment({
+        threadId,
+        parentCommentId: comment.id,
+        content: replyInput.trim(),
+        bookIds: linkedBooks.map((book) => book.id),
       });
 
-      if (!res.ok) {
-        throw new Error(await getErrorMessage(res, "返信の投稿に失敗しました"));
+      if (result.status !== 200) {
+        throw new Error(result.error);
       }
 
       setReplyInput("");

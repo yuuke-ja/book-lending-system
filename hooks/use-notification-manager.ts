@@ -1,4 +1,8 @@
 import { useEffect, useState } from "react";
+import {
+  subscribePushNotification,
+  unsubscribePushNotification,
+} from "@/lib/action/push-notification";
 
 type StoredSubscription = {
   endpoint: string;
@@ -75,19 +79,13 @@ export function useNotificationManager() {
         throw new Error("subscriptionの形式が不正です");
       }
 
-      const response = await fetch("/api/push/subscribe", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          subscription: {
-            endpoint,
-            keys: { p256dh: keys.p256dh, auth: keys.auth },
-          },
-        }),
+      const result = await subscribePushNotification({
+        endpoint,
+        keys: { p256dh: keys.p256dh, auth: keys.auth },
       });
-      if (!response.ok) {
+      if (!result.ok) {
         await sub.unsubscribe().catch(() => undefined);
-        throw new Error("通知登録の保存に失敗しました");
+        throw new Error(result.error);
       }
       setSubscription(sub);
     } catch (err) {
@@ -101,13 +99,9 @@ export function useNotificationManager() {
     try {
       if (!subscription) return;
       const endpoint = subscription.endpoint;
-      const response = await fetch("/api/push/unsubscribe", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ endpoint }),
-      });
-      if (!response.ok) {
-        throw new Error("通知解除の保存に失敗しました");
+      const result = await unsubscribePushNotification(endpoint);
+      if (!result.ok) {
+        throw new Error(result.error);
       }
 
       await subscription.unsubscribe();
