@@ -34,18 +34,18 @@ const mockedAdmin = Admin as unknown as ReturnType<typeof vi.fn>;
 const mockedQuery = db.query as unknown as ReturnType<typeof vi.fn>;
 
 function readDatabaseUrl() {
-  if (process.env.DATABASE_URL) return process.env.DATABASE_URL;
+  if (process.env.TEST_DATABASE_URL) return process.env.TEST_DATABASE_URL;
 
   try {
     const envFile = readFileSync(".env.local", "utf8");
     const databaseUrlLine = envFile
       .split(/\r?\n/)
-      .find((line) => line.startsWith("DATABASE_URL="));
+      .find((line) => line.startsWith("TEST_DATABASE_URL="));
 
     if (!databaseUrlLine) return undefined;
 
     return databaseUrlLine
-      .slice("DATABASE_URL=".length)
+      .slice("TEST_DATABASE_URL=".length)
       .trim()
       .replace(/^["']|["']$/g, "");
   } catch {
@@ -126,8 +126,13 @@ async function createTempTables(client: Client) {
        id TEXT PRIMARY KEY,
        "userEmail" TEXT NOT NULL,
        "bookId" TEXT NOT NULL,
-       "loanedAt" TIMESTAMP(3) NOT NULL
+       "loanedAt" TIMESTAMPTZ NOT NULL,
+       "returnedAt" TIMESTAMPTZ
      )`
+  );
+  await client.query(
+    `CREATE UNIQUE INDEX "Loan_one_active_per_book"
+     ON "Loan" ("bookId") WHERE "returnedAt" IS NULL`
   );
   await client.query(
     `CREATE TEMP TABLE "ResearchEvent" (
@@ -204,12 +209,12 @@ async function seedAggregationData(client: Client) {
      VALUES ('search-design-1', 'tag-design', 0.8)`
   );
   await client.query(
-    `INSERT INTO "Loan" (id, "userEmail", "bookId", "loanedAt")
+    `INSERT INTO "Loan" (id, "userEmail", "bookId", "loanedAt", "returnedAt")
      VALUES
-       ('loan-design-1', 'user@example.com', 'book-design-1', '2026-04-11 10:00:00'),
-       ('loan-design-2', 'user@example.com', 'book-design-2', '2026-04-12 10:00:00'),
-       ('loan-design-3', 'user@example.com', 'book-design-1', '2026-05-01 10:00:00'),
-       ('loan-tech-1', 'user@example.com', 'book-tech-1', '2026-04-13 10:00:00')`
+       ('loan-design-1', 'user@example.com', 'book-design-1', '2026-04-11 10:00:00', '2026-04-20 10:00:00'),
+       ('loan-design-2', 'user@example.com', 'book-design-2', '2026-04-12 10:00:00', NULL),
+       ('loan-design-3', 'user@example.com', 'book-design-1', '2026-05-01 10:00:00', NULL),
+       ('loan-tech-1', 'user@example.com', 'book-tech-1', '2026-04-13 10:00:00', NULL)`
   );
   await client.query(
     `INSERT INTO "ResearchEvent"
@@ -221,7 +226,7 @@ async function seedAggregationData(client: Client) {
   );
   await client.query(
     `INSERT INTO "Thread" (id, kind, "bookId", "userEmail", content, "createdAt")
-     VALUES ('thread-design-1', 'book', 'book-design-1', 'user@example.com', 'thread', '2026-04-17 10:00:00')`
+     VALUES ('thread-design-1', 'BOOK_TOPIC', 'book-design-1', 'user@example.com', 'thread', '2026-04-17 10:00:00')`
   );
 }
 
@@ -305,5 +310,90 @@ describeWithDatabase("GET /api/admin/genre-points SQL aggregation", () => {
         points: 8.25,
       },
     ]);
+  });
+
+  it("11種類すべての行動を指定した重みで同じ月・タグへ集約する", async () => {
+    await client.query(`INSERT INTO "TagList" (id, tag) VALUES ('tag-all', '全種類')`);
+    await client.query(`INSERT INTO "BookTag" ("bookId", "tagId") VALUES ('book-all', 'tag-all')`);
+    await client.query(`
+      INSERT INTO "SearchEvent" (id, "userEmail", "searchType", query, "occurredAt") VALUES
+        ('search-book', 'user@example.com', 'book_list', 'book', '2026-04-01 10:00:00'),
+        ('search-ai', 'user@example.com', 'ai_query', 'ai', '2026-04-02 10:00:00')
+    `);
+    await client.query(`
+      INSERT INTO "SearchEventTag" ("searchEventId", "tagId", confidence) VALUES
+        ('search-book', 'tag-all', 1),
+        ('search-ai', 'tag-all', 1)
+    `);
+    await client.query(`
+      INSERT INTO "Loan" (id, "userEmail", "bookId", "loanedAt")
+      VALUES ('loan-all', 'user@example.com', 'book-all', '2026-04-03 10:00:00')
+    `);
+    await client.query(`
+      INSERT INTO "ResearchEvent"
+        (id, "eventType", "userEmail", "bookId", "sourceType", "sourceId", "occurredAt") VALUES
+        ('detail', 'book_detail_view', 'user@example.com', 'book-all', 'direct', NULL, '2026-04-04 10:00:00'),
+        ('post', 'post_view', 'user@example.com', 'book-all', 'thread', NULL, '2026-04-05 10:00:00'),
+        ('thread-click', 'book_link_click', 'user@example.com', 'book-all', 'thread', NULL, '2026-04-06 10:00:00'),
+        ('comment-click', 'book_link_click', 'user@example.com', 'book-all', 'comment', NULL, '2026-04-07 10:00:00'),
+        ('ai-click', 'book_link_click', 'user@example.com', 'book-all', 'ai_chat', NULL, '2026-04-08 10:00:00')
+    `);
+    await client.query(`
+      INSERT INTO "AiRecommendation"
+        (id, "bookId", "createdAt", "userEmail", query, reason, rank)
+      VALUES ('ai-rec', 'book-all', '2026-04-09 10:00:00', 'user@example.com', 'query', 'reason', 1)
+    `);
+    await client.query(`
+      INSERT INTO "Thread" (id, kind, "bookId", "userEmail", content, "createdAt")
+      VALUES ('thread-all', 'BOOK_TOPIC', 'book-all', 'user@example.com', 'thread', '2026-04-10 10:00:00')
+    `);
+    await client.query(`
+      INSERT INTO "ThreadComment"
+        (id, "threadId", "parentCommentId", "userEmail", content, "createdAt")
+      VALUES ('comment-all', 'thread-all', NULL, 'user@example.com', 'comment', '2026-04-11 10:00:00')
+    `);
+    await client.query(`
+      INSERT INTO "CommentBookLink" (id, "commentId", "bookId", "createdAt")
+      VALUES ('link-all', 'comment-all', 'book-all', '2026-04-11 10:00:00')
+    `);
+
+    const params = new URLSearchParams({
+      searchBookList: "1",
+      searchAiQuery: "1",
+      loan: "1",
+      bookDetailView: "1",
+      postView: "1",
+      threadBookLinkClick: "1",
+      commentBookLinkClick: "1",
+      aiBookLinkClick: "1",
+      aiRecommendationView: "1",
+      threadCreate: "1",
+      commentCreate: "1",
+    });
+    const response = await GET(
+      new Request(`http://localhost/api/admin/genre-points?${params}`)
+    );
+    const body: GenrePointResponse = await response.json();
+
+    expect(response.status).toBe(200);
+    expect(findRow(body, "2026-04", "全種類")?.points).toBe(11);
+  });
+
+  it("月末23時59分と翌月0時を別の月へ集約する", async () => {
+    await client.query(`INSERT INTO "TagList" (id, tag) VALUES ('tag-boundary', '境界')`);
+    await client.query(`INSERT INTO "BookTag" ("bookId", "tagId") VALUES ('book-boundary', 'tag-boundary')`);
+    await client.query(`
+      INSERT INTO "Loan" (id, "userEmail", "bookId", "loanedAt", "returnedAt") VALUES
+        ('april', 'user@example.com', 'book-boundary', '2026-04-30 23:59:59.999', '2026-04-30 23:59:59.999'),
+        ('may', 'user@example.com', 'book-boundary', '2026-05-01 00:00:00.000', NULL)
+    `);
+
+    const response = await GET(
+      new Request("http://localhost/api/admin/genre-points?loan=1")
+    );
+    const body: GenrePointResponse = await response.json();
+
+    expect(findRow(body, "2026-04", "境界")?.points).toBe(1);
+    expect(findRow(body, "2026-05", "境界")?.points).toBe(1);
   });
 });

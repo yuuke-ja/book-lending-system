@@ -45,13 +45,9 @@ function calcDueAtByReturnWeek(now: Date, returnWeek: number): Date {
     Number.isInteger(returnWeek) && returnWeek >= 1 && returnWeek <= 3
       ? returnWeek
       : 1;
-  const due = new Date(now);
   const diff = (safeWeekday - getJstWeekday(now) + 7) % 7;
-  due.setDate(due.getDate() + diff);
-
-  // 日本時間の23:59:59にしたいので、UTCでは14:59:59を入れている。
-  due.setUTCHours(14, 59, 59, 999);
-  return due;
+  const jstNow = new Date(now.getTime() + 9 * 60 * 60 * 1000);
+  return new Date(Date.UTC(jstNow.getUTCFullYear(), jstNow.getUTCMonth(), jstNow.getUTCDate() + diff, 14, 59, 59, 999));
 }
 
 export async function loanBook(bookId: unknown): Promise<LoanBookResult> {

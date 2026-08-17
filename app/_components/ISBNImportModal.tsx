@@ -113,6 +113,7 @@ export default function ISBNImportModal({
   // モーダルが開いてる間だけカメラを動かす。
   useEffect(() => {
     if (!open || !videoRef.current) return;
+    const mountedVideo = videoRef.current;
 
     detectingRef.current = false;
     let active = true;
@@ -150,9 +151,7 @@ export default function ISBNImportModal({
         stream.getTracks().forEach((track) => track.stop());
         stream = null;
       }
-      if (videoRef.current) {
-        videoRef.current.srcObject = null;
-      }
+      mountedVideo.srcObject = null;
       setOverlayRect(null);
     };
 

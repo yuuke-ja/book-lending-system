@@ -6,7 +6,7 @@ const ISBN13_REGEX = /^(97[89]|491)\d{10}$/;
 
 export async function GET(request: Request) {
   const session = await auth();
-  if (!session) {
+  if (!session?.user?.email) {
     return NextResponse.json({ error: "認証が必要です" }, { status: 401 });
   }
 

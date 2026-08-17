@@ -178,7 +178,10 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const messages = Array.isArray(body.messages) ? body.messages as UIMessage[] : null;
-    const query = typeof body.query === "string" ? body.query : getLastUserText(messages ?? []);
+    const query =
+      typeof body.query === "string"
+        ? body.query.trim()
+        : getLastUserText(messages ?? []);
     if (!query) {
       return NextResponse.json({ error: "クエリが必要です" }, { status: 400 });
     }

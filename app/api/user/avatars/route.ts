@@ -19,7 +19,16 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: '認証していません' }, { status: 401 });
   }
 
-  const form = await req.formData();
+  let form: FormData;
+  try {
+    form = await req.formData();
+  } catch (error) {
+    console.error('プロフィール画像のFormData解析に失敗:', error);
+    return NextResponse.json(
+      { error: 'リクエストの解析に失敗しました' },
+      { status: 400 }
+    );
+  }
   const file = form.get('file') as File | null;
   if (!file) {
     return NextResponse.json(
@@ -43,47 +52,55 @@ export async function POST(req: Request) {
     );
   }
 
-  const userResult = await db.query<{ id: string }>(
-    `SELECT id
-     FROM "User"
-     WHERE email = $1
-     LIMIT 1`,
-    [userEmail]
-  );
-  const userId = userResult.rows[0]?.id;
-
-  if (!userId) {
-    return NextResponse.json(
-      { error: 'ユーザーが見つかりません' },
-      { status: 404 }
+  try {
+    const userResult = await db.query<{ id: string }>(
+      `SELECT id
+       FROM "User"
+       WHERE email = $1
+       LIMIT 1`,
+      [userEmail]
     );
-  }
+    const userId = userResult.rows[0]?.id;
 
-  const arrayBuffer = await file.arrayBuffer();
-  const key = `uploads/${userId}/avatar`;
+    if (!userId) {
+      return NextResponse.json(
+        { error: 'ユーザーが見つかりません' },
+        { status: 404 }
+      );
+    }
 
-  const { error: uploadError } = await supabase.storage
-    .from('avatars')
-    .upload(key, Buffer.from(arrayBuffer), {
-      contentType: file.type,
-      upsert: true,
+    const arrayBuffer = await file.arrayBuffer();
+    const key = `uploads/${userId}/avatar`;
+
+    const { error: uploadError } = await supabase.storage
+      .from('avatars')
+      .upload(key, Buffer.from(arrayBuffer), {
+        contentType: file.type,
+        upsert: true,
+      });
+
+    if (uploadError) {
+      return NextResponse.json(
+        { error: '画像のアップロードに失敗しました' },
+        { status: 500 }
+      );
+    }
+
+    const { data } = supabase.storage
+      .from('avatars')
+      .getPublicUrl(key);
+    const publicUrl = new URL(data.publicUrl);
+    publicUrl.searchParams.set('v', Date.now().toString());
+
+    return NextResponse.json({
+      url: publicUrl.toString(),
+      path: key,
     });
-
-  if (uploadError) {
+  } catch (error) {
+    console.error('プロフィール画像の処理に失敗:', error);
     return NextResponse.json(
-      { error: '画像のアップロードに失敗しました' },
+      { error: 'プロフィール画像の処理に失敗しました' },
       { status: 500 }
     );
   }
-
-  const { data } = supabase.storage
-    .from('avatars')
-    .getPublicUrl(key);
-  const publicUrl = new URL(data.publicUrl);
-  publicUrl.searchParams.set('v', Date.now().toString());
-
-  return NextResponse.json({
-    url: publicUrl.toString(),
-    path: key,
-  });
 }

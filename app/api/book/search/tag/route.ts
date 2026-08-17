@@ -9,21 +9,17 @@ export async function GET(request: Request) {
   }
 
   const { searchParams } = new URL(request.url);
-  const query = searchParams.get("query")?.trim() ?? "";
-  if (!query) {
-    return NextResponse.json([], { status: 200 });
-  }
-
-  const tags = Array.from(
+  const tagIds = Array.from(
     new Set(
-      query
-        .split(/[,\s、，]+/)
-        .map((v) => v.trim().toLowerCase())
+      searchParams
+        .getAll("tagIds")
+        .flatMap((value) => value.split(","))
+        .map((value) => value.trim())
         .filter(Boolean)
     )
   );
 
-  if (tags.length === 0) {
+  if (tagIds.length === 0) {
     return NextResponse.json([], { status: 200 });
   }
 
@@ -64,13 +60,12 @@ export async function GET(request: Request) {
        WHERE EXISTS (
          SELECT 1
          FROM "BookTag" bt
-         JOIN "TagList" t ON t.id = bt."tagId"
          WHERE bt."bookId" = b.id
-           AND lower(t.tag) = ANY($1::text[])
+           AND bt."tagId" = ANY($1::text[])
        )
        ORDER BY b."createdAt" DESC
        LIMIT 20`,
-      [tags]
+      [tagIds]
     );
 
     return NextResponse.json(searchtag.rows, { status: 200 });

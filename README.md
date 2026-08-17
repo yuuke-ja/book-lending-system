@@ -16,6 +16,28 @@ bun dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
+## テスト
+
+通常の単体・API・画面テストは次のコマンドで実行します。
+
+```bash
+npm test
+```
+
+PostgreSQLを使う結合テストは、Docker Desktopを起動してから次のコマンドで
+実行します。
+
+```bash
+npm run test:db:up
+npm run test:integration
+npm run test:db:down
+```
+
+`test:integration`は`127.0.0.1:55432`のDockerテストDBへ固定接続します。
+本番の`DATABASE_URL`は使用しません。初回起動時に`migrations/`を番号順に適用し、
+本番と同じpublicスキーマを作成します。テスト本体は接続をread-onlyにしたうえで、
+接続ごとに破棄される一時テーブルだけを更新します。
+
 ## CSRF対策
 
 Route Handlerでデータを変更するリクエストは、`proxy.ts`でブラウザの

@@ -19,9 +19,17 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: "認証に失敗しました" }, { status: 401 });
   }
 
-  const result = await notifications();
-  return NextResponse.json(
-    { ok: true, message: "Daily notifications sent", ...result },
-    { status: 200 }
-  );
+  try {
+    const result = await notifications();
+    return NextResponse.json(
+      { ok: true, message: "Daily notifications sent", ...result },
+      { status: 200 }
+    );
+  } catch (error) {
+    console.error("日次通知の送信に失敗:", error);
+    return NextResponse.json(
+      { ok: false, error: "日次通知の送信に失敗しました" },
+      { status: 500 }
+    );
+  }
 }

@@ -35,6 +35,9 @@ export async function findCandidatesFromSearchHistory(
      LIMIT 5`,
     [userEmail]
   )
+  if (historysearchResult.rows.length === 0) {
+    return [];
+  }
   const historysearchVectors = await Promise.all(
     historysearchResult.rows.map(async (history) => {
       const embedding = await createEmbedding(history.query, "query")

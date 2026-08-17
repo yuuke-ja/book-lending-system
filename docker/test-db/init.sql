@@ -1,0 +1,31 @@
+\set ON_ERROR_STOP on
+
+GRANT USAGE, CREATE ON SCHEMA public TO postgres;
+SET ROLE postgres;
+
+\ir '/app-migrations/001_initial_schema.sql'
+\ir '/app-migrations/002_loan_settings_singleton_key.sql'
+\ir '/app-migrations/003_book_review.sql'
+\ir '/app-migrations/004_book_review_add_comment.sql'
+\ir '/app-migrations/005_book_search_pgroonga.sql'
+\ir '/app-migrations/006_book_tags.sql'
+\ir '/app-migrations/007_thread.sql'
+\ir '/app-migrations/008_User_nickname.sql'
+\ir '/app-migrations/009_User_ avatarUrl.sql'
+\ir '/app-migrations/010_research_event.sql'
+\ir '/app-migrations/011_user_id_default.sql'
+\ir '/app-migrations/012_research_event_book_link_click.sql'
+\ir '/app-migrations/013_book_embedding_pgvector.sql'
+\ir '/app-migrations/014_research_event_ai_chat_source.sql'
+\ir '/app-migrations/015_ai_recommendations.sql'
+\ir '/app-migrations/016_community_ai_summary_columns.sql'
+\ir '/app-migrations/017_ai_chat_history.sql'
+\ir '/app-migrations/018_tag_subterm_embeddings.sql'
+\ir '/app-migrations/019_book_tag_source.sql'
+\ir '/app-migrations/020_book_pgroonga_token_mecab_indexes.sql'
+\ir '/app-migrations/021_search_events.sql'
+\ir '/app-migrations/022_ notice.sql'
+\ir '/app-migrations/023_user_recommendations.sql'
+\ir '/app-migrations/024_genre_point_predictions.sql'
+\ir '/app-migrations/025_seach_event_count.sql'
+\ir '/app-migrations/026_sync_production_rls.sql'

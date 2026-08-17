@@ -1,0 +1,37 @@
+services:
+  test-db:
+    image: supabase/postgres:17.6.1.136
+    ports:
+      - "127.0.0.1:55432:5432"
+    environment:
+      POSTGRES_HOST: /var/run/postgresql
+      PGPORT: 5432
+      POSTGRES_PORT: 5432
+      PGPASSWORD: book_test
+      POSTGRES_PASSWORD: book_test
+      PGDATABASE: book_lending_test
+      POSTGRES_DB: book_lending_test
+      JWT_SECRET: local-test-only-secret-at-least-32-characters
+      JWT_EXP: 3600
+    volumes:
+      - ./migrations:/app-migrations:ro
+      - ./docker/test-db/init.sql:/docker-entrypoint-initdb.d/migrations/99-app-schema.sql:ro
+    healthcheck:
+      test:
+        - CMD
+        - pg_isready
+        - -U
+        - postgres
+        - -h
+        - localhost
+        - -d
+        - book_lending_test
+      interval: 2s
+      timeout: 3s
+      retries: 15
+    command:
+      - postgres
+      - -c
+      - config_file=/etc/postgresql/postgresql.conf
+      - -c
+      - log_min_messages=fatal

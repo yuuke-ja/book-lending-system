@@ -28,28 +28,39 @@ export default function BookListClient({
   const [searchBooks, setSearchBooks] = useState<BookListBook[] | null>(null);
   const [loanedBooks, setLoanedBooks] = useState<string[]>(initialLoanedBookIds);
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [selectedTags, setSelectedTags] = useState<BookListTag[]>([]);
   const displayBooks = searchBooks ?? initialBooks;
   const hasSearched = searchBooks !== null;
   const loanedSet = new Set(loanedBooks);
 
-  const runSearch = useCallback((query: string, selectedTags: string[]) => {
-    if (!query) {
+  const runSearch = useCallback((query: string, selectedTags: BookListTag[]) => {
+    const normalizedQuery = query.trim();
+    const selectedTagIds = selectedTags.map((tag) => tag.id);
+
+    if (!normalizedQuery && selectedTagIds.length === 0) {
       setSearchBooks(null);
       return;
     }
 
-    const full = fetch(`/api/book/search/full-text?query=${encodeURIComponent(query)}`)
-      .then((res) => {
-        if (!res.ok) throw new Error("全文検索に失敗しました");
-        return res.json();
-      });
+    const full = normalizedQuery
+      ? fetch(
+          `/api/book/search/full-text?query=${encodeURIComponent(normalizedQuery)}`
+        ).then((res) => {
+          if (!res.ok) throw new Error("全文検索に失敗しました");
+          return res.json();
+        })
+      : Promise.resolve([]);
 
-    const tag = fetch(`/api/book/search/tag?query=${encodeURIComponent(query)}`)
-      .then((res) => {
-        if (!res.ok) throw new Error("タグ検索に失敗しました");
-        return res.json();
-      });
+    const tag = selectedTagIds.length > 0
+      ? fetch(
+          `/api/book/search/tag?${new URLSearchParams({
+            tagIds: selectedTagIds.join(","),
+          })}`
+        ).then((res) => {
+          if (!res.ok) throw new Error("タグ検索に失敗しました");
+          return res.json();
+        })
+      : Promise.resolve([]);
 
     Promise.all([full, tag])
       .then(([fullBooks, tagBooks]) => {
@@ -62,7 +73,12 @@ export default function BookListClient({
         void fetch("/api/book/search/log", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ query, selectedTags, resultTagIds, count: uniqueBookList.length }),
+          body: JSON.stringify({
+            query: normalizedQuery,
+            selectedTags: selectedTags.map((tag) => tag.tag),
+            resultTagIds,
+            count: uniqueBookList.length,
+          }),
         }).catch((err) => {
           console.error("検索ログ保存エラー:", err);
         });
@@ -114,8 +130,7 @@ export default function BookListClient({
         <form
           onSubmit={(e) => {
             e.preventDefault();
-            const mergedQuery = [...selectedTags, searchQuery.trim()].filter(Boolean).join(" ");
-            runSearch(mergedQuery, selectedTags);
+            runSearch(searchQuery, selectedTags);
           }}
           className="space-y-2"
         >
@@ -129,17 +144,19 @@ export default function BookListClient({
             <div className="flex w-full flex-wrap items-center gap-2 rounded-lg border border-zinc-300 bg-white px-3 py-2 focus-within:border-zinc-400">
               {selectedTags.map((tag) => (
                 <span
-                  key={tag}
+                  key={tag.id}
                   className="inline-flex items-center gap-1 rounded-md border border-zinc-200 bg-zinc-100 px-2.5 py-1 text-xs font-medium text-zinc-700"
                 >
-                  #{tag}
+                  #{tag.tag}
                   <button
                     type="button"
                     onClick={() => {
-                      setSelectedTags((prev) => prev.filter((value) => value !== tag));
+                      setSelectedTags((prev) =>
+                        prev.filter((value) => value.id !== tag.id)
+                      );
                     }}
                     className="text-zinc-500 hover:text-zinc-700"
-                    aria-label={`${tag}を削除`}
+                    aria-label={`${tag.tag}を削除`}
                   >
                     ×
                   </button>
@@ -165,16 +182,16 @@ export default function BookListClient({
         {initialTags.length > 0 && (
           <div className="mt-3 flex flex-wrap gap-2">
             {initialTags.map((item) => {
-              const isSelected = selectedTags.includes(item.tag);
+              const isSelected = selectedTags.some((tag) => tag.id === item.id);
               return (
                 <button
                   key={item.id}
                   type="button"
                   onClick={() => {
                     setSelectedTags((prev) =>
-                      prev.includes(item.tag)
-                        ? prev.filter((tag) => tag !== item.tag)
-                        : [...prev, item.tag]
+                      prev.some((tag) => tag.id === item.id)
+                        ? prev.filter((tag) => tag.id !== item.id)
+                        : [...prev, item]
                     );
                   }}
                   className={`rounded-full border px-3 py-1 text-xs font-medium transition ${isSelected
@@ -200,6 +217,11 @@ export default function BookListClient({
             key={book.id}
             className="flex h-full min-w-0 cursor-pointer flex-col rounded-md border border-zinc-200 bg-white p-2 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md md:p-3"
             onClick={() => {
+              router.push(`/book/${book.id}`);
+            }}
+            onKeyDown={(event) => {
+              if (event.key !== "Enter" && event.key !== " ") return;
+              event.preventDefault();
               router.push(`/book/${book.id}`);
             }}
             role="link"

@@ -122,18 +122,18 @@ const emptyPaths: DashboardResponse["paths"] = {
 };
 
 function readDatabaseUrl() {
-  if (process.env.DATABASE_URL) return process.env.DATABASE_URL;
+  if (process.env.TEST_DATABASE_URL) return process.env.TEST_DATABASE_URL;
 
   try {
     const envFile = readFileSync(".env.local", "utf8");
     const databaseUrlLine = envFile
       .split(/\r?\n/)
-      .find((line) => line.startsWith("DATABASE_URL="));
+      .find((line) => line.startsWith("TEST_DATABASE_URL="));
 
     if (!databaseUrlLine) return undefined;
 
     return databaseUrlLine
-      .slice("DATABASE_URL=".length)
+      .slice("TEST_DATABASE_URL=".length)
       .trim()
       .replace(/^["']|["']$/g, "");
   } catch {
@@ -1862,6 +1862,85 @@ describeWithDatabase("GET /api/admin/events/dashboard event path patterns", () =
       "detail-a-1",
       "post-a",
     ]);
+  });
+
+  it("イベント0件なら件数・割合を0、平均をnull、一覧を空で返す", async () => {
+    const data = await fetchDashboard();
+
+    expect(data.summary).toEqual({
+      postViewCount: 0,
+      bookDetailViewCount: 0,
+      loanCount: 0,
+      uniqueUserCount: 0,
+    });
+    expectPaths(data, {});
+    expect(data.ranking).toEqual([]);
+    expect(data.recentLogs).toEqual([]);
+  });
+
+  it("影響時間ちょうどの貸出を含め、1ミリ秒超過した貸出を除外する", async () => {
+    await seedEvents(client, [
+      {
+        id: "boundary-in-post",
+        eventType: "post_view",
+        at: "10:00:00.000",
+        userEmail: "boundary-in@example.com",
+      },
+      {
+        id: "boundary-in-loan",
+        eventType: "loan",
+        at: "11:00:00.000",
+        userEmail: "boundary-in@example.com",
+      },
+      {
+        id: "boundary-out-post",
+        eventType: "post_view",
+        at: "12:00:00.000",
+        userEmail: "boundary-out@example.com",
+      },
+      {
+        id: "boundary-out-loan",
+        eventType: "loan",
+        at: "13:00:00.001",
+        userEmail: "boundary-out@example.com",
+      },
+    ]);
+
+    const data = await fetchDashboard({ postToLoan: "60minutes" });
+
+    expect(data.paths.postToLoanCount).toBe(1);
+  });
+
+  it("閲覧ランキングは同数ならタイトル順で最大10件にする", async () => {
+    const events = Array.from({ length: 11 }, (_, index) => ({
+      id: `ranking-${String(index).padStart(2, "0")}`,
+      eventType: "book_detail_view" as const,
+      at: `10:00:${String(index).padStart(2, "0")}`,
+      bookId: `book-${String(index).padStart(2, "0")}`,
+    }));
+    await seedEvents(client, events);
+
+    const data = await fetchDashboard();
+
+    expect(data.ranking).toHaveLength(10);
+    expect(data.ranking.map((row) => row.bookId)).toEqual(
+      Array.from({ length: 10 }, (_, index) => `book-${String(index).padStart(2, "0")}`)
+    );
+  });
+
+  it("最近のログは新しい順で最大20件にする", async () => {
+    const events = Array.from({ length: 21 }, (_, index) => ({
+      id: `recent-${String(index).padStart(2, "0")}`,
+      eventType: "post_view" as const,
+      at: `10:00:${String(index).padStart(2, "0")}`,
+    }));
+    await seedEvents(client, events);
+
+    const data = await fetchDashboard();
+
+    expect(data.recentLogs).toHaveLength(20);
+    expect(data.recentLogs[0].id).toBe("recent-20");
+    expect(data.recentLogs.at(-1)?.id).toBe("recent-01");
   });
 
   it("未ログインなら401を返す", async () => {

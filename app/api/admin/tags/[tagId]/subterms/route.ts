@@ -28,7 +28,11 @@ export async function GET(_request: Request, context: RouteContext) {
   try {
     const authError = await requireAdmin();
     if (authError) return authError;
-    const { tagId } = await context.params;
+    const { tagId: rawTagId } = await context.params;
+    const tagId = rawTagId.trim();
+    if (!tagId) {
+      return NextResponse.json({ error: "tagIdが必要です" }, { status: 400 });
+    }
     const result = await db.query(
       `SELECT id, "tagId", subterm FROM "TagSubterm" WHERE "tagId" = $1 ORDER BY subterm ASC`,
       [tagId]

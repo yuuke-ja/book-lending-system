@@ -80,6 +80,12 @@ export async function GET(request: Request) {
         thumbnail: item.largeImageUrl ?? item.mediumImageUrl ?? item.smallImageUrl ?? null,
       });
     } else {
+      if (!process.env.BOOKS_API_KEY) {
+        return NextResponse.json(
+          { error: "Google Books APIの設定が不足しています" },
+          { status: 500 }
+        );
+      }
       const res = await axios.get(
         `https://www.googleapis.com/books/v1/volumes?q=isbn:${isbn}&key=${process.env.BOOKS_API_KEY}`
       );
