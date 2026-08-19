@@ -41,7 +41,7 @@ export default function Home() {
         <RecommendedBooksList />
       </Suspense>
 
-      <BorrowedList />
+      <BorrowedList sectionId="loan-history" />
 
       <Suspense
         fallback={

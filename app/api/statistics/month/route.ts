@@ -11,18 +11,27 @@ function parseDateOnlyString(value: unknown): string | null {
   return value;
 }
 
+function isCheckDate(value: string): boolean {
+  const match = value.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (!match) return false;
+
+  const year = Number(match[1]);
+  const month = Number(match[2]);
+  const day = Number(match[3]);
+  const date = new Date(Date.UTC(year, month - 1, day));
+
+  return (
+    date.getUTCFullYear() === year &&
+    date.getUTCMonth() === month - 1 &&
+    date.getUTCDate() === day
+  );
+}
+
 export async function GET(request: Request) {
   const session = await auth();
   const email = session?.user?.email;
 
   const { searchParams } = new URL(request.url);
-  const anchorDate = parseDateOnlyString(searchParams.get("anchorDate"));
-  if (!anchorDate) {
-    return NextResponse.json(
-      { error: "anchorDate は YYYY-MM-DD 形式で指定してください" },
-      { status: 400 }
-    );
-  }
 
   if (!email) {
     return NextResponse.json({ error: "認証が必要です" }, { status: 401 });
@@ -31,6 +40,24 @@ export async function GET(request: Request) {
   const isAdmin = await Admin(email);
   if (!isAdmin) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
+
+  const now = new Date();
+  console.info("月次統計APIの実行環境", {
+    vercelEnvironment: process.env.VERCEL_ENV ?? null,
+    vercelRegion: process.env.VERCEL_REGION ?? null,
+    timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+    offsetMinutes: now.getTimezoneOffset(),
+    localTime: now.toString(),
+    utcTime: now.toISOString(),
+  });
+
+  const anchorDate = parseDateOnlyString(searchParams.get("anchorDate"));
+  if (!anchorDate || !isCheckDate(anchorDate)) {
+    return NextResponse.json(
+      { error: "anchorDate は YYYY-MM-DD 形式で指定してください" },
+      { status: 400 }
+    );
   }
 
   try {

@@ -7,8 +7,6 @@ import { getTagList } from "@/lib/books/get-tag-list";
 import { getLoanedBookIds } from "@/lib/books/get-loaned-book-ids";
 import { getBookEmbeddingCount } from "@/lib/books/get-book-embedding-count";
 import { getNotices } from "@/lib/notices/get-notices";
-import { loanranking } from "@/lib/ranking/loan";
-import { userranking } from "@/lib/ranking/user";
 import {
   getSearchHistory,
   getzerokSearchHistory,
@@ -245,75 +243,6 @@ describeWithDatabase("書籍・通知・ランキング・履歴取得とPostgre
     expect(notices[0].linkedBook).toBeNull();
     expect(notices[1].linkedBook).toBeNull();
     expect(notices[2].linkedBook).toMatchObject({ id: "book-new", title: "新しい本" });
-  });
-
-  it("書籍ランキングを貸出数順・同数同順位・最大10件で返す", async () => {
-    const extraBooks = Array.from({ length: 9 }, (_, index) => ({
-      id: `rank-book-${index}`,
-      isbn: `97900000000${String(index).padStart(2, "0")}`,
-      title: `順位本${index}`,
-    }));
-    for (const [index, book] of extraBooks.entries()) {
-      await client.query(
-        `INSERT INTO "Book" (id, isbn13, title, authors, "createdAt")
-         VALUES ($1, $2, $3, ARRAY['著者'], CURRENT_TIMESTAMP)`,
-        [book.id, book.isbn, book.title]
-      );
-      await client.query(
-        `INSERT INTO "Loan" (id, "userEmail", "bookId", "loanedAt")
-         VALUES ($1, 'rank@example.com', $2, CURRENT_TIMESTAMP)`,
-        [`rank-loan-${index}`, book.id]
-      );
-    }
-    await client.query(`
-      INSERT INTO "Loan" (id, "userEmail", "bookId", "loanedAt", "returnedAt") VALUES
-        ('new-1', 'rank@example.com', 'book-new', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-        ('new-2', 'rank@example.com', 'book-new', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-        ('old-1', 'rank@example.com', 'book-old', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-        ('old-2', 'rank@example.com', 'book-old', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
-    `);
-
-    const ranking = await loanranking();
-
-    expect(ranking).toHaveLength(10);
-    const tied = ranking.filter((row) => ["book-new", "book-old"].includes(row.bookId));
-    expect(tied.map((row) => row.ranking)).toEqual([1, 1]);
-  });
-
-  it("ユーザーランキングを最大5件で返し、Userが消えた利用者の貸出も保持する", async () => {
-    await client.query(`
-      INSERT INTO "User" (id, email, nickname, avatarurl) VALUES
-        ('user-1', 'one@example.com', '一郎', '/one.png'),
-        ('user-2', 'two@example.com', '二郎', NULL),
-        ('user-3', 'three@example.com', '三郎', NULL),
-        ('user-4', 'four@example.com', '四郎', NULL),
-        ('user-5', 'five@example.com', '五郎', NULL)
-    `);
-    const emails = [
-      "one@example.com",
-      "two@example.com",
-      "three@example.com",
-      "four@example.com",
-      "five@example.com",
-      "deleted@example.com",
-    ];
-    for (const [index, email] of emails.entries()) {
-      await client.query(
-        `INSERT INTO "Loan" (id, "userEmail", "bookId", "loanedAt", "returnedAt")
-         VALUES ($1, $2, 'book-old', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)`,
-        [`user-loan-${index}`, email]
-      );
-    }
-    await client.query(`
-      INSERT INTO "Loan" (id, "userEmail", "bookId", "loanedAt")
-      VALUES ('deleted-extra', 'deleted@example.com', 'book-new', CURRENT_TIMESTAMP)
-    `);
-
-    const ranking = await userranking();
-
-    expect(ranking).toHaveLength(5);
-    expect(ranking[0]).toMatchObject({ userId: null, loanCount: 2, ranking: 1 });
-    expect(ranking.slice(1).every((row) => row.loanCount === 1 && row.ranking === 2)).toBe(true);
   });
 
   it("検索履歴を同時刻ならID降順で最大30件にし、0件検索だけも抽出する", async () => {

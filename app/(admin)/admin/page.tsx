@@ -51,61 +51,61 @@ const adminMenu: {
   icon: LucideIcon;
   color: string;
 }[] = [
-  {
-    label: "本登録",
-    href: "/admin/registration",
-    icon: BookOpen,
-    color: "border-blue-100 bg-blue-50 text-blue-600",
-  },
-  {
-    label: "本一覧",
-    href: "/admin/books",
-    icon: Folder,
-    color: "border-indigo-100 bg-indigo-50 text-indigo-600",
-  },
-  {
-    label: "タグ管理",
-    href: "/admin/tags",
-    icon: Tags,
-    color: "border-purple-100 bg-purple-50 text-purple-600",
-  },
-  {
-    label: "お知らせ管理",
-    href: "/admin/notices",
-    icon: Bell,
-    color: "border-pink-100 bg-pink-50 text-pink-600",
-  },
-  {
-    label: "統計を見る",
-    href: "/admin/statistics",
-    icon: BarChart2,
-    color: "border-emerald-100 bg-emerald-50 text-emerald-600",
-  },
-  {
-    label: "イベント分析",
-    href: "/admin/events",
-    icon: TrendingUp,
-    color: "border-amber-100 bg-amber-50 text-amber-600",
-  },
-  {
-    label: "ベクトル精度テスト",
-    href: "/admin/embedding-test",
-    icon: Cpu,
-    color: "border-cyan-100 bg-cyan-50 text-cyan-600",
-  },
-  {
-    label: "貸出履歴",
-    href: "/admin/history",
-    icon: History,
-    color: "border-rose-100 bg-rose-50 text-rose-600",
-  },
-  {
-    label: "検索履歴",
-    href: "/admin/seachhistory",
-    icon: Search,
-    color: "border-sky-100 bg-sky-50 text-sky-600",
-  },
-];
+    {
+      label: "本登録",
+      href: "/admin/registration",
+      icon: BookOpen,
+      color: "border-blue-100 bg-blue-50 text-blue-600",
+    },
+    {
+      label: "本一覧",
+      href: "/admin/books",
+      icon: Folder,
+      color: "border-indigo-100 bg-indigo-50 text-indigo-600",
+    },
+    {
+      label: "タグ管理",
+      href: "/admin/tags",
+      icon: Tags,
+      color: "border-purple-100 bg-purple-50 text-purple-600",
+    },
+    {
+      label: "お知らせ管理",
+      href: "/admin/notices",
+      icon: Bell,
+      color: "border-pink-100 bg-pink-50 text-pink-600",
+    },
+    {
+      label: "統計を見る",
+      href: "/admin/statistics",
+      icon: BarChart2,
+      color: "border-emerald-100 bg-emerald-50 text-emerald-600",
+    },
+    {
+      label: "分析",
+      href: "/admin/events",
+      icon: TrendingUp,
+      color: "border-amber-100 bg-amber-50 text-amber-600",
+    },
+    {
+      label: "ベクトル精度テスト",
+      href: "/admin/embedding-test",
+      icon: Cpu,
+      color: "border-cyan-100 bg-cyan-50 text-cyan-600",
+    },
+    {
+      label: "貸出履歴",
+      href: "/admin/history",
+      icon: History,
+      color: "border-rose-100 bg-rose-50 text-rose-600",
+    },
+    {
+      label: "検索履歴",
+      href: "/admin/seachhistory",
+      icon: Search,
+      color: "border-sky-100 bg-sky-50 text-sky-600",
+    },
+  ];
 
 export default function AdminPage() {
   const [settings, setSettings] = useState<LoanSettings>({

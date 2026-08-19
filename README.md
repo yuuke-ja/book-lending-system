@@ -38,6 +38,34 @@ npm run test:db:down
 本番と同じpublicスキーマを作成します。テスト本体は接続をread-onlyにしたうえで、
 接続ごとに破棄される一時テーブルだけを更新します。
 
+### E2Eテスト
+
+Docker Desktopを起動した状態で、Playwrightの画面を見ながら実行できます。
+
+```bash
+npm run test:e2e:ui
+```
+
+画面を出さず全ブラウザーで実行する場合と、Chromiumを表示して操作を
+ゆっくり自動実行する場合は次のコマンドを使います。
+
+```bash
+npm run test:e2e
+npm run test:e2e:headed
+```
+
+これらのコマンドは、`127.0.0.1:55433/book_lending_e2e`のE2E専用DBを起動・
+初期化し、Next.js開発サーバーとテスト専用ログインを自動で用意します。
+通常DBと結合テスト用DBは使用しません。終了後に専用DBを停止する場合は
+次を実行します。
+
+```bash
+npm run e2e:db:down
+```
+
+テスト専用ログインは、E2Eモード、開発環境、Vercel外、上記のローカル専用DB
+という条件をすべて満たす場合にだけ有効になります。
+
 ## CSRF対策
 
 Route Handlerでデータを変更するリクエストは、`proxy.ts`でブラウザの
