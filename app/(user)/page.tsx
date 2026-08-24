@@ -28,20 +28,35 @@ export default function Home() {
 
       <ReturnStatus />
 
-      <BorrowedBooksList />
+      <Suspense
+        fallback={
+          <SectionLoadingFallback
+            label="BORROWED BOOKS"
+            title="現在借りている本"
+          />
+        }
+      >
+        <BorrowedBooksList />
+      </Suspense>
 
       <Suspense
         fallback={
           <SectionLoadingFallback
             label="RECOMMENDED BOOKS"
-            title="おすすめ本"
+            title="あなたにおすすめの本"
           />
         }
       >
         <RecommendedBooksList />
       </Suspense>
 
-      <BorrowedList sectionId="loan-history" />
+      <Suspense
+        fallback={
+          <SectionLoadingFallback label="LOAN HISTORY" title="貸し出し履歴" />
+        }
+      >
+        <BorrowedList sectionId="loan-history" />
+      </Suspense>
 
       <Suspense
         fallback={

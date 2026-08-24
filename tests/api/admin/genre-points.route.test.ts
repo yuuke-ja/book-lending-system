@@ -67,7 +67,7 @@ describe("GET /api/admin/genre-points", () => {
     expect(mockedQuery).not.toHaveBeenCalled();
   });
 
-  it("デフォルト重みで月別タグ別ポイントを返す", async () => {
+  it("デフォルト重みで月別ジャンル別ポイントを返す", async () => {
     const dbRows = [
       {
         month: new Date("2026-04-01T00:00:00.000Z"),

@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { createThread } from "@/lib/action/thread";
+import { createThread, deleteThread } from "@/lib/action/thread";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { summary } from "@/lib/ai/aiSummary";
@@ -189,5 +189,57 @@ describe("createThread Server Action", () => {
     });
     expect(consoleError).toHaveBeenCalledOnce();
     consoleError.mockRestore();
+  });
+});
+
+describe("deleteThread Server Action", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it("未ログインでは削除しない", async () => {
+    mockedAuth.mockResolvedValue(null);
+
+    await expect(deleteThread("thread-1")).resolves.toEqual({
+      ok: false,
+      status: 401,
+      error: "認証が必要です",
+    });
+    expect(mockedQuery).not.toHaveBeenCalled();
+  });
+
+  it("本人のメールと未削除条件を使ってソフトデリートする", async () => {
+    mockedAuth.mockResolvedValue({ user: { email: "user@example.com" } });
+    mockedQuery.mockResolvedValueOnce({ rowCount: 1, rows: [{ id: "thread-1" }] });
+
+    await expect(deleteThread("thread-1")).resolves.toEqual({
+      ok: true,
+      status: 200,
+      message: "スレッドを削除しました",
+    });
+    expect(String(mockedQuery.mock.calls[0]?.[0])).toContain(
+      'SET "deletedAt" = NOW()'
+    );
+    expect(String(mockedQuery.mock.calls[0]?.[0])).toContain(
+      'AND "userEmail" = $2'
+    );
+    expect(String(mockedQuery.mock.calls[0]?.[0])).toContain(
+      'AND "deletedAt" IS NULL'
+    );
+    expect(mockedQuery.mock.calls[0]?.[1]).toEqual([
+      "thread-1",
+      "user@example.com",
+    ]);
+  });
+
+  it("他人の投稿または存在しない投稿は削除できない", async () => {
+    mockedAuth.mockResolvedValue({ user: { email: "other@example.com" } });
+    mockedQuery.mockResolvedValueOnce({ rowCount: 0, rows: [] });
+
+    await expect(deleteThread("thread-1")).resolves.toEqual({
+      ok: false,
+      status: 404,
+      error: "スレッドが見つからないか、削除する権限がありません",
+    });
   });
 });

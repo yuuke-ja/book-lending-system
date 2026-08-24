@@ -54,7 +54,7 @@ describe("registerPendingBooks", () => {
     expect(result).toMatchObject({ ok: false, status: 403 });
   });
 
-  it("登録した本のEmbedding作成後に自動タグ付けを実行する", async () => {
+  it("登録した本のEmbedding作成後に自動ジャンル付けを実行する", async () => {
     mockedAuth.mockResolvedValue({ user: { email: "admin@example.com" } });
     mockedAdmin.mockResolvedValue(true);
     mockedQuery.mockResolvedValue({

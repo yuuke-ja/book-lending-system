@@ -29,7 +29,7 @@ describe("createTags Server Action", () => {
     mockedAdmin.mockResolvedValue(true);
   });
 
-  it("複数タグをembeddingなしで保存する", async () => {
+  it("複数ジャンルをembeddingなしで保存する", async () => {
     mockedQuery.mockResolvedValueOnce({
       rows: [{ id: "tag-1", tag: "Web", inserted: true }],
     });

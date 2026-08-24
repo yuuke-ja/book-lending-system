@@ -2,8 +2,6 @@ import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } 
 import type { Client } from "pg";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
-import { GET as getCurrentLoans } from "@/app/api/book/loan/route";
-import { GET as getBorrowedHistory } from "@/app/api/book/borrowed/route";
 import { GET as getBookStatus } from "@/app/api/book/bookStatus/route";
 import {
   connectIntegrationClient,
@@ -64,7 +62,7 @@ async function createTables(client: Client) {
   `);
 }
 
-describeWithDatabase("貸出一覧・履歴・返却期限RouteとPostgreSQLの結合", () => {
+describeWithDatabase("返却期限RouteとPostgreSQLの結合", () => {
   let client: Client;
 
   beforeAll(async () => {
@@ -84,42 +82,6 @@ describeWithDatabase("貸出一覧・履歴・返却期限RouteとPostgreSQLの�
 
   afterAll(async () => {
     if (client) await client.end();
-  });
-
-  it("現在貸出中の自分の本だけを新しい順でbook付きレスポンスにする", async () => {
-    await client.query(`
-      INSERT INTO "Loan" (id, "userEmail", "bookId", "loanedAt", "dueAt", "returnedAt") VALUES
-        ('mine-old', 'user@example.com', 'book-1', '2026-08-01T00:00:00Z', '2026-08-10T00:00:00Z', NULL),
-        ('mine-new', 'user@example.com', 'book-2', '2026-08-02T00:00:00Z', '2026-08-11T00:00:00Z', NULL),
-        ('mine-returned', 'user@example.com', 'book-3', '2026-08-03T00:00:00Z', NULL, '2026-08-04T00:00:00Z'),
-        ('other', 'other@example.com', 'book-3', '2026-08-04T00:00:00Z', NULL, NULL)
-    `);
-
-    const response = await getCurrentLoans();
-    const body = await response.json();
-
-    expect(response.status).toBe(200);
-    expect(body.map((loan: { id: string }) => loan.id)).toEqual(["mine-new", "mine-old"]);
-    expect(body[0].book).toMatchObject({ id: "book-2", title: "本2", authors: ["著者2"] });
-  });
-
-  it("貸出履歴は自分の同じ本について最新1件だけを返す", async () => {
-    await client.query(`
-      INSERT INTO "Loan" (id, "userEmail", "bookId", "loanedAt", "returnedAt") VALUES
-        ('history-old', 'user@example.com', 'book-1', '2026-08-01T00:00:00Z', '2026-08-02T00:00:00Z'),
-        ('history-new', 'user@example.com', 'book-1', '2026-08-03T00:00:00Z', NULL),
-        ('history-book-2', 'user@example.com', 'book-2', '2026-08-02T00:00:00Z', NULL),
-        ('history-other', 'other@example.com', 'book-3', '2026-08-04T00:00:00Z', NULL)
-    `);
-
-    const response = await getBorrowedHistory();
-    const body = await response.json();
-
-    expect(response.status).toBe(200);
-    expect(body).toHaveLength(2);
-    expect(body.find((loan: { bookId: string }) => loan.bookId === "book-1").id).toBe(
-      "history-new"
-    );
   });
 
   it("JSTの今日をdueToday、今日より前をoverdueへ分けて他を除外する", async () => {
@@ -147,15 +109,9 @@ describeWithDatabase("貸出一覧・履歴・返却期限RouteとPostgreSQLの�
     ]);
   });
 
-  it("貸出がなければ各APIが空の結果を返す", async () => {
-    const [current, history, status] = await Promise.all([
-      getCurrentLoans(),
-      getBorrowedHistory(),
-      getBookStatus(),
-    ]);
+  it("貸出がなければ返却期限APIが空の結果を返す", async () => {
+    const status = await getBookStatus();
 
-    await expect(current.json()).resolves.toEqual([]);
-    await expect(history.json()).resolves.toEqual([]);
     await expect(status.json()).resolves.toEqual({ dueToday: [], overdue: [] });
   });
 });

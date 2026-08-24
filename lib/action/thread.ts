@@ -18,10 +18,10 @@ type CreatedThread = {
 export type CreateThreadResult =
   | { ok: true; status: 200; message: string }
   | {
-      ok: false;
-      status: 400 | 401 | 404 | 500;
-      error: string;
-    };
+    ok: false;
+    status: 400 | 401 | 404 | 500;
+    error: string;
+  };
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
@@ -30,6 +30,7 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 export async function createThread(
   input: unknown
 ): Promise<CreateThreadResult> {
+
   const session = await auth();
   const userEmail = session?.user?.email;
 
@@ -111,6 +112,43 @@ export async function createThread(
       ok: false,
       status: 500,
       error: "スレッドの作成に失敗しました",
+    };
+  }
+}
+
+
+export async function deleteThread(threadId: string) {
+
+  const session = await auth();
+  const userEmail = session?.user?.email;
+
+  if (!userEmail) {
+    return { ok: false, status: 401, error: "認証が必要です" };
+  }
+  try {
+    const res = await db.query(
+      `UPDATE "Thread"
+       SET "deletedAt" = NOW()
+       WHERE id = $1
+         AND "userEmail" = $2
+         AND "deletedAt" IS NULL
+       RETURNING id`,
+      [threadId, userEmail]
+    );
+    if ((res.rowCount ?? 0) === 0) {
+      return {
+        ok: false,
+        status: 404,
+        error: "スレッドが見つからないか、削除する権限がありません",
+      };
+    }
+    return { ok: true, status: 200, message: "スレッドを削除しました" };
+  } catch (error) {
+    console.error("スレッドの削除に失敗:", error);
+    return {
+      ok: false,
+      status: 500,
+      error: "スレッドの削除に失敗しました",
     };
   }
 }

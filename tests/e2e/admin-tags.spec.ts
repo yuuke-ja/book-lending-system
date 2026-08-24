@@ -20,7 +20,7 @@ async function clickAndAcceptAlert(
 
 test.use({ storageState: e2eConfig.authState.admin });
 
-test('管理者がタグと小要素を追加して削除できる', async ({
+test('管理者がジャンルと小要素を追加して削除できる', async ({
   page,
   browserName,
 }) => {
@@ -33,12 +33,12 @@ test('管理者がタグと小要素を追加して削除できる', async ({
   await resetAdminTag(tagName);
 
   await page.goto(appURL('/admin'));
-  await page.getByRole('link', { name: 'タグ管理' }).click();
-  await page.getByRole('textbox', { name: '追加するタグ名' }).fill(tagName);
+  await page.getByRole('link', { name: 'ジャンル管理' }).click();
+  await page.getByRole('textbox', { name: '追加するジャンル名' }).fill(tagName);
   await clickAndAcceptAlert(
     page,
     page.getByRole('button', { name: 'まとめて追加' }),
-    'タグを保存しました'
+    'ジャンルを保存しました'
   );
 
   const tagRow = page
@@ -50,7 +50,7 @@ test('管理者がタグと小要素を追加して削除できる', async ({
   await tagRow.getByRole('button', { name: '詳細' }).click();
 
   const tagDetails = page
-    .getByRole('heading', { name: `タグ詳細: ${tagName}` })
+    .getByRole('heading', { name: `ジャンル詳細: ${tagName}` })
     .locator('..');
   await tagDetails.getByRole('textbox', { name: 'SQL' }).fill(subterm);
   await clickAndAcceptAlert(
@@ -69,7 +69,7 @@ test('管理者がタグと小要素を追加して削除できる', async ({
   await confirmation.accept();
 
   const deletedAlert = await page.waitForEvent('dialog');
-  expect(deletedAlert.message()).toBe('タグを削除しました');
+  expect(deletedAlert.message()).toBe('ジャンルを削除しました');
   await deletedAlert.accept();
   await deleteClickPromise;
 

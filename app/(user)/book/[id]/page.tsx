@@ -3,8 +3,11 @@ import Image from "next/image";
 import StarRating from "@/app/(user)/book-list/_components/Rating";
 import { getBookById } from "@/lib/books/get-book-by-id";
 import { auth } from "@/lib/auth";
+import { getThreadList } from "@/lib/community/get-thread-list";
 import { recordResearchEvent } from "@/lib/research-event.server";
-import BookThreadSection from "./_components/BookThreadSection";
+import BookThreadSection, {
+  type Thread,
+} from "./_components/BookThreadSection";
 import BackButton from "./_components/BackButton";
 
 export default async function BookPage({
@@ -21,6 +24,22 @@ export default async function BookPage({
 
   const session = await auth();
   const userEmail = session?.user?.email;
+  let initialThreads: Thread[] = [];
+  let initialThreadError: string | null = null;
+
+  try {
+    const threads = await getThreadList(book.id);
+    initialThreads = threads.map((thread) => ({
+      id: thread.id,
+      content: thread.content,
+      bookId: thread.bookId,
+      kind: thread.kind,
+      createdAt: new Date(thread.createdAt).toISOString(),
+    }));
+  } catch (error) {
+    console.error(error);
+    initialThreadError = "スレッドの取得に失敗しました";
+  }
 
   if (userEmail) {
     await recordResearchEvent({
@@ -84,7 +103,7 @@ export default async function BookPage({
                     key={tag.id}
                     className="inline-flex rounded-full border border-zinc-300 bg-zinc-50 px-3 py-1 text-xs font-medium text-zinc-700"
                   >
-                    #{tag.tag}
+                    {tag.tag}
                   </span>
                 ))}
               </div>
@@ -99,7 +118,12 @@ export default async function BookPage({
         </div>
       </div>
 
-      <BookThreadSection bookId={book.id} />
+      <BookThreadSection
+        key={book.id}
+        bookId={book.id}
+        initialThreads={initialThreads}
+        initialError={initialThreadError}
+      />
     </section>
   );
 }

@@ -12,12 +12,12 @@ vi.mock("@/lib/db", () => ({
 const mockedQuery = db.query as unknown as ReturnType<typeof vi.fn>;
 const mockedTransaction = db.transaction as unknown as ReturnType<typeof vi.fn>;
 
-describe("単語による自動タグ付け", () => {
+describe("単語による自動ジャンル付け", () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
-  it("親タグまたは小要素の単語列が一致した本だけを返す", async () => {
+  it("親ジャンルまたは小要素の単語列が一致した本だけを返す", async () => {
     mockedQuery.mockResolvedValueOnce({
       rows: [
         {
@@ -53,7 +53,7 @@ describe("単語による自動タグ付け", () => {
     ]);
   });
 
-  it("手動タグを残して旧ベクトルタグと単語タグだけを入れ直す", async () => {
+  it("手動ジャンルを残して旧ベクトルジャンルと単語ジャンルだけを入れ直す", async () => {
     mockedQuery.mockResolvedValueOnce({
       rows: [
         {

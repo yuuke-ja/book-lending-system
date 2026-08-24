@@ -46,7 +46,7 @@ export default function AdminTagsPage() {
 
   async function fetchTagList(options?: { silent?: boolean }) {
     const silent = options?.silent ?? false;
-    if (!silent) setTagStatusMessage("タグ一覧を取得中...");
+    if (!silent) setTagStatusMessage("ジャンル一覧を取得中...");
     try {
       const res = await fetch("/api/admin/tags", { cache: "no-store" });
       if (!res.ok) throw new Error();
@@ -54,7 +54,7 @@ export default function AdminTagsPage() {
       setTaglist(Array.isArray(data) ? data : []);
       if (!silent) setTagStatusMessage("");
     } catch {
-      if (!silent) showAlertMessage("タグ一覧の取得に失敗しました");
+      if (!silent) showAlertMessage("ジャンル一覧の取得に失敗しました");
     } finally {
       setIsLoadingTags(false);
     }
@@ -65,12 +65,12 @@ export default function AdminTagsPage() {
 
     const tags = tagInputs.filter((value) => value.trim() !== "");
     if (tags.length === 0) {
-      showAlertMessage("タグ名を入力してください");
+      showAlertMessage("ジャンル名を入力してください");
       return;
     }
 
     setIsAddingTags(true);
-    setTagStatusMessage("タグを保存中...");
+    setTagStatusMessage("ジャンルを保存中...");
     try {
       const result = await createTags(tags);
       if (!result.ok) {
@@ -80,9 +80,9 @@ export default function AdminTagsPage() {
 
       setTagInputs([""]);
       await fetchTagList({ silent: true });
-      showAlertMessage("タグを保存しました");
+      showAlertMessage("ジャンルを保存しました");
     } catch {
-      showAlertMessage("タグの保存に失敗しました");
+      showAlertMessage("ジャンルの保存に失敗しました");
     } finally {
       setIsAddingTags(false);
     }
@@ -100,7 +100,7 @@ export default function AdminTagsPage() {
 
       showAlertMessage(result.message);
     } catch {
-      showAlertMessage("タグの付け直しに失敗しました");
+      showAlertMessage("ジャンルの付け直しに失敗しました");
     } finally {
       setIsReclassifyingTags(false);
     }
@@ -119,7 +119,7 @@ export default function AdminTagsPage() {
 
       showAlertMessage(result.message);
     } catch {
-      showAlertMessage("全タグの付け直しに失敗しました");
+      showAlertMessage("全ジャンルの付け直しに失敗しました");
     } finally {
       setIsReclassifyingTags(false);
     }
@@ -128,7 +128,7 @@ export default function AdminTagsPage() {
   async function deleteTag(tag: TagItem) {
     if (!window.confirm(`${tag.tag}を削除しますか？`)) return;
 
-    setTagStatusMessage("タグを削除中...");
+    setTagStatusMessage("ジャンルを削除中...");
     try {
       const result = await deleteTagAction(tag.id);
       if (!result.ok) {
@@ -141,9 +141,9 @@ export default function AdminTagsPage() {
         setTagSubterms([]);
       }
       await fetchTagList({ silent: true });
-      showAlertMessage("タグを削除しました");
+      showAlertMessage("ジャンルを削除しました");
     } catch {
-      showAlertMessage("タグの削除に失敗しました");
+      showAlertMessage("ジャンルの削除に失敗しました");
     }
   }
 
@@ -213,7 +213,7 @@ export default function AdminTagsPage() {
 
   useEffect(() => {
     const fetchInitialTags = async () => {
-      setTagStatusMessage("タグ一覧を取得中...");
+      setTagStatusMessage("ジャンル一覧を取得中...");
       try {
         const res = await fetch("/api/admin/tags", { cache: "no-store" });
         if (!res.ok) throw new Error();
@@ -221,7 +221,7 @@ export default function AdminTagsPage() {
         setTaglist(Array.isArray(data) ? data : []);
         setTagStatusMessage("");
       } catch {
-        showAlertMessage("タグ一覧の取得に失敗しました");
+        showAlertMessage("ジャンル一覧の取得に失敗しました");
       } finally {
         setIsLoadingTags(false);
       }
@@ -241,7 +241,7 @@ export default function AdminTagsPage() {
 
   return (
     <main className="min-h-screen bg-white p-6">
-      <h1 className="text-2xl font-semibold text-zinc-900">タグ管理</h1>
+      <h1 className="text-2xl font-semibold text-zinc-900">ジャンル管理</h1>
 
       <div
         className={`mt-8 grid gap-4 lg:items-start ${
@@ -252,14 +252,14 @@ export default function AdminTagsPage() {
       >
       <section className="rounded-lg border border-zinc-200 bg-zinc-50 p-5">
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-zinc-900">タグ管理</h2>
+          <h2 className="text-lg font-semibold text-zinc-900">ジャンル管理</h2>
           <button
             type="button"
             onClick={handleReclassifyAllTags}
             disabled={isReclassifyingTags}
             className="inline-flex min-w-[132px] items-center justify-center rounded-md border border-zinc-300 bg-white px-3 py-1 text-sm text-zinc-700 hover:bg-zinc-100 disabled:cursor-not-allowed disabled:bg-zinc-200"
           >
-            {isReclassifyingTags ? <LoadingSpinner /> : "全部タグ付け直し"}
+            {isReclassifyingTags ? <LoadingSpinner /> : "全部ジャンル付け直し"}
           </button>
           <button
             type="button"
@@ -290,7 +290,7 @@ export default function AdminTagsPage() {
                   )
                 )
               }
-              placeholder="追加するタグ名"
+              placeholder="追加するジャンル名"
               disabled={isLoadingTags || isAddingTags}
               className="min-h-12 w-full rounded border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-800 outline-none focus:border-zinc-400"
             />
@@ -318,16 +318,16 @@ export default function AdminTagsPage() {
 
         <div className="mt-4 rounded-md border border-zinc-200 bg-white p-3">
           {isLoadingTags ? (
-            <p className="text-sm text-zinc-600">タグを読み込み中...</p>
+            <p className="text-sm text-zinc-600">ジャンルを読み込み中...</p>
           ) : taglist.length === 0 ? (
-            <p className="text-sm text-zinc-600">タグはまだありません。</p>
+            <p className="text-sm text-zinc-600">ジャンルはまだありません。</p>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full min-w-[480px] text-left text-sm">
                 <thead className="bg-zinc-50 text-xs text-zinc-600">
                   <tr>
                     <th scope="col" className="border-b border-zinc-200 px-4 py-3">
-                      タグ名
+                      ジャンル名
                     </th>
                     <th scope="col" className="w-48 border-b border-zinc-200 px-4 py-3">
                       操作
@@ -370,7 +370,7 @@ export default function AdminTagsPage() {
       {selectedTag && (
         <section className="rounded-md border border-zinc-200 bg-white p-3 text-left">
           <h3 className="text-sm font-semibold text-zinc-900">
-            タグ詳細: {selectedTag.tag}
+            ジャンル詳細: {selectedTag.tag}
           </h3>
           <button
             type="button"
@@ -378,7 +378,7 @@ export default function AdminTagsPage() {
             disabled={isReclassifyingTags}
             className="inline-flex min-w-[108px] items-center justify-center rounded-md border border-zinc-300 bg-white px-3 py-1 text-sm text-zinc-700 hover:bg-zinc-100 disabled:cursor-not-allowed disabled:bg-zinc-200"
           >
-            {isReclassifyingTags ? <LoadingSpinner /> : "タグ付け直す"}
+            {isReclassifyingTags ? <LoadingSpinner /> : "ジャンル付け直す"}
           </button>
           <h4 className="mt-3 text-sm font-medium text-zinc-700">小要素</h4>
 

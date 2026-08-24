@@ -1,9 +1,11 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { revalidatePath } from "next/cache";
 import { loanBook } from "@/lib/action/loan";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 
 vi.mock("@/lib/auth", () => ({ auth: vi.fn() }));
+vi.mock("next/cache", () => ({ revalidatePath: vi.fn() }));
 vi.mock("@/lib/db", () => ({
   db: {
     query: vi.fn(),
@@ -12,6 +14,7 @@ vi.mock("@/lib/db", () => ({
 }));
 
 const mockedAuth = auth as unknown as ReturnType<typeof vi.fn>;
+const mockedRevalidatePath = vi.mocked(revalidatePath);
 const mockedQuery = db.query as unknown as ReturnType<typeof vi.fn>;
 const mockedTransaction = db.transaction as unknown as ReturnType<typeof vi.fn>;
 
@@ -167,6 +170,10 @@ describe("loanBook Server Action", () => {
     });
     expect(mockedQuery).toHaveBeenCalledTimes(6);
     expect(mockedTransaction).toHaveBeenCalledTimes(1);
+    expect(mockedRevalidatePath.mock.calls).toEqual([
+      ["/"],
+      ["/book-list"],
+    ]);
   });
 
   it("fridayOnlyがfalseなら非金曜・例外期間外でも借りられる", async () => {

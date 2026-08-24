@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { createComment } from "@/lib/action/comment";
+import { createComment, deleteComment } from "@/lib/action/comment";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { summary } from "@/lib/ai/aiSummary";
@@ -220,5 +220,57 @@ describe("createComment Server Action", () => {
     });
     expect(consoleError).toHaveBeenCalledOnce();
     consoleError.mockRestore();
+  });
+});
+
+describe("deleteComment Server Action", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it("未ログインでは削除しない", async () => {
+    mockedAuth.mockResolvedValue(null);
+
+    await expect(deleteComment("comment-1")).resolves.toEqual({
+      ok: false,
+      status: 401,
+      error: "認証が必要です",
+    });
+    expect(mockedQuery).not.toHaveBeenCalled();
+  });
+
+  it("本人のメールと未削除条件を使ってソフトデリートする", async () => {
+    mockedAuth.mockResolvedValue({ user: { email: "user@example.com" } });
+    mockedQuery.mockResolvedValueOnce({ rowCount: 1, rows: [{ id: "comment-1" }] });
+
+    await expect(deleteComment("comment-1")).resolves.toEqual({
+      ok: true,
+      status: 200,
+      message: "コメントを削除しました",
+    });
+    expect(String(mockedQuery.mock.calls[0]?.[0])).toContain(
+      'SET "deletedAt" = NOW()'
+    );
+    expect(String(mockedQuery.mock.calls[0]?.[0])).toContain(
+      'AND "userEmail" = $2'
+    );
+    expect(String(mockedQuery.mock.calls[0]?.[0])).toContain(
+      'AND "deletedAt" IS NULL'
+    );
+    expect(mockedQuery.mock.calls[0]?.[1]).toEqual([
+      "comment-1",
+      "user@example.com",
+    ]);
+  });
+
+  it("他人のコメントまたは存在しないコメントは削除できない", async () => {
+    mockedAuth.mockResolvedValue({ user: { email: "other@example.com" } });
+    mockedQuery.mockResolvedValueOnce({ rowCount: 0, rows: [] });
+
+    await expect(deleteComment("comment-1")).resolves.toEqual({
+      ok: false,
+      status: 404,
+      error: "コメントが見つからないか、削除する権限がありません",
+    });
   });
 });

@@ -1,6 +1,7 @@
 "use server";
 
 import { randomUUID } from "node:crypto";
+import { revalidatePath } from "next/cache";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { recordResearchEvent } from "@/lib/research-event.server";
@@ -146,6 +147,9 @@ export async function loanBook(bookId: unknown): Promise<LoanBookResult> {
         tx,
       );
     });
+
+    revalidatePath("/");
+    revalidatePath("/book-list");
 
     return { ok: true, status: 200, message: "貸出が完了しました" };
   } catch (error) {

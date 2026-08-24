@@ -17,7 +17,7 @@ const mockedAuth = auth as unknown as ReturnType<typeof vi.fn>;
 const mockedAdmin = vi.mocked(Admin);
 const mockedQuery = vi.mocked(db.query);
 
-describe("管理者タグGET API", () => {
+describe("管理者ジャンルGET API", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockedAuth.mockResolvedValue({ user: { email: "admin@example.com" } });
@@ -25,7 +25,7 @@ describe("管理者タグGET API", () => {
   });
 
   it.each([
-    ["タグ", () => getTags()],
+    ["ジャンル", () => getTags()],
     [
       "小要素",
       () =>
@@ -43,7 +43,7 @@ describe("管理者タグGET API", () => {
   });
 
   it.each([
-    ["タグ", () => getTags()],
+    ["ジャンル", () => getTags()],
     [
       "小要素",
       () =>
@@ -60,7 +60,7 @@ describe("管理者タグGET API", () => {
     expect(mockedQuery).not.toHaveBeenCalled();
   });
 
-  it("タグ一覧を名前順で返す", async () => {
+  it("ジャンル一覧を名前順で返す", async () => {
     const rows = [{ id: "tag-1", tag: "Web" }];
     mockedQuery.mockResolvedValueOnce({ rows } as never);
 
@@ -71,7 +71,7 @@ describe("管理者タグGET API", () => {
     expect(mockedQuery).toHaveBeenCalledWith(expect.stringContaining("ORDER BY tag ASC"));
   });
 
-  it("指定タグの小要素を名前順で返す", async () => {
+  it("指定ジャンルの小要素を名前順で返す", async () => {
     const rows = [{ id: "subterm-1", tagId: "tag-1", subterm: "React" }];
     mockedQuery.mockResolvedValueOnce({ rows } as never);
 
@@ -87,7 +87,7 @@ describe("管理者タグGET API", () => {
     ]);
   });
 
-  it("タグと小要素が0件なら空配列を返す", async () => {
+  it("ジャンルと小要素が0件なら空配列を返す", async () => {
     mockedQuery.mockResolvedValue({ rows: [] } as never);
 
     const tagsResponse = await getTags();
@@ -111,7 +111,7 @@ describe("管理者タグGET API", () => {
   });
 
   it.each([
-    ["タグ", () => getTags()],
+    ["ジャンル", () => getTags()],
     [
       "小要素",
       () =>

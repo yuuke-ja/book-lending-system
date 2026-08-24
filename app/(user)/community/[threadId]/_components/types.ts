@@ -9,5 +9,7 @@ export type ThreadCommentNode = {
   nickname: string | null;
   authorAvatarUrl: string | null;
   linkedBooks: LinkedBook[];
+  isOwner?: boolean;
+  isDeleted?: boolean;
   children: ThreadCommentNode[];
 };

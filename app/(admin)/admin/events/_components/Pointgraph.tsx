@@ -204,7 +204,7 @@ export default function Pointgraph({ data, predictions }: PointgraphProps) {
           ジャンルポイント推移
         </h2>
         <p className="mt-1 text-sm text-zinc-600">
-          月ごとのタグ別ポイントと翌月予測です。
+          月ごとのジャンル別ポイントと翌月予測です。
         </p>
       </div>
       <div className="mt-4 flex gap-2">

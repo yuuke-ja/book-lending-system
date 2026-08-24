@@ -2,7 +2,7 @@
 
 import { BrowserMultiFormatReader } from "@zxing/browser";
 import { BarcodeFormat, DecodeHintType } from "@zxing/library";
-import { useEffect, useRef, useState } from "react";
+import { type FormEvent, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 
 type ScanRect = {
@@ -101,6 +101,8 @@ export default function ISBNImportModal({
   const detectingRef = useRef(false);
   const [overlayRect, setOverlayRect] = useState<OverlayRect | null>(null);
   const [cameraError, setCameraError] = useState<string | null>(null);
+  const [inputISBN, setInputISBN] = useState("");
+  const [inputError, setInputError] = useState<string | null>(null);
 
   useEffect(() => {
     onCloseRef.current = onClose;
@@ -109,6 +111,36 @@ export default function ISBNImportModal({
   useEffect(() => {
     onDetectedRef.current = onDetected;
   }, [onDetected]);
+
+  // 手入力されたISBN/JANも、カメラで読み取った時と同じ処理へ渡す。
+  const submitInputISBN = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    const isbn = inputISBN.normalize("NFKC").replace(/\D/g, "");
+    if (!ISBN13_REGEX.test(isbn)) {
+      setInputError(
+        "978・979・491から始まる13桁のISBN/JANを入力してください"
+      );
+      return;
+    }
+    if (detectingRef.current) return;
+
+    detectingRef.current = true;
+    setInputError(null);
+    setInputISBN("");
+    onCloseRef.current();
+    Promise.resolve()
+      .then(() => onDetectedRef.current(isbn))
+      .finally(() => {
+        detectingRef.current = false;
+      });
+  };
+
+  const closeModal = () => {
+    setInputISBN("");
+    setInputError(null);
+    onCloseRef.current();
+  };
 
   // モーダルが開いてる間だけカメラを動かす。
   useEffect(() => {
@@ -210,6 +242,8 @@ export default function ISBNImportModal({
 
         detectingRef.current = true;
         clearResources();
+        setInputISBN("");
+        setInputError(null);
         onCloseRef.current();
         Promise.resolve(onDetectedRef.current(isbn)).finally(() => {
           detectingRef.current = false;
@@ -278,9 +312,42 @@ export default function ISBNImportModal({
       <div className="absolute bottom-0 w-full bg-black/70 p-4 text-white">
         <p className="mb-3 text-sm">ISBN/JANコードを枠に合わせてください（ISBN: 978/979、雑誌JAN: 491）</p>
         {cameraError && <p className="mb-3 text-sm text-red-300">{cameraError}</p>}
+        <p className="mb-3 text-sm">
+          読み取れない場合は、ISBN/JANコードを手入力してください。
+        </p>
+
+        <form onSubmit={submitInputISBN} className="mb-3 flex flex-col gap-2 sm:flex-row">
+          <input
+            type="text"
+            inputMode="numeric"
+            autoComplete="off"
+            placeholder="13桁のISBN/JAN"
+            value={inputISBN}
+            onChange={(event) => {
+              setInputISBN(event.target.value);
+              if (inputError) setInputError(null);
+            }}
+            aria-invalid={inputError ? true : undefined}
+            aria-describedby={inputError ? "isbn-input-error" : undefined}
+            className="min-w-0 flex-1 rounded border border-zinc-300 bg-white px-3 py-2 text-zinc-900 placeholder:text-zinc-400 focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+          />
+          <button
+            type="submit"
+            className="rounded bg-emerald-600 px-4 py-2 font-medium text-white hover:bg-emerald-500"
+          >
+            本を確認
+          </button>
+        </form>
+
+        {inputError && (
+          <p id="isbn-input-error" role="alert" className="mb-3 text-sm text-red-300">
+            {inputError}
+          </p>
+        )}
+
         <button
           type="button"
-          onClick={() => onCloseRef.current()}
+          onClick={closeModal}
           className="rounded bg-white px-4 py-2 text-zinc-900"
         >
           閉じる

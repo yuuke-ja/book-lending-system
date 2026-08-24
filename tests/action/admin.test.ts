@@ -144,7 +144,7 @@ describe("admin Server Actions", () => {
     expect(result.ok).toBe(false);
   });
 
-  it("本情報更新後にembeddingと自動タグ付けを更新する", async () => {
+  it("本情報更新後にembeddingと自動ジャンル付けを更新する", async () => {
     mockedQuery.mockResolvedValueOnce({ rowCount: 1, rows: [] });
 
     const result = await updateBookInfo({
@@ -159,7 +159,7 @@ describe("admin Server Actions", () => {
     expect(mockedClassifyBooks).toHaveBeenCalledWith({ bookIds: ["book-1"] });
   });
 
-  it("本のタグをトランザクションで置き換える", async () => {
+  it("本のジャンルをトランザクションで置き換える", async () => {
     const txQuery = vi.fn().mockResolvedValue({ rows: [] });
     mockedTransaction.mockImplementation(
       async (callback: (tx: { query: typeof txQuery }) => Promise<unknown>) =>
@@ -180,7 +180,7 @@ describe("admin Server Actions", () => {
     expect(mockedRebuildBookEmbeddings).toHaveBeenCalledWith(["book-1"]);
   });
 
-  it("タグを削除する", async () => {
+  it("ジャンルを削除する", async () => {
     mockedQuery.mockResolvedValueOnce({ rowCount: 1, rows: [] });
 
     const result = await deleteTag("tag-1");
@@ -188,12 +188,12 @@ describe("admin Server Actions", () => {
     expect(result).toEqual({
       ok: true,
       status: 200,
-      message: "タグを削除しました",
+      message: "ジャンルを削除しました",
     });
     expect(mockedQuery.mock.calls[0][1]).toEqual(["tag-1"]);
   });
 
-  it("小要素をタグとの組み合わせで削除する", async () => {
+  it("小要素をジャンルとの組み合わせで削除する", async () => {
     mockedQuery.mockResolvedValueOnce({ rowCount: 1, rows: [] });
 
     const result = await deleteTagSubterm("tag-1", "subterm-1");

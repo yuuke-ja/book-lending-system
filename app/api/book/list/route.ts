@@ -18,7 +18,7 @@ export async function GET() {
          FROM "BookReview"
          GROUP BY "bookId"
        ),
-       --タグを本ごとにまとめてJSON配列にする
+       --ジャンルを本ごとにまとめてJSON配列にする
        tag_summary AS (
          SELECT
            bt."bookId",

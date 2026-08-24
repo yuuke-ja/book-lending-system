@@ -61,21 +61,3 @@ test('貸出済みの本を借りようとすると重複貸出エラーを表�
   expect(dialog.message()).toBe('この本はすでに貸出中です');
   await dialog.accept();
 });
-
-test('貸出一覧APIが失敗するとホームに取得エラーを表示する', async ({
-  page,
-}) => {
-  await page.route('**/api/book/loan', async (route) => {
-    await route.fulfill({
-      status: 500,
-      contentType: 'application/json',
-      body: JSON.stringify({ error: 'E2Eで意図的に発生させたエラー' }),
-    });
-  });
-
-  await page.goto(appURL('/'));
-  const borrowedSection = page.locator('#borrowed-books');
-  await expect(
-    borrowedSection.getByText('貸出中の本の取得に失敗しました')
-  ).toBeVisible();
-});

@@ -79,7 +79,7 @@ describe("管理画面の編集コンポーネント", () => {
     mocks.updateBookTags.mockResolvedValue({
       ok: true,
       status: 200,
-      message: "タグを更新しました",
+      message: "ジャンルを更新しました",
     });
     mocks.createNotice.mockResolvedValue({
       ok: true,
@@ -158,25 +158,25 @@ describe("管理画面の編集コンポーネント", () => {
     await waitFor(() => expect(alert).toHaveBeenCalledWith("変更に失敗しました"));
   });
 
-  it("本の既存タグを外して新しいタグを保存する", async () => {
+  it("本の既存ジャンルを外して新しいジャンルを保存する", async () => {
     const user = userEvent.setup();
     render(
       <BookTagEditor
         bookId="book-1"
         title="対象本"
-        initialTags={[{ id: "tag-old", tag: "旧タグ" }]}
+        initialTags={[{ id: "tag-old", tag: "旧ジャンル" }]}
         allTags={[
-          { id: "tag-old", tag: "旧タグ" },
-          { id: "tag-new", tag: "新タグ" },
+          { id: "tag-old", tag: "旧ジャンル" },
+          { id: "tag-new", tag: "新ジャンル" },
         ]}
       />
     );
 
-    await user.click(screen.getByRole("button", { name: "タグ変更" }));
+    await user.click(screen.getByRole("button", { name: "ジャンル変更" }));
     expect(screen.getByRole("dialog")).toBeInTheDocument();
     expect(document.body.style.overflow).toBe("hidden");
-    await user.click(screen.getByRole("button", { name: "旧タグを削除" }));
-    await user.click(screen.getByRole("button", { name: "#新タグ" }));
+    await user.click(screen.getByRole("button", { name: "旧ジャンルを削除" }));
+    await user.click(screen.getByRole("button", { name: "新ジャンル" }));
     await user.click(screen.getByRole("button", { name: "変更を保存" }));
 
     await waitFor(() =>
@@ -187,28 +187,28 @@ describe("管理画面の編集コンポーネント", () => {
     );
   });
 
-  it("本タグの保存失敗を表示する", async () => {
+  it("本ジャンルの保存失敗を表示する", async () => {
     const user = userEvent.setup();
     vi.spyOn(console, "error").mockImplementation(() => {});
     mocks.updateBookTags.mockResolvedValueOnce({
       ok: false,
       status: 500,
-      error: "タグ保存失敗",
+      error: "ジャンル保存失敗",
     });
     render(
       <BookTagEditor
         bookId="book-1"
         title="対象本"
         initialTags={[]}
-        allTags={[{ id: "tag-1", tag: "タグ" }]}
+        allTags={[{ id: "tag-1", tag: "ジャンル" }]}
       />
     );
 
-    await user.click(screen.getByRole("button", { name: "タグ変更" }));
-    await user.click(screen.getByRole("button", { name: "#タグ" }));
+    await user.click(screen.getByRole("button", { name: "ジャンル変更" }));
+    await user.click(screen.getByRole("button", { name: "ジャンル" }));
     await user.click(screen.getByRole("button", { name: "変更を保存" }));
 
-    await waitFor(() => expect(alert).toHaveBeenCalledWith("タグ保存失敗"));
+    await waitFor(() => expect(alert).toHaveBeenCalledWith("ジャンル保存失敗"));
   });
 
   it("お知らせの下書きと選択本を復元し、一時データを破棄する", async () => {

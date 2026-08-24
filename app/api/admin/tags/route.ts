@@ -20,6 +20,6 @@ export async function GET() {
     return NextResponse.json(result.rows, { status: 200 });
   } catch (error) {
     console.error(error);
-    return NextResponse.json({ error: "タグ一覧の取得に失敗しました" }, { status: 500 });
+    return NextResponse.json({ error: "ジャンル一覧の取得に失敗しました" }, { status: 500 });
   }
 }

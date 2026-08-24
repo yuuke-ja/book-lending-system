@@ -57,7 +57,7 @@ export default function BookListClient({
             tagIds: selectedTagIds.join(","),
           })}`
         ).then((res) => {
-          if (!res.ok) throw new Error("タグ検索に失敗しました");
+          if (!res.ok) throw new Error("ジャンル検索に失敗しました");
           return res.json();
         })
       : Promise.resolve([]);
@@ -147,7 +147,7 @@ export default function BookListClient({
                   key={tag.id}
                   className="inline-flex items-center gap-1 rounded-md border border-zinc-200 bg-zinc-100 px-2.5 py-1 text-xs font-medium text-zinc-700"
                 >
-                  #{tag.tag}
+                  {tag.tag}
                   <button
                     type="button"
                     onClick={() => {
@@ -199,7 +199,7 @@ export default function BookListClient({
                     : "border-zinc-300 bg-zinc-50 text-zinc-700 hover:bg-zinc-100"
                     }`}
                 >
-                  #{item.tag}
+                  {item.tag}
                 </button>
               );
             })}
@@ -253,7 +253,7 @@ export default function BookListClient({
                         key={tag.id}
                         className="inline-flex rounded border border-zinc-300 bg-zinc-50 px-1 py-0.5 text-[10px] leading-none text-zinc-600"
                       >
-                        #{tag.tag}
+                        {tag.tag}
                       </span>
                     ))}
                   </div>

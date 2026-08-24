@@ -1,5 +1,9 @@
 import { db } from "@/lib/db";
-import type { LinkedBook, ThreadDetail } from "@/lib/community/types";
+import type {
+  LinkedBook,
+  ThreadDetail,
+  ThreadDetailWithOwnership,
+} from "@/lib/community/types";
 
 type ThreadRow = {
   id: string;
@@ -7,6 +11,7 @@ type ThreadRow = {
   bookId: string | null;
   kind: string;
   createdAt: string;
+  userEmail: string;
   nickname: string | null;
   authorAvatarUrl: string | null;
 };
@@ -17,6 +22,8 @@ type CommentRow = {
   parentCommentId: string | null;
   content: string;
   createdAt: string;
+  deletedAt: string | Date | null;
+  userEmail: string;
   nickname: string | null;
   authorAvatarUrl: string | null;
 };
@@ -28,7 +35,15 @@ type CommentBookRow = {
   thumbnail: string | null;
 };
 
-export async function getThreadDetail(threadId: string): Promise<ThreadDetail | null> {
+export function getThreadDetail(threadId: string): Promise<ThreadDetail | null>;
+export function getThreadDetail(
+  threadId: string,
+  currentUserEmail: string | null
+): Promise<ThreadDetailWithOwnership | null>;
+export async function getThreadDetail(
+  threadId: string,
+  currentUserEmail?: string | null
+): Promise<ThreadDetail | ThreadDetailWithOwnership | null> {
   const threadResult = await db.query<ThreadRow>(
     `SELECT
        t.id,
@@ -36,11 +51,13 @@ export async function getThreadDetail(threadId: string): Promise<ThreadDetail | 
        t."bookId" AS "bookId",
        t.kind,
        t."createdAt" AS "createdAt",
+       t."userEmail" AS "userEmail",
        u.nickname AS nickname,
        u.avatarurl AS "authorAvatarUrl"
      FROM "Thread" t
      LEFT JOIN "User" u ON u.email = t."userEmail"
      WHERE t.id = $1
+       AND t."deletedAt" IS NULL
      LIMIT 1`,
     [threadId]
   );
@@ -68,6 +85,8 @@ export async function getThreadDetail(threadId: string): Promise<ThreadDetail | 
        c."parentCommentId" AS "parentCommentId",
        c.content,
        c."createdAt" AS "createdAt",
+       c."deletedAt" AS "deletedAt",
+       c."userEmail" AS "userEmail",
        u.nickname AS nickname,
        u.avatarurl AS "authorAvatarUrl"
      FROM "ThreadComment" c
@@ -113,12 +132,33 @@ export async function getThreadDetail(threadId: string): Promise<ThreadDetail | 
 
   return {
     thread: {
-      ...thread,
+      id: thread.id,
+      content: thread.content,
+      bookId: thread.bookId,
+      kind: thread.kind,
+      createdAt: thread.createdAt,
+      nickname: thread.nickname,
+      authorAvatarUrl: thread.authorAvatarUrl,
       linkedBook: linkedThreadBookResult?.rows[0] ?? null,
+      ...(currentUserEmail !== undefined
+        ? { isOwner: thread.userEmail === currentUserEmail }
+        : {}),
     },
     comments: commentResult.rows.map((comment) => ({
-      ...comment,
+      id: comment.id,
+      threadId: comment.threadId,
+      parentCommentId: comment.parentCommentId,
+      content: comment.content,
+      createdAt: comment.createdAt,
+      nickname: comment.nickname,
+      authorAvatarUrl: comment.authorAvatarUrl,
       linkedBooks: linkedBooksByCommentId[comment.id] ?? [],
+      ...(currentUserEmail !== undefined
+        ? {
+            isOwner: comment.userEmail === currentUserEmail,
+            isDeleted: comment.deletedAt != null,
+          }
+        : {}),
     })),
   };
 }

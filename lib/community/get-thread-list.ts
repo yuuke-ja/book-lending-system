@@ -29,6 +29,7 @@ export async function getThreadList(bookId?: string | null) {
          LEFT JOIN "Book" AS b ON b.id = t."bookId"
          LEFT JOIN "User" AS u ON u.email = t."userEmail"
          WHERE t."bookId" = $1
+           AND t."deletedAt" IS NULL
          ORDER BY t."createdAt" DESC`,
       [bookId]
     )
@@ -46,6 +47,7 @@ export async function getThreadList(bookId?: string | null) {
          FROM "Thread" t
          LEFT JOIN "Book" AS b ON b.id = t."bookId"
          LEFT JOIN "User" AS u ON u.email = t."userEmail"
+         WHERE t."deletedAt" IS NULL
          ORDER BY t."createdAt" DESC`
     );
   return result.rows.map((thread: CommunityThreadRow) => ({

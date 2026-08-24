@@ -104,6 +104,41 @@ describe("ISBNImportModal", () => {
     ).toBeInTheDocument();
   });
 
+  it("手入力したISBNからハイフンを除去して検出処理へ渡す", async () => {
+    const user = userEvent.setup();
+    const onClose = vi.fn();
+    const onDetected = vi.fn();
+    render(
+      <ISBNImportModal open onClose={onClose} onDetected={onDetected} />
+    );
+
+    await user.type(screen.getByRole("textbox"), "978-1-234-56789-0");
+    await user.click(screen.getByRole("button", { name: "本を確認" }));
+
+    expect(onClose).toHaveBeenCalledTimes(1);
+    await waitFor(() =>
+      expect(onDetected).toHaveBeenCalledWith("9781234567890")
+    );
+  });
+
+  it("手入力したISBNが不正な時は送信しない", async () => {
+    const user = userEvent.setup();
+    const onClose = vi.fn();
+    const onDetected = vi.fn();
+    render(
+      <ISBNImportModal open onClose={onClose} onDetected={onDetected} />
+    );
+
+    await user.type(screen.getByRole("textbox"), "12345");
+    await user.click(screen.getByRole("button", { name: "本を確認" }));
+
+    expect(
+      screen.getByText("978・979・491から始まる13桁のISBN/JANを入力してください")
+    ).toBeInTheDocument();
+    expect(onClose).not.toHaveBeenCalled();
+    expect(onDetected).not.toHaveBeenCalled();
+  });
+
   it("同じ有効ISBNを2回連続で読んだ時だけ検出を確定する", async () => {
     vi.useFakeTimers();
     const onClose = vi.fn();

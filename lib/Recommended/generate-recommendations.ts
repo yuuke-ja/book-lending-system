@@ -129,7 +129,7 @@ function addTagCandidateCountScore(
   recommendBookScoreByBookId: Map<string, number>,
   tagRecommendBooks: TagRecommendBook[]
 ) {
-  // 同じタグから候補に出た回数が多い本ほど高得点にする
+  // 同じジャンルから候補に出た回数が多い本ほど高得点にする
   const tagCandidateCountRanking = tagRecommendBooks.slice().sort((first, second) => {
     if (second.tagCandidateCount !== first.tagCandidateCount) {
       return second.tagCandidateCount - first.tagCandidateCount;

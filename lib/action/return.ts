@@ -1,5 +1,6 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 
@@ -39,6 +40,9 @@ export async function returnBook(bookId: unknown): Promise<ReturnBookResult> {
         error: "返却する貸出が見つかりません",
       };
     }
+
+    revalidatePath("/");
+    revalidatePath("/book-list");
 
     return { ok: true, status: 200, message: "返却が完了しました" };
   } catch (error) {

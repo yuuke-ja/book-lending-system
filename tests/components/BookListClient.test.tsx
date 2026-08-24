@@ -104,17 +104,17 @@ describe("BookListClient", () => {
     vi.unstubAllGlobals();
   });
 
-  it("初期本、タグ、評価、貸出状態を表示する", () => {
+  it("初期本、ジャンル、評価、貸出状態を表示する", () => {
     renderBookList();
 
     expect(screen.getByText("最初の本")).toBeInTheDocument();
     expect(screen.getByText("著者A")).toBeInTheDocument();
     expect(screen.getByText("rating:4")).toBeInTheDocument();
     expect(screen.getByText("貸出中")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "#技術" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "技術" })).toBeInTheDocument();
   });
 
-  it("自由文とタグIDを別々のAPIへ送り、結果を重複排除してログ保存する", async () => {
+  it("自由文とジャンルIDを別々のAPIへ送り、結果を重複排除してログ保存する", async () => {
     const user = userEvent.setup();
     const sharedBook: BookListBook = {
       id: "book-shared",
@@ -132,7 +132,7 @@ describe("BookListClient", () => {
     };
     const tagBook: BookListBook = {
       id: "book-tag",
-      title: "タグ検索の本",
+      title: "ジャンル検索の本",
       authors: [],
       isbn13: "9780000000004",
       tags: [tags[0]],
@@ -152,13 +152,13 @@ describe("BookListClient", () => {
     });
 
     renderBookList();
-    await user.click(screen.getByRole("button", { name: "#技術" }));
+    await user.click(screen.getByRole("button", { name: "技術" }));
     await user.type(screen.getByLabelText("検索"), "  React 入門  ");
     await user.click(screen.getByRole("button", { name: "検索" }));
 
     await screen.findByText("全文検索の本");
     expect(screen.getAllByText("共通の本")).toHaveLength(1);
-    expect(screen.getByText("タグ検索の本")).toBeInTheDocument();
+    expect(screen.getByText("ジャンル検索の本")).toBeInTheDocument();
 
     const requestedUrls = fetchMock.mock.calls.map(([input]) => String(input));
     expect(requestedUrls).toContain(
@@ -180,7 +180,7 @@ describe("BookListClient", () => {
     });
   });
 
-  it("タグだけの検索では全文検索APIを呼ばず、IDと表示名を保持する", async () => {
+  it("ジャンルだけの検索では全文検索APIを呼ばず、IDと表示名を保持する", async () => {
     const user = userEvent.setup();
     const fetchMock = vi.mocked(fetch).mockImplementation((input) => {
       const url = String(input);
@@ -194,7 +194,7 @@ describe("BookListClient", () => {
     });
 
     renderBookList();
-    await user.click(screen.getByRole("button", { name: "#デザイン" }));
+    await user.click(screen.getByRole("button", { name: "デザイン" }));
     expect(
       screen.getByRole("button", { name: "デザインを削除" })
     ).toBeInTheDocument();
@@ -211,11 +211,11 @@ describe("BookListClient", () => {
     ).toBe(false);
   });
 
-  it("選択したタグを解除できる", async () => {
+  it("選択したジャンルを解除できる", async () => {
     const user = userEvent.setup();
     renderBookList();
 
-    await user.click(screen.getByRole("button", { name: "#技術" }));
+    await user.click(screen.getByRole("button", { name: "技術" }));
     const removeButton = screen.getByRole("button", { name: "技術を削除" });
     expect(removeButton).toBeInTheDocument();
 

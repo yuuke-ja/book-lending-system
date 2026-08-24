@@ -32,7 +32,7 @@ export default async function RecommendedBooksList({
             RECOMMENDED BOOKS
           </p>
           <h3 className="mt-1 text-lg font-semibold text-zinc-900">
-            おすすめ本
+            あなたにおすすめの本
           </h3>
         </div>
         {!hasError && (

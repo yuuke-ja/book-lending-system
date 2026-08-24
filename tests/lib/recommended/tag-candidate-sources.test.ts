@@ -8,10 +8,10 @@ vi.mock("@/lib/db", () => ({ db: { query: vi.fn() } }));
 
 const queryMock = vi.mocked(db.query);
 
-describe("タグ由来の推薦候補", () => {
+describe("ジャンル由来の推薦候補", () => {
   beforeEach(() => vi.clearAllMocks());
 
-  it("行動履歴の対象イベントと同じタグを持つ別の本を検索する", async () => {
+  it("行動履歴の対象イベントと同じジャンルを持つ別の本を検索する", async () => {
     const rows = [
       {
         historyBookId: "source-1",
@@ -43,14 +43,14 @@ describe("タグ由来の推薦候補", () => {
     ).resolves.toEqual([]);
   });
 
-  it("行動履歴タグ候補のDBエラーを伝播する", async () => {
+  it("行動履歴ジャンル候補のDBエラーを伝播する", async () => {
     queryMock.mockRejectedValueOnce(new Error("database error"));
     await expect(
       findTagCandidatesFromHistory("user@example.com")
     ).rejects.toThrow("database error");
   });
 
-  it("検索履歴をタグ名と小要素の両方へ照合する", async () => {
+  it("検索履歴をジャンル名と小要素の両方へ照合する", async () => {
     const rows = [
       {
         sourceQuery: "React",
@@ -78,7 +78,7 @@ describe("タグ由来の推薦候補", () => {
     expect(params).toEqual(["user@example.com"]);
   });
 
-  it("検索履歴タグ候補のDBエラーを伝播する", async () => {
+  it("検索履歴ジャンル候補のDBエラーを伝播する", async () => {
     queryMock.mockRejectedValueOnce(new Error("database error"));
     await expect(
       findTagCandidatesFromSearchHistory("user@example.com")

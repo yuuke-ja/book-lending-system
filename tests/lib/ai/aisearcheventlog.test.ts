@@ -23,7 +23,7 @@ describe("aisearcheventlog", () => {
     mockedRecordSearchEvent.mockResolvedValue({ id: "search-event-1" });
   });
 
-  it("検索語がタグに一致したらconfidence 1で保存する", async () => {
+  it("検索語がジャンルに一致したらconfidence 1で保存する", async () => {
     mockedQuery.mockResolvedValueOnce({
       rows: [{ id: "tag-ai" }, { id: "tag-tech" }],
     });
@@ -45,7 +45,7 @@ describe("aisearcheventlog", () => {
     }));
   });
 
-  it("検索語にタグがなければ推薦本タグ上位2件をconfidence 0.5で保存する", async () => {
+  it("検索語にジャンルがなければ推薦本ジャンル上位2件をconfidence 0.5で保存する", async () => {
     mockedQuery.mockResolvedValueOnce({ rows: [] });
     mockedQuery.mockResolvedValueOnce({
       rows: [{ id: "tag-design" }, { id: "tag-tech" }],
@@ -70,19 +70,19 @@ describe("aisearcheventlog", () => {
     }));
   });
 
-  it("検索語にも推薦本にもタグがなければタグなしで保存する", async () => {
+  it("検索語にも推薦本にもジャンルがなければジャンルなしで保存する", async () => {
     mockedQuery.mockResolvedValueOnce({ rows: [] });
 
     await aisearcheventlog({
       userEmail: "user@example.com",
-      query: "タグなし",
+      query: "ジャンルなし",
       recommendedBooks: [],
     });
 
     expect(mockedQuery).toHaveBeenCalledTimes(1);
     expect(mockedRecordSearchEvent).toHaveBeenCalledWith(expect.objectContaining({
       userEmail: "user@example.com",
-      query: "タグなし",
+      query: "ジャンルなし",
       searchType: "ai_query",
       tagIds: [],
       confidence: 1,

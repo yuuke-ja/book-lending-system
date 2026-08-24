@@ -18,7 +18,7 @@ describe("書籍データ取得", () => {
     vi.clearAllMocks();
   });
 
-  it("getBookByIdは評価とタグを含む1冊を返す", async () => {
+  it("getBookByIdは評価とジャンルを含む1冊を返す", async () => {
     const book = {
       id: "book-1",
       title: "TypeScript入門",
@@ -47,7 +47,7 @@ describe("書籍データ取得", () => {
     await expect(getBookById("missing-book")).resolves.toBeNull();
   });
 
-  it("レビューとタグがない詳細は平均0・件数0・空タグを返す", async () => {
+  it("レビューとジャンルがない詳細は平均0・件数0・空ジャンルを返す", async () => {
     const book = {
       id: "book-empty",
       title: "未評価の本",
@@ -66,7 +66,7 @@ describe("書籍データ取得", () => {
     await expect(getBookById("book-1")).rejects.toBe(error);
   });
 
-  it("getBookListはDBの書籍一覧を返し、評価とタグの既定値を取得する", async () => {
+  it("getBookListはDBの書籍一覧を返し、評価とジャンルの既定値を取得する", async () => {
     const books = [
       {
         id: "book-2",
@@ -160,12 +160,12 @@ describe("貸出中ID取得", () => {
   });
 });
 
-describe("タグ一覧取得", () => {
+describe("ジャンル一覧取得", () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
-  it("タグを名前の昇順で取得して返す", async () => {
+  it("ジャンルを名前の昇順で取得して返す", async () => {
     const tags = [
       { id: "tag-a", tag: "AI" },
       { id: "tag-w", tag: "Web" },
@@ -178,7 +178,7 @@ describe("タグ一覧取得", () => {
     );
   });
 
-  it("タグがなければ空配列を返す", async () => {
+  it("ジャンルがなければ空配列を返す", async () => {
     mockedQuery.mockResolvedValueOnce({ rows: [] });
     await expect(getTagList()).resolves.toEqual([]);
   });

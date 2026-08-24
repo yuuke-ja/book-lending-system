@@ -1,7 +1,14 @@
 // @vitest-environment jsdom
 /* eslint-disable @next/next/no-img-element -- next/image is intentionally reduced to an img in this component unit test */
 
-import { act, cleanup, render, screen, waitFor } from "@testing-library/react";
+import {
+  act,
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import CommentTree, {
@@ -10,6 +17,7 @@ import CommentTree, {
 
 const mocks = vi.hoisted(() => ({
   createComment: vi.fn(),
+  deleteComment: vi.fn(),
   push: vi.fn(),
   refresh: vi.fn(),
 }));
@@ -26,6 +34,7 @@ vi.mock("next/image", () => ({
 
 vi.mock("@/lib/action/comment", () => ({
   createComment: mocks.createComment,
+  deleteComment: mocks.deleteComment,
 }));
 
 const linkedBook = {
@@ -68,6 +77,7 @@ describe("CommentTree", () => {
     sessionStorage.clear();
     vi.stubGlobal("fetch", vi.fn().mockResolvedValue(new Response(null, { status: 204 })));
     vi.stubGlobal("alert", vi.fn());
+    vi.stubGlobal("confirm", vi.fn(() => true));
     vi.stubGlobal(
       "IntersectionObserver",
       class IntersectionObserverMock {
@@ -90,6 +100,45 @@ describe("CommentTree", () => {
     sessionStorage.clear();
     vi.useRealTimers();
     vi.unstubAllGlobals();
+  });
+
+  it("削除済みの親コメントとその返信を表示しない", () => {
+    render(
+      <CommentTree
+        comments={[{ ...root, isDeleted: true }]}
+        threadId="thread-1"
+      />
+    );
+
+    expect(screen.queryByText("親コメント")).not.toBeInTheDocument();
+    expect(screen.queryByText("子コメント")).not.toBeInTheDocument();
+  });
+
+  it("本人のコメントを削除して表示を再取得する", async () => {
+    vi.useFakeTimers();
+    mocks.deleteComment.mockResolvedValueOnce({
+      ok: true,
+      status: 200,
+      message: "コメントを削除しました",
+    });
+    render(
+      <CommentTree
+        comments={[{ ...root, isOwner: true }]}
+        threadId="thread-1"
+      />
+    );
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole("button", { name: "削除" }));
+      await Promise.resolve();
+    });
+
+    expect(mocks.deleteComment).toHaveBeenCalledWith("comment-root");
+    expect(screen.getByRole("status")).toHaveTextContent(
+      "コメントを削除しました"
+    );
+    act(() => vi.advanceTimersByTime(800));
+    expect(mocks.refresh).toHaveBeenCalledOnce();
   });
 
   it("入れ子コメントを表示し、親ID付きで返信する", async () => {

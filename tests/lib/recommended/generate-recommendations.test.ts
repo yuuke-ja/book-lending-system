@@ -165,7 +165,7 @@ describe("generateRecommendations", () => {
     );
   });
 
-  it("検索履歴候補の取得に失敗しても行動ログ候補とタグ候補でおすすめを作る", async () => {
+  it("検索履歴候補の取得に失敗しても行動ログ候補とジャンル候補でおすすめを作る", async () => {
     const consoleErrorSpy = vi
       .spyOn(console, "error")
       .mockImplementation(() => {});
@@ -219,7 +219,7 @@ describe("generateRecommendations", () => {
     expect(mockedDb.transaction).not.toHaveBeenCalled();
   });
 
-  it("タグ候補2系統を並列に取得する", async () => {
+  it("ジャンル候補2系統を並列に取得する", async () => {
     const calls: string[] = [];
     let resolveHistoryTag: ((value: []) => void) | undefined;
     let resolveSearchTag: ((value: []) => void) | undefined;
@@ -265,7 +265,7 @@ describe("generateRecommendations", () => {
     ]);
   });
 
-  it("ベクトル候補とタグ候補をbookIdで合算して順位を決める", async () => {
+  it("ベクトル候補とジャンル候補をbookIdで合算して順位を決める", async () => {
     mockedFindCandidatesFromHistory.mockResolvedValue([
       {
         historyBookId: "source-vector",

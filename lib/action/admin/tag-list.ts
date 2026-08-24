@@ -41,7 +41,7 @@ export async function createTags(
     return {
       ok: true,
       status,
-      message: "タグを保存しました",
+      message: "ジャンルを保存しました",
       data: result.rows,
     };
   } catch (error) {
@@ -60,9 +60,9 @@ export async function deleteTag(tagId: unknown): Promise<AdminActionResult> {
   try {
     await db.query(`DELETE FROM "TagList" WHERE id = $1`, [tagId]);
     revalidatePath("/admin/tags");
-    return { ok: true, status: 200, message: "タグを削除しました" };
+    return { ok: true, status: 200, message: "ジャンルを削除しました" };
   } catch (error) {
     console.error(error);
-    return { ok: false, status: 500, error: "タグの削除に失敗しました" };
+    return { ok: false, status: 500, error: "ジャンルの削除に失敗しました" };
   }
 }

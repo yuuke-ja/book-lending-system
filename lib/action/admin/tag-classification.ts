@@ -18,15 +18,15 @@ export async function classifyAllBooks(): Promise<
     return {
       ok: true,
       status: 200,
-      message: "全タグを付け直しました",
+      message: "全ジャンルを付け直しました",
       data: { count: rows.length },
     };
   } catch (error) {
-    console.error("全タグの自動付与に失敗:", error);
+    console.error("全ジャンルの自動付与に失敗:", error);
     return {
       ok: false,
       status: 500,
-      error: "全タグの付け直しに失敗しました",
+      error: "全ジャンルの付け直しに失敗しました",
     };
   }
 }
@@ -48,15 +48,15 @@ export async function classifyBooksForTag(
     return {
       ok: true,
       status: 200,
-      message: "タグを付け直しました",
+      message: "ジャンルを付け直しました",
       data: { count: rows.length },
     };
   } catch (error) {
-    console.error("タグの自動付与に失敗:", error);
+    console.error("ジャンルの自動付与に失敗:", error);
     return {
       ok: false,
       status: 500,
-      error: "タグの付け直しに失敗しました",
+      error: "ジャンルの付け直しに失敗しました",
     };
   }
 }

@@ -258,7 +258,7 @@ describeWithDatabase("GET /api/admin/genre-points SQL aggregation", () => {
     await client.end();
   });
 
-  it("同じ月の同じタグを1行にまとめてpointsを合計する", async () => {
+  it("同じ月の同じジャンルを1行にまとめてpointsを合計する", async () => {
     await seedAggregationData(client);
     await client.query(
       `INSERT INTO "GenrePointPrediction"
@@ -312,7 +312,7 @@ describeWithDatabase("GET /api/admin/genre-points SQL aggregation", () => {
     ]);
   });
 
-  it("11種類すべての行動を指定した重みで同じ月・タグへ集約する", async () => {
+  it("11種類すべての行動を指定した重みで同じ月・ジャンルへ集約する", async () => {
     await client.query(`INSERT INTO "TagList" (id, tag) VALUES ('tag-all', '全種類')`);
     await client.query(`INSERT INTO "BookTag" ("bookId", "tagId") VALUES ('book-all', 'tag-all')`);
     await client.query(`

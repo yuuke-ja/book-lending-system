@@ -13,6 +13,7 @@ import {
 } from "./postgres-test-utils";
 
 vi.mock("@/lib/auth", () => ({ auth: vi.fn() }));
+vi.mock("next/cache", () => ({ revalidatePath: vi.fn() }));
 vi.mock("@/lib/db", () => ({
   db: { query: vi.fn(), transaction: vi.fn() },
 }));

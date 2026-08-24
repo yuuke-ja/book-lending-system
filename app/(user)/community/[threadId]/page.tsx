@@ -6,6 +6,7 @@ import CommentComposer from "./_components/CommentComposer";
 import CommentTree, { type ThreadCommentNode } from "./_components/CommentTree";
 import ThreadLinkedBookCard from "./_components/ThreadLinkedBookCard";
 import ThreadBackButton from "./_components/ThreadBackButton";
+import DeleteThreadButton from "./_components/DeleteThreadButton";
 import { type LinkedBook } from "../_components/types";
 
 type Thread = {
@@ -17,6 +18,7 @@ type Thread = {
   nickname: string | null;
   authorAvatarUrl: string | null;
   linkedBook: LinkedBook | null;
+  isOwner: boolean;
 };
 
 type ThreadComment = {
@@ -28,6 +30,8 @@ type ThreadComment = {
   nickname: string | null;
   authorAvatarUrl: string | null;
   linkedBooks: LinkedBook[];
+  isOwner: boolean;
+  isDeleted: boolean;
 };
 
 export default async function ThreadPage({
@@ -38,7 +42,9 @@ export default async function ThreadPage({
   const { threadId } = await params;
 
   try {
-    const [session, data] = await Promise.all([auth(), getThreadDetail(threadId)]);
+    const session = await auth();
+    const userEmail = session?.user?.email ?? null;
+    const data = await getThreadDetail(threadId, userEmail);
 
     if (!data) {
       return (
@@ -64,7 +70,6 @@ export default async function ThreadPage({
       }
     });
 
-    const userEmail = session?.user?.email ?? null;
     if (userEmail && thread?.bookId) {
       await recordResearchEvent({
         eventType: "post_view",
@@ -78,7 +83,13 @@ export default async function ThreadPage({
     return (
       <section className="space-y-6">
         <header className="rounded-3xl border border-zinc-200 bg-white p-7 shadow-sm">
-          <ThreadBackButton />
+          <div className="flex items-center justify-between gap-4">
+            <ThreadBackButton />
+            {thread.isOwner && (
+              <DeleteThreadButton threadId={threadId} />
+            )}
+
+          </div>
           <p className="text-xs font-semibold tracking-[0.08em] text-zinc-500">
             THREAD
           </p>

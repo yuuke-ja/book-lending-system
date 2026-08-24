@@ -4,6 +4,7 @@ import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/re
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import AdminPage from "@/app/(admin)/admin/page";
+import LoanSettingsPage from "@/app/(admin)/admin/loan-settings/page";
 
 const actions = vi.hoisted(() => ({
   saveLoanSettings: vi.fn(),
@@ -44,7 +45,7 @@ function jsonResponse(body: unknown, status = 200) {
   });
 }
 
-describe("AdminPage", () => {
+describe("LoanSettingsPage", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     actions.saveLoanSettings.mockResolvedValue({
@@ -65,7 +66,7 @@ describe("AdminPage", () => {
   });
 
   it("取得した貸出設定をcheckbox、曜日、例外ルールへ反映する", async () => {
-    const { container } = render(<AdminPage />);
+    const { container } = render(<LoanSettingsPage />);
 
     await waitFor(() => expect(screen.getByRole("checkbox")).toBeChecked());
     expect(screen.getByLabelText("火曜日")).toBeChecked();
@@ -82,7 +83,7 @@ describe("AdminPage", () => {
 
   it("設定変更を表示名ではなくreturnweek値と正規化済みルールで保存する", async () => {
     const user = userEvent.setup();
-    const { container } = render(<AdminPage />);
+    const { container } = render(<LoanSettingsPage />);
     await waitFor(() => expect(screen.getByRole("checkbox")).toBeEnabled());
 
     await user.click(screen.getByRole("checkbox"));
@@ -115,7 +116,7 @@ describe("AdminPage", () => {
 
   it("例外ルールを追加・削除できる", async () => {
     const user = userEvent.setup();
-    render(<AdminPage />);
+    render(<LoanSettingsPage />);
     await screen.findByText("例外ルール 1");
 
     await user.click(screen.getByRole("button", { name: "追加" }));
@@ -130,7 +131,7 @@ describe("AdminPage", () => {
   it("設定取得失敗と保存失敗をユーザーへ通知する", async () => {
     const consoleError = vi.spyOn(console, "error").mockImplementation(() => undefined);
     vi.mocked(fetch).mockResolvedValueOnce(jsonResponse({}, 500));
-    const view = render(<AdminPage />);
+    const view = render(<LoanSettingsPage />);
     expect(await screen.findByText("設定取得に失敗しました")).toBeInTheDocument();
     view.unmount();
 
@@ -140,10 +141,25 @@ describe("AdminPage", () => {
       status: 400,
       error: "入力エラー",
     });
-    render(<AdminPage />);
+    render(<LoanSettingsPage />);
     await waitFor(() => expect(screen.getByRole("button", { name: "保存" })).toBeEnabled());
     await userEvent.click(screen.getByRole("button", { name: "保存" }));
     await waitFor(() => expect(alert).toHaveBeenCalledWith("入力エラー"));
     consoleError.mockRestore();
+  });
+});
+
+describe("AdminPage", () => {
+  afterEach(cleanup);
+
+  it("貸出ルール設定をフォームではなく遷移メニューとして表示する", () => {
+    render(<AdminPage />);
+
+    expect(screen.getByRole("link", { name: "貸出ルール" })).toHaveAttribute(
+      "href",
+      "/admin/loan-settings"
+    );
+    expect(screen.queryByText("通常貸出ルール")).not.toBeInTheDocument();
+    expect(screen.queryByText("例外貸出ルール")).not.toBeInTheDocument();
   });
 });

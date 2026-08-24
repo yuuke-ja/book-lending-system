@@ -38,7 +38,7 @@ describe("GET /api/book/search/tag", () => {
     expect(mockedQuery).not.toHaveBeenCalled();
   });
 
-  it("タグ名のqueryは検索条件に使わず、極端に長くてもDBへ渡さない", async () => {
+  it("ジャンル名のqueryは検索条件に使わず、極端に長くてもDBへ渡さない", async () => {
     const url = new URL("http://localhost/api/book/search/tag");
     url.searchParams.set("query", `React${"x".repeat(10_000)}`);
 
@@ -60,7 +60,7 @@ describe("GET /api/book/search/tag", () => {
     expect(params).toEqual([["tag-1", "tag-2"]]);
   });
 
-  it("タグIDに一致した本を200で返す", async () => {
+  it("ジャンルIDに一致した本を200で返す", async () => {
     const rows = [{ id: "book-1", title: "SQL入門", tags: [{ id: "tag-db", tag: "DB" }] }];
     mockedQuery.mockResolvedValueOnce({ rows } as never);
 

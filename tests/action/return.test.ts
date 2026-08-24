@@ -1,9 +1,11 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { revalidatePath } from "next/cache";
 import { returnBook } from "@/lib/action/return";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 
 vi.mock("@/lib/auth", () => ({ auth: vi.fn() }));
+vi.mock("next/cache", () => ({ revalidatePath: vi.fn() }));
 vi.mock("@/lib/db", () => ({
   db: {
     query: vi.fn(),
@@ -12,6 +14,7 @@ vi.mock("@/lib/db", () => ({
 }));
 
 const mockedAuth = auth as unknown as ReturnType<typeof vi.fn>;
+const mockedRevalidatePath = vi.mocked(revalidatePath);
 const mockedQuery = db.query as unknown as ReturnType<typeof vi.fn>;
 
 describe("returnBook Server Action", () => {
@@ -69,6 +72,10 @@ describe("returnBook Server Action", () => {
       status: 200,
       message: "返却が完了しました",
     });
+    expect(mockedRevalidatePath.mock.calls).toEqual([
+      ["/"],
+      ["/book-list"],
+    ]);
   });
 
   it("DB処理に失敗したとき500を返す", async () => {

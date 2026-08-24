@@ -4,20 +4,11 @@ import { appURL, e2eConfig } from './support/e2e-config';
 test.describe('未ログイン', () => {
   test.use({ storageState: { cookies: [], origins: [] } });
 
-  test('未ログインでは利用者画面とAPIを利用できない', async ({
-    page,
-    context,
-  }) => {
+  test('未ログインでは利用者画面を利用できない', async ({ page }) => {
     await page.goto(appURL('/'));
     await expect(
       page.getByRole('heading', { name: 'ログインが必要です' })
     ).toBeVisible();
-
-    const response = await context.request.get(appURL('/api/book/loan'));
-    expect(response.status()).toBe(401);
-    await expect(response.json()).resolves.toMatchObject({
-      error: '認証が必要です',
-    });
   });
 });
 

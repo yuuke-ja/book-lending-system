@@ -60,7 +60,7 @@ describe("POST /api/book/search/log", () => {
     expect(mockedRecordSearchEvent).not.toHaveBeenCalled();
   });
 
-  it("検索語がタグに一致したらconfidence 1で保存する", async () => {
+  it("検索語がジャンルに一致したらconfidence 1で保存する", async () => {
     mockedQuery.mockResolvedValueOnce({
       rows: [{ id: "tag-tech" }, { id: "tag-design" }],
     });
@@ -87,7 +87,7 @@ describe("POST /api/book/search/log", () => {
     }));
   });
 
-  it("検索語にタグがなければ検索結果タグ上位2件をconfidence 0.5で保存する", async () => {
+  it("検索語にジャンルがなければ検索結果ジャンル上位2件をconfidence 0.5で保存する", async () => {
     mockedQuery.mockResolvedValueOnce({ rows: [] });
 
     const res = await POST(
@@ -117,12 +117,12 @@ describe("POST /api/book/search/log", () => {
     }));
   });
 
-  it("検索語にも検索結果にもタグがなければタグなしのconfidence 0.5で保存する", async () => {
+  it("検索語にも検索結果にもジャンルがなければジャンルなしのconfidence 0.5で保存する", async () => {
     mockedQuery.mockResolvedValueOnce({ rows: [] });
 
     const res = await POST(
       createRequest({
-        query: "タグなし検索",
+        query: "ジャンルなし検索",
         selectedTags: [],
         resultTagIds: [],
       })
@@ -133,7 +133,7 @@ describe("POST /api/book/search/log", () => {
     expect(data).toEqual({ id: "search-event-1", tagCount: 0 });
     expect(mockedRecordSearchEvent).toHaveBeenCalledWith(expect.objectContaining({
       userEmail: "user@example.com",
-      query: "タグなし検索",
+      query: "ジャンルなし検索",
       searchType: "book_list",
       tagIds: [],
       confidence: 0.5,

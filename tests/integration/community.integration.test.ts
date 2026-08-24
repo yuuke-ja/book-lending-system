@@ -3,8 +3,8 @@ import type { Client } from "pg";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { summary } from "@/lib/ai/aiSummary";
-import { createThread } from "@/lib/action/thread";
-import { createComment } from "@/lib/action/comment";
+import { createThread, deleteThread } from "@/lib/action/thread";
+import { createComment, deleteComment } from "@/lib/action/comment";
 import { getThreadList } from "@/lib/community/get-thread-list";
 import { getThreadDetail } from "@/lib/community/get-thread-detail";
 import {
@@ -59,6 +59,7 @@ async function createCommunityTables(client: Client) {
       content TEXT NOT NULL,
       "createdAt" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
       "updatedAt" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      "deletedAt" TIMESTAMP,
       FOREIGN KEY ("bookId") REFERENCES "Book"(id) ON DELETE SET NULL
     )
   `);
@@ -71,6 +72,7 @@ async function createCommunityTables(client: Client) {
       content TEXT NOT NULL,
       "createdAt" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
       "updatedAt" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      "deletedAt" TIMESTAMP,
       FOREIGN KEY ("threadId") REFERENCES "Thread"(id) ON DELETE CASCADE,
       FOREIGN KEY ("parentCommentId") REFERENCES "ThreadComment"(id) ON DELETE CASCADE
     )
@@ -337,5 +339,93 @@ describeWithDatabase("コミュニティAction・取得処理とPostgreSQLの結
     const detail = await getThreadDetail("no-comments");
 
     expect(detail?.comments).toEqual([]);
+  });
+
+  it("本人のスレッドをソフトデリートし一覧と詳細から除外する", async () => {
+    await createThread({
+      kind: "BOOK_TOPIC",
+      bookId: "book-1",
+      content: "削除する投稿",
+    });
+    const thread = await client.query<{ id: string }>(
+      `SELECT id FROM "Thread" WHERE content = '削除する投稿'`
+    );
+    const threadId = thread.rows[0].id;
+
+    await expect(deleteThread(threadId)).resolves.toMatchObject({
+      ok: true,
+      status: 200,
+    });
+    const deleted = await client.query<{ deletedAt: Date | null }>(
+      `SELECT "deletedAt" FROM "Thread" WHERE id = $1`,
+      [threadId]
+    );
+
+    expect(deleted.rows[0].deletedAt).not.toBeNull();
+    await expect(getThreadList()).resolves.toEqual([]);
+    await expect(getThreadDetail(threadId)).resolves.toBeNull();
+  });
+
+  it("他人のスレッドはソフトデリートできない", async () => {
+    await createThread({
+      kind: "BOOK_REQUEST",
+      content: "他人には削除できない投稿",
+    });
+    const thread = await client.query<{ id: string }>(
+      `SELECT id FROM "Thread" WHERE content = '他人には削除できない投稿'`
+    );
+    mockedAuth.mockResolvedValue({
+      user: { email: "other@example.com" },
+    } as never);
+
+    await expect(deleteThread(thread.rows[0].id)).resolves.toMatchObject({
+      ok: false,
+      status: 404,
+    });
+    const unchanged = await client.query<{ deletedAt: Date | null }>(
+      `SELECT "deletedAt" FROM "Thread" WHERE id = $1`,
+      [thread.rows[0].id]
+    );
+    expect(unchanged.rows[0].deletedAt).toBeNull();
+  });
+
+  it("親コメントをソフトデリートし取得結果へ削除状態を返す", async () => {
+    await createThread({
+      kind: "BOOK_REQUEST",
+      content: "コメント削除用投稿",
+    });
+    const thread = await client.query<{ id: string }>(
+      `SELECT id FROM "Thread" WHERE content = 'コメント削除用投稿'`
+    );
+    await createComment({
+      threadId: thread.rows[0].id,
+      content: "削除する親コメント",
+    });
+    const parent = await client.query<{ id: string }>(
+      `SELECT id FROM "ThreadComment" WHERE content = '削除する親コメント'`
+    );
+    await createComment({
+      threadId: thread.rows[0].id,
+      parentCommentId: parent.rows[0].id,
+      content: "親の下の返信",
+    });
+
+    await expect(deleteComment(parent.rows[0].id)).resolves.toMatchObject({
+      ok: true,
+      status: 200,
+    });
+    const detail = await getThreadDetail(
+      thread.rows[0].id,
+      "user@example.com"
+    );
+    const deletedParent = detail?.comments.find(
+      (comment) => comment.id === parent.rows[0].id
+    );
+    const reply = detail?.comments.find(
+      (comment) => comment.parentCommentId === parent.rows[0].id
+    );
+
+    expect(deletedParent?.isDeleted).toBe(true);
+    expect(reply?.isDeleted).toBe(false);
   });
 });

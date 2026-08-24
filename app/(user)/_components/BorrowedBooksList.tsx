@@ -1,7 +1,6 @@
-"use client";
-
-import { useEffect, useState } from "react";
 import Image from "next/image";
+import { auth } from "@/lib/auth";
+import { getCurrentLoans, type UserLoan } from "@/lib/loans/get-user-loans";
 
 const JST_TIMEZONE = "Asia/Tokyo";
 const DAY_MS = 24 * 60 * 60 * 1000;
@@ -11,55 +10,24 @@ function toJstDateStartMs(date: Date): number {
   return new Date(`${dateText}T00:00:00.000+09:00`).getTime();
 }
 
-type Loan = {
-  id: string;
-  loanedAt: string;
-  dueAt?: string | null;
-  book: {
-    title: string;
-    authors: string[];
-    isbn13: string;
-    thumbnail?: string | null;
-  };
-};
-
 type BorrowedBooksListProps = {
   sectionId?: string;
 };
 
-export default function BorrowedBooksList({
+export default async function BorrowedBooksList({
   sectionId = "borrowed-books",
 }: BorrowedBooksListProps) {
-  const [loans, setLoans] = useState<Loan[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const session = await auth();
+  const userEmail = session?.user?.email;
+  let loans: UserLoan[] = [];
+  let error: string | null = null;
 
-  useEffect(() => {
-    let active = true;
-
-    fetch("/api/book/loan")
-      .then(async (res) => {
-        if (!res.ok) throw new Error("貸出中の本の取得に失敗しました");
-        return res.json();
-      })
-      .then((data) => {
-        if (!active) return;
-        setLoans(Array.isArray(data) ? data : []);
-        setError(null);
-      })
-      .catch((e) => {
-        if (!active) return;
-        setLoans([]);
-        setError(e instanceof Error ? e.message : "取得に失敗しました");
-      })
-      .finally(() => {
-        if (active) setLoading(false);
-      });
-
-    return () => {
-      active = false;
-    };
-  }, []);
+  try {
+    loans = userEmail ? await getCurrentLoans(userEmail) : [];
+  } catch (err) {
+    console.error(err);
+    error = "貸出中の本の取得に失敗しました";
+  }
 
   return (
     <section
@@ -75,32 +43,24 @@ export default function BorrowedBooksList({
             現在借りている本
           </h3>
         </div>
-        {!loading && (
-          <span className="rounded-full bg-zinc-100 px-3 py-1 text-xs font-medium text-zinc-700">
-            {loans.length}冊
-          </span>
-        )}
+        <span className="rounded-full bg-zinc-100 px-3 py-1 text-xs font-medium text-zinc-700">
+          {loans.length}冊
+        </span>
       </div>
 
-      {loading && (
-        <div className="rounded-xl border border-zinc-200 bg-zinc-50 p-4 text-sm text-zinc-600">
-          読み込み中...
-        </div>
-      )}
-
-      {!loading && error && (
+      {error && (
         <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
           {error}
         </div>
       )}
 
-      {!loading && !error && loans.length === 0 && (
+      {!error && loans.length === 0 && (
         <div className="rounded-xl border border-zinc-200 bg-zinc-50 p-4 text-sm text-zinc-600">
           現在貸出中の本はありません。
         </div>
       )}
 
-      {!loading && !error && loans.length > 0 && (
+      {!error && loans.length > 0 && (
         <div className="overflow-x-auto pb-2">
           <div className="flex w-max gap-4">
             {loans.map((loan) => {

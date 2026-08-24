@@ -98,8 +98,8 @@ describeWithDatabase("推薦取得・更新判定とPostgreSQLの結合", () => 
       await client.query(`
         INSERT INTO "Book" (id, title, authors, isbn13, thumbnail) VALUES
           ('source', '閲覧した本', ARRAY['著者A'], '9780000000001', NULL),
-          ('same-tag', '同じタグの本', ARRAY['著者B'], '9780000000002', '/same.png'),
-          ('other-tag', '別タグの本', ARRAY['著者C'], '9780000000003', NULL)
+          ('same-tag', '同じジャンルの本', ARRAY['著者B'], '9780000000002', '/same.png'),
+          ('other-tag', '別ジャンルの本', ARRAY['著者C'], '9780000000003', NULL)
       `);
       await client.query(`
         INSERT INTO "BookTag" ("bookId", "tagId") VALUES
@@ -212,7 +212,7 @@ describeWithDatabase("推薦取得・更新判定とPostgreSQLの結合", () => 
     ]);
   });
 
-  it("対象の行動履歴から同じタグの別の本だけを候補にする", async () => {
+  it("対象の行動履歴から同じジャンルの別の本だけを候補にする", async () => {
     await client.query(`
       INSERT INTO "ResearchEvent"
         (id, "eventType", "userEmail", "bookId", "sourceType", "occurredAt")
@@ -231,7 +231,7 @@ describeWithDatabase("推薦取得・更新判定とPostgreSQLの結合", () => 
     });
   });
 
-  it("貸出・詳細閲覧・書籍リンククリックの3種類をタグ候補履歴に使う", async () => {
+  it("貸出・詳細閲覧・書籍リンククリックの3種類をジャンル候補履歴に使う", async () => {
     await client.query(`
       INSERT INTO "ResearchEvent"
         (id, "eventType", "userEmail", "bookId", "sourceType", "occurredAt")
@@ -247,10 +247,10 @@ describeWithDatabase("推薦取得・更新判定とPostgreSQLの結合", () => 
     expect(candidates.every((candidate) => candidate.bookId === "same-tag")).toBe(true);
   });
 
-  it("タグ候補に使う対象履歴を新しい10件までに制限する", async () => {
+  it("ジャンル候補に使う対象履歴を新しい10件までに制限する", async () => {
     await client.query(`
       INSERT INTO "Book" (id, title, authors, isbn13, thumbnail)
-      VALUES ('tag-2-candidate', 'タグ2候補', ARRAY['著者D'], '9780000000004', NULL)
+      VALUES ('tag-2-candidate', 'ジャンル2候補', ARRAY['著者D'], '9780000000004', NULL)
     `);
     await client.query(`
       INSERT INTO "BookTag" ("bookId", "tagId")

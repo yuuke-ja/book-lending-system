@@ -96,7 +96,7 @@ describe("管理メンテナンスAction", () => {
     });
   });
 
-  it("全ての本をタグ分類する", async () => {
+  it("全ての本をジャンル分類する", async () => {
     mockedClassify.mockResolvedValue([{ bookId: "book-1" }]);
 
     const result = await classifyAllBooks();
@@ -105,7 +105,7 @@ describe("管理メンテナンスAction", () => {
     expect(mockedClassify).toHaveBeenCalledWith();
   });
 
-  it("指定タグだけで本を分類する", async () => {
+  it("指定ジャンルだけで本を分類する", async () => {
     mockedClassify.mockResolvedValue([]);
 
     const result = await classifyBooksForTag("tag-1");

@@ -64,7 +64,7 @@ async function createSearchTables(client: Client, pgroongaAvailable: boolean) {
   }
 }
 
-describeWithDatabase("全文・タグ検索RouteとPostgreSQLの結合", () => {
+describeWithDatabase("全文・ジャンル検索RouteとPostgreSQLの結合", () => {
   let client: Client;
   let pgroongaAvailable = false;
 
@@ -123,7 +123,7 @@ describeWithDatabase("全文・タグ検索RouteとPostgreSQLの結合", () => {
     if (client) await client.end();
   });
 
-  it("タグIDに一致する本だけを取得し、タグと平均評価を集約する", async () => {
+  it("ジャンルIDに一致する本だけを取得し、ジャンルと平均評価を集約する", async () => {
     const response = await tagSearch(
       new Request("http://localhost/api/book/search/tag?tagIds=tag-web")
     );
@@ -141,7 +141,7 @@ describeWithDatabase("全文・タグ検索RouteとPostgreSQLの結合", () => {
     expect(react.tags).toEqual([{ id: "tag-web", tag: "Web" }]);
   });
 
-  it("複数タグIDはOR検索となり同じ本を重複させない", async () => {
+  it("複数ジャンルIDはOR検索となり同じ本を重複させない", async () => {
     const response = await tagSearch(
       new Request(
         "http://localhost/api/book/search/tag?tagIds=tag-web,tag-db&tagIds=tag-web"
@@ -157,7 +157,7 @@ describeWithDatabase("全文・タグ検索RouteとPostgreSQLの結合", () => {
     ]);
   });
 
-  it("タグ名queryだけではDB検索せず空配列を返す", async () => {
+  it("ジャンル名queryだけではDB検索せず空配列を返す", async () => {
     vi.clearAllMocks();
     const response = await tagSearch(
       new Request("http://localhost/api/book/search/tag?query=Web")
@@ -237,7 +237,7 @@ describeWithDatabase("全文・タグ検索RouteとPostgreSQLの結合", () => {
     await expect(response.json()).resolves.toEqual([]);
   });
 
-  it("タグ検索結果に選択外を含む全タグとレビューなし平均0を付ける", async () => {
+  it("ジャンル検索結果に選択外を含む全ジャンルとレビューなし平均0を付ける", async () => {
     const response = await tagSearch(
       new Request("http://localhost/api/book/search/tag?tagIds=tag-web")
     );

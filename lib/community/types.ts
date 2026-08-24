@@ -30,3 +30,10 @@ export type ThreadDetail = {
   thread: CommunityThread;
   comments: CommunityComment[];
 };
+
+export type ThreadDetailWithOwnership = {
+  thread: CommunityThread & { isOwner: boolean };
+  comments: Array<
+    CommunityComment & { isOwner: boolean; isDeleted: boolean }
+  >;
+};

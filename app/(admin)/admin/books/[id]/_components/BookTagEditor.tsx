@@ -93,7 +93,7 @@ export default function BookTagEditor({
         }))
       );
     } catch (err) {
-      console.error("タグ保存エラー:", err);
+      console.error("ジャンル保存エラー:", err);
       alert(err instanceof Error ? err.message : "エラーが発生しました");
     }
   }
@@ -119,7 +119,7 @@ export default function BookTagEditor({
                 key={tag.id}
                 className="inline-flex rounded-full border border-zinc-300 bg-zinc-50 px-3 py-1 text-xs font-medium text-zinc-700"
               >
-                #{tag.tag}
+                {tag.tag}
               </span>
             ))}
           </div>
@@ -143,7 +143,7 @@ export default function BookTagEditor({
           }}
           className="inline-flex w-fit rounded border border-zinc-300 bg-white px-3 py-1.5 text-xs font-medium text-zinc-700 hover:bg-zinc-50"
         >
-          タグ変更
+          ジャンル変更
         </button>
       </div>
 
@@ -160,7 +160,7 @@ export default function BookTagEditor({
                 id="tag-edit-title"
                 className="min-w-0 truncate text-base font-semibold text-zinc-900"
               >
-                タグ変更: {tagadd.title}
+                ジャンル変更: {tagadd.title}
               </h2>
               <button
                 type="button"
@@ -180,7 +180,7 @@ export default function BookTagEditor({
                 <div className="flex flex-wrap gap-1">
                   {tagadd.tags.length === 0 && (
                     <p className="text-sm text-zinc-700">
-                      タグはまだありません。
+                      ジャンルはまだありません。
                     </p>
                   )}
                   {tagadd.tags.map((tag) => {
@@ -196,7 +196,7 @@ export default function BookTagEditor({
                             : "border-zinc-300 bg-zinc-50 text-zinc-600"
                         }`}
                       >
-                        #{tag.tag}
+                        {tag.tag}
                         <button
                           type="button"
                           onClick={() => toggleTagInDraft(tagadd.bookId, tag.id)}
@@ -217,7 +217,7 @@ export default function BookTagEditor({
                 {allTags.length > 0 && (
                   <div className="space-y-1">
                     <p className="text-xs font-semibold tracking-[0.08em] text-zinc-500">
-                      候補タグ
+                      候補ジャンル
                     </p>
                     <div className="flex flex-wrap gap-2">
                       {allTags.map((item) => {
@@ -245,7 +245,7 @@ export default function BookTagEditor({
                             }
                             className="rounded-full border border-zinc-300 bg-zinc-50 px-3 py-1 text-xs font-medium text-zinc-700 transition hover:bg-zinc-100"
                           >
-                            #{item.tag}
+                            {item.tag}
                           </button>
                         );
                       })}

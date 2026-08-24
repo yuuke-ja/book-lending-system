@@ -207,7 +207,7 @@ describeWithDatabase("管理設定・通知・プロフィールActionとPostgre
     expect(periods.rows[0].endDate.toISOString()).toBe("2026-01-02T14:59:59.999Z");
   });
 
-  it("書籍タグを重複除外して置き換え、Embedding再作成へ対象本を渡す", async () => {
+  it("書籍ジャンルを重複除外して置き換え、Embedding再作成へ対象本を渡す", async () => {
     await client.query(`INSERT INTO "BookTag" ("bookId", "tagId") VALUES ('book-1', 'tag-1')`);
 
     const result = await updateBookTags({

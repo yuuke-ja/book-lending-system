@@ -125,7 +125,7 @@ export default async function AdminBooksPage({
                         key={tag.id}
                         className="inline-flex rounded border border-zinc-300 bg-zinc-50 px-1 py-0.5 text-[10px] leading-none text-zinc-600"
                       >
-                        #{tag.tag}
+                        {tag.tag}
                       </span>
                     ))}
                   </div>

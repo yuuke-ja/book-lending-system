@@ -65,7 +65,7 @@ describeWithLocalDatabase("migrationで作成したpublicスキーマとの結�
     `);
     await client.query(`
       INSERT INTO "TagList" (id, tag)
-      VALUES ('public-tag', '実タグ')
+      VALUES ('public-tag', '実ジャンル')
     `);
     await client.query(`
       INSERT INTO "BookTag" ("bookId", "tagId")
@@ -77,13 +77,13 @@ describeWithLocalDatabase("migrationで作成したpublicスキーマとの結�
 
     expect(list.find((book) => book.id === "public-book")).toMatchObject({
       averageRating: 5,
-      tags: [{ id: "public-tag", tag: "実タグ" }],
+      tags: [{ id: "public-tag", tag: "実ジャンル" }],
     });
     expect(detail).toMatchObject({
       id: "public-book",
       ratingCount: 1,
       averageRating: 5,
-      tags: [{ id: "public-tag", tag: "実タグ" }],
+      tags: [{ id: "public-tag", tag: "実ジャンル" }],
     });
   });
 

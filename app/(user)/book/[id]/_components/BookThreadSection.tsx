@@ -1,10 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { createThread } from "@/lib/action/thread";
 
-type Thread = {
+export type Thread = {
   id: string;
   content: string;
   bookId: string | null;
@@ -12,11 +12,21 @@ type Thread = {
   createdAt: string;
 };
 
-export default function BookThreadSection({ bookId }: { bookId: string }) {
-  const [threads, setThreads] = useState<Thread[]>([]);
+type BookThreadSectionProps = {
+  bookId: string;
+  initialThreads?: Thread[];
+  initialError?: string | null;
+};
+
+export default function BookThreadSection({
+  bookId,
+  initialThreads = [],
+  initialError = null,
+}: BookThreadSectionProps) {
+  const [threads, setThreads] = useState<Thread[]>(initialThreads);
   const [threadInput, setThreadInput] = useState("");
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(initialError);
   const [isSubmittingThread, setIsSubmittingThread] = useState(false);
 
   const fetchThreads = useCallback(async () => {
@@ -66,14 +76,6 @@ export default function BookThreadSection({ bookId }: { bookId: string }) {
       setIsSubmittingThread(false);
     }
   };
-
-  useEffect(() => {
-    const run = async () => {
-      await fetchThreads();
-    };
-
-    run();
-  }, [fetchThreads]);
 
   return (
     <div className="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm sm:p-6">

@@ -70,7 +70,7 @@ export async function GET(request: Request) {
 
     return NextResponse.json(searchtag.rows, { status: 200 });
   } catch (error) {
-    console.error("タグ検索に失敗:", error);
+    console.error("ジャンル検索に失敗:", error);
     return NextResponse.json({ error: "検索に失敗しました" }, { status: 500 });
   }
 }

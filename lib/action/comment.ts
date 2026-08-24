@@ -166,3 +166,41 @@ export async function createComment(
     };
   }
 }
+
+export async function deleteComment(commentId: string) {
+  const session = await auth();
+  const userEmail = session?.user?.email;
+
+  if (!userEmail) {
+    return { ok: false, status: 401, error: "認証が必要です" };
+  }
+
+  try {
+    const res = await db.query(
+      `UPDATE "ThreadComment"
+       SET "deletedAt" = NOW()
+       WHERE id = $1
+         AND "userEmail" = $2
+         AND "deletedAt" IS NULL
+       RETURNING id`,
+      [commentId, userEmail]
+    );
+
+    if ((res.rowCount ?? 0) === 0) {
+      return {
+        ok: false,
+        status: 404,
+        error: "コメントが見つからないか、削除する権限がありません",
+      };
+    }
+
+    return { ok: true, status: 200, message: "コメントを削除しました" };
+  } catch (error) {
+    console.error("コメントの削除に失敗:", error);
+    return {
+      ok: false,
+      status: 500,
+      error: "コメントの削除に失敗しました",
+    };
+  }
+}

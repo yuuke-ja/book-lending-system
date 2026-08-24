@@ -75,17 +75,17 @@ describe("CommunityBookPickerPage", () => {
     vi.unstubAllGlobals();
   });
 
-  it("本とタグを読み込んで表示する", async () => {
+  it("本とジャンルを読み込んで表示する", async () => {
     installInitialFetch();
     render(<CommunityBookPickerPage />);
 
     expect(screen.getByText("読み込み中...")).toBeInTheDocument();
     expect(await screen.findByText("最初の本")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "#技術" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "技術" })).toBeInTheDocument();
     expect(screen.getByText("rating:4")).toBeInTheDocument();
   });
 
-  it("自由文は全文検索、選択タグIDはタグ検索へ完全分離する", async () => {
+  it("自由文は全文検索、選択ジャンルIDはジャンル検索へ完全分離する", async () => {
     const user = userEvent.setup();
     const fullBook = {
       ...initialBook,
@@ -95,7 +95,7 @@ describe("CommunityBookPickerPage", () => {
     const tagBook = {
       ...initialBook,
       id: "book-tag",
-      title: "タグ検索本",
+      title: "ジャンル検索本",
     };
     const fetchMock = vi.mocked(fetch).mockImplementation((input) => {
       const url = String(input);
@@ -116,7 +116,7 @@ describe("CommunityBookPickerPage", () => {
     render(<CommunityBookPickerPage />);
     await screen.findByText("最初の本");
 
-    await user.click(screen.getByRole("button", { name: "#技術" }));
+    await user.click(screen.getByRole("button", { name: "技術" }));
     expect(
       screen.getByRole("button", { name: "技術を削除" })
     ).toBeInTheDocument();
@@ -124,7 +124,7 @@ describe("CommunityBookPickerPage", () => {
     await user.click(screen.getByRole("button", { name: "検索" }));
 
     expect(await screen.findByText("全文検索本")).toBeInTheDocument();
-    expect(screen.getByText("タグ検索本")).toBeInTheDocument();
+    expect(screen.getByText("ジャンル検索本")).toBeInTheDocument();
     const urls = fetchMock.mock.calls.map(([input]) => String(input));
     expect(urls).toContain("/api/book/search/full-text?query=React");
     expect(urls).toContain("/api/book/search/tag?tagIds=tag-tech");

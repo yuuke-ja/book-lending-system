@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { createComment } from "@/lib/action/comment";
 import { type LinkedBook } from "../../_components/types";
 import type { ThreadCommentNode } from "./types";
+import DeleteCommentButton from "./DeleteCommentButton";
 export type { ThreadCommentNode } from "./types";
 
 function CommentTreeItem({
@@ -226,23 +227,28 @@ function CommentTreeItem({
       <div ref={commentRef} className="text-sm text-zinc-700">
         {/*投稿日時と本文を表示*/}
         <div className="min-w-0">
-          <div className="flex items-center gap-3">
-            <Image
-              src={comment.authorAvatarUrl || "/default-avatar.svg"}
-              alt={comment.nickname ?? "投稿者"}
-              width={40}
-              height={40}
-              sizes="40px"
-              className="h-10 w-10 rounded-full border border-zinc-200 bg-zinc-100 object-cover"
-            />
-            <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-              <p className="text-sm font-semibold text-zinc-900">
-                {comment.nickname || "未設定"}
-              </p>
-              <p className="text-sm text-zinc-400">
-                {new Date(comment.createdAt).toLocaleString("ja-JP")}
-              </p>
+          <div className="flex items-start justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <Image
+                src={comment.authorAvatarUrl || "/default-avatar.svg"}
+                alt={comment.nickname ?? "投稿者"}
+                width={40}
+                height={40}
+                sizes="40px"
+                className="h-10 w-10 rounded-full border border-zinc-200 bg-zinc-100 object-cover"
+              />
+              <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+                <p className="text-sm font-semibold text-zinc-900">
+                  {comment.nickname || "未設定"}
+                </p>
+                <p className="text-sm text-zinc-400">
+                  {new Date(comment.createdAt).toLocaleString("ja-JP")}
+                </p>
+              </div>
             </div>
+            {comment.isOwner && (
+              <DeleteCommentButton commentId={comment.id} />
+            )}
           </div>
           <p className="mt-2 whitespace-pre-wrap text-base leading-7 text-zinc-800">
             {comment.content}
@@ -372,14 +378,16 @@ function CommentTreeItem({
       {comment.children.length > 0 && (
         <div className="mt-4 space-y-5">
           {/*子コメント再帰*/}
-          {comment.children.map((child) => (
-            <CommentTreeItem
-              key={child.id}
-              comment={child}
-              threadId={threadId}
-              depth={depth + 1}
-            />
-          ))}
+          {comment.children
+            .filter((child) => !child.isDeleted)
+            .map((child) => (
+              <CommentTreeItem
+                key={child.id}
+                comment={child}
+                threadId={threadId}
+                depth={depth + 1}
+              />
+            ))}
         </div>
       )}
     </div>
@@ -395,9 +403,15 @@ export default function CommentTree({
 }) {
   return (
     <>
-      {comments.map((comment) => (
-        <CommentTreeItem key={comment.id} comment={comment} threadId={threadId} />
-      ))}
+      {comments
+        .filter((comment) => !comment.isDeleted)
+        .map((comment) => (
+          <CommentTreeItem
+            key={comment.id}
+            comment={comment}
+            threadId={threadId}
+          />
+        ))}
     </>
   );
 }

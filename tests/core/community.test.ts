@@ -66,6 +66,9 @@ describe("getThreadList", () => {
     expect(String(mockedQuery.mock.calls[0]?.[0])).not.toContain(
       'WHERE t."bookId" = $1'
     );
+    expect(String(mockedQuery.mock.calls[0]?.[0])).toContain(
+      'WHERE t."deletedAt" IS NULL'
+    );
   });
 
   it("bookId指定時は対象本だけ検索し欠落した結合値を補う", async () => {
@@ -88,6 +91,9 @@ describe("getThreadList", () => {
     expect(mockedQuery.mock.calls[0]?.[1]).toEqual(["book-1"]);
     expect(String(mockedQuery.mock.calls[0]?.[0])).toContain(
       'WHERE t."bookId" = $1'
+    );
+    expect(String(mockedQuery.mock.calls[0]?.[0])).toContain(
+      'AND t."deletedAt" IS NULL'
     );
     expect(result[0]).toMatchObject({
       linkedBook: { id: "book-1", title: "関連する本", thumbnail: null },
@@ -114,6 +120,9 @@ describe("getThreadDetail", () => {
     await expect(getThreadDetail("missing-thread")).resolves.toBeNull();
     expect(mockedQuery).toHaveBeenCalledOnce();
     expect(mockedQuery.mock.calls[0]?.[1]).toEqual(["missing-thread"]);
+    expect(String(mockedQuery.mock.calls[0]?.[0])).toContain(
+      'AND t."deletedAt" IS NULL'
+    );
   });
 
   it("スレッド本とコメントごとの複数リンク本を整形する", async () => {

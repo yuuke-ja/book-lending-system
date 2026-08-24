@@ -2,6 +2,24 @@ import { NextResponse } from 'next/server';
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 
+function getJapaneseToday() {
+  const parts = new Intl.DateTimeFormat("ja-JP", {
+    timeZone: "Asia/Tokyo",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  })
+    .formatToParts(new Date())
+    .reduce((acc, part) => {
+      if (part.type !== "literal") {
+        acc[part.type] = part.value;
+      }
+      return acc;
+    }, {} as Record<string, string>);
+
+  return `${parts.year}-${parts.month}-${parts.day}`;
+}
+
 export async function GET() {
   const session = await auth();
   if (!session) {
@@ -12,10 +30,9 @@ export async function GET() {
     return NextResponse.json({ error: '認証が必要です' }, { status: 401 });
   }
   try {
-    const todayStart = new Date();
-    todayStart.setHours(0, 0, 0, 0);
-    const todayEnd = new Date(todayStart);
-    todayEnd.setHours(23, 59, 59, 999);
+    const today = getJapaneseToday();
+    const todayStart = new Date(`${today}T00:00:00+09:00`);
+    const todayEnd = new Date(`${today}T23:59:59.999+09:00`);
 
     const data = await db.query(
       `SELECT l."dueAt", b.title

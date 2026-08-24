@@ -1,10 +1,10 @@
-/* 管理者がタグを生成 */
+/* 管理者がジャンルを生成 */
 CREATE TABLE IF NOT EXISTS "TagList" (
   id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
   tag TEXT NOT NULL UNIQUE,
   "createdAt" TIMESTAMPTZ NOT NULL DEFAULT now()
 );
-/* 書籍とタグの中間テーブル */
+/* 書籍とジャンルの中間テーブル */
 CREATE TABLE IF NOT EXISTS "BookTag" (
   "bookId" TEXT NOT NULL,
   "tagId" TEXT NOT NULL,

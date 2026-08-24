@@ -145,7 +145,7 @@ describeWithDatabase("推薦候補ソースとpgvector・PGroongaの結合", () 
     expect(candidates.every((candidate) => typeof candidate.distance === "number")).toBe(true);
   });
 
-  it("タグ名と小要素の両方に一致しても同じ本を1候補にまとめる", async () => {
+  it("ジャンル名と小要素の両方に一致しても同じ本を1候補にまとめる", async () => {
     await client.query(`INSERT INTO "TagList" (id, tag) VALUES ('tag-web', 'Web')`);
     await client.query(`
       INSERT INTO "TagSubterm" (id, "tagId", subterm)
@@ -165,7 +165,7 @@ describeWithDatabase("推薦候補ソースとpgvector・PGroongaの結合", () 
     expect(candidates[0]).toMatchObject({ tagId: "tag-web", bookId: "book-web" });
   });
 
-  it("タグ検索候補は最新5件・対象ユーザー・対象検索種別だけを使う", async () => {
+  it("ジャンル検索候補は最新5件・対象ユーザー・対象検索種別だけを使う", async () => {
     await client.query(`INSERT INTO "TagList" (id, tag) VALUES ('tag-web', 'Web')`);
     await client.query(`INSERT INTO "BookTag" ("bookId", "tagId") VALUES ('book-web', 'tag-web')`);
     const recent = Array.from({ length: 5 }, (_, index) =>

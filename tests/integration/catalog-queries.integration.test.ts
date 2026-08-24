@@ -162,7 +162,7 @@ describeWithDatabase("書籍・通知・ランキング・履歴取得とPostgre
     if (client) await client.end();
   });
 
-  it("書籍一覧を新しい順で返し、平均評価・全タグ・空の既定値を集約する", async () => {
+  it("書籍一覧を新しい順で返し、平均評価・全ジャンル・空の既定値を集約する", async () => {
     const books = await getBookList();
 
     expect(books.map((book) => book.id)).toEqual([
@@ -183,7 +183,7 @@ describeWithDatabase("書籍・通知・ランキング・履歴取得とPostgre
     });
   });
 
-  it("書籍詳細に評価件数とタグをまとめ、存在しないIDはnullにする", async () => {
+  it("書籍詳細に評価件数とジャンルをまとめ、存在しないIDはnullにする", async () => {
     const detail = await getBookById("book-new");
 
     expect(detail).toMatchObject({
@@ -200,7 +200,7 @@ describeWithDatabase("書籍・通知・ランキング・履歴取得とPostgre
     await expect(getBookById("missing-book")).resolves.toBeNull();
   });
 
-  it("タグを名前順で返す", async () => {
+  it("ジャンルを名前順で返す", async () => {
     const tags = await getTagList();
     expect(tags.map((tag) => tag.tag)).toEqual(["Web", "技術"]);
   });

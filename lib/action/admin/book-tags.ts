@@ -45,11 +45,11 @@ export async function updateBookTags(
     return {
       ok: true,
       status: 200,
-      message: "タグの更新が完了しました",
+      message: "ジャンルの更新が完了しました",
       data: { embeddingCount },
     };
   } catch (error) {
     console.error(error);
-    return { ok: false, status: 500, error: "タグの更新に失敗しました" };
+    return { ok: false, status: 500, error: "ジャンルの更新に失敗しました" };
   }
 }
