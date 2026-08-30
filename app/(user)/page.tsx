@@ -52,7 +52,7 @@ export default function Home() {
 
       <Suspense
         fallback={
-          <SectionLoadingFallback label="LOAN HISTORY" title="貸し出し履歴" />
+          <SectionLoadingFallback label="LOAN HISTORY" title="貸出履歴" />
         }
       >
         <BorrowedList sectionId="loan-history" />

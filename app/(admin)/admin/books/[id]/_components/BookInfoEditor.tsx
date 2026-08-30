@@ -1,6 +1,6 @@
 "use client";
 
-import LoadingSpinner from "@/app/_components/LoadingSpinner";
+import { Spinner } from "@/components/ui/spinner";
 import { updateBookInfo } from "@/lib/action/admin/book-info";
 import { useState } from "react";
 
@@ -33,10 +33,10 @@ export default function BookInfoEditor({
         throw new Error(result.error);
       }
 
-      alert(result.message);
+      window.alert(result.message);
     } catch (error) {
       console.error("変更失敗", error);
-      alert("変更に失敗しました");
+      window.alert("変更に失敗しました");
     } finally {
       setIsSaving(false);
     }
@@ -83,9 +83,16 @@ export default function BookInfoEditor({
           type="button"
           onClick={changedetail}
           disabled={isSaving}
-          className="inline-flex min-w-[92px] items-center justify-center rounded-md border border-zinc-300 bg-white px-4 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50 disabled:cursor-not-allowed disabled:opacity-60"
+          className="inline-flex min-w-[120px] items-center justify-center gap-2 rounded-md border border-zinc-300 bg-white px-4 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50 disabled:cursor-not-allowed disabled:opacity-60"
         >
-          {isSaving ? <LoadingSpinner /> : "変更を保存"}
+          {isSaving ? (
+            <>
+              <Spinner aria-hidden="true" />
+              処理中
+            </>
+          ) : (
+            "変更を保存"
+          )}
         </button>
       </div>
     </div>

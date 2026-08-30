@@ -5,6 +5,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import NoticeEditor from "./NoticeEditor";
+import { Spinner } from "@/components/ui/spinner";
 import { createNotice } from "@/lib/action/admin/notices";
 
 const NOTICE_DRAFT_KEY = "noticeDraft";
@@ -190,9 +191,16 @@ export default function NoticeForm() {
       <button
         type="submit"
         disabled={isSubmitting}
-        className="rounded-md bg-zinc-900 px-4 py-2 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-50"
+        className="inline-flex min-w-24 items-center justify-center gap-2 rounded-md bg-emerald-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-emerald-700 disabled:cursor-not-allowed disabled:bg-emerald-300"
       >
-        {isSubmitting ? "登録中..." : "お知らせを登録"}
+        {isSubmitting ? (
+          <>
+            <Spinner aria-hidden="true" />
+            登録中...
+          </>
+        ) : (
+          "登録"
+        )}
       </button>
     </form>
   );

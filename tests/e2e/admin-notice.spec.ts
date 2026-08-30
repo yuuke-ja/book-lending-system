@@ -56,7 +56,7 @@ test('管理者がお知らせを登録し、利用者画面で確認して削�
 
   await clickAndAcceptAlert(
     page,
-    page.getByRole('button', { name: 'お知らせを登録' }),
+    page.getByRole('button', { name: '登録', exact: true }),
     'お知らせが保存されました'
   );
 

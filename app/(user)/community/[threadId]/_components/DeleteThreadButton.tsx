@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { Spinner } from "@/components/ui/spinner";
 import { deleteThread } from "@/lib/action/thread";
 
 export default function DeleteThreadButton({
@@ -48,9 +49,16 @@ export default function DeleteThreadButton({
         type="button"
         onClick={handleDelete}
         disabled={isDeleting}
-        className="rounded-lg border border-red-200 bg-white px-3 py-2 text-sm font-semibold text-red-600 transition hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-50"
+        className="inline-flex min-w-20 items-center justify-center gap-2 rounded-lg border border-red-200 bg-white px-3 py-2 text-sm font-semibold text-red-600 transition hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-50"
       >
-        {isDeleting ? "削除中..." : "削除"}
+        {isDeleting ? (
+          <>
+            <Spinner aria-hidden="true" />
+            削除中...
+          </>
+        ) : (
+          "削除"
+        )}
       </button>
     </>
   );

@@ -252,6 +252,7 @@ export async function POST(request: NextRequest) {
             ルール:
             - 必ず候補本の中からだけおすすめしてください。
             - 候補にない本は出さないでください。
+            - - 条件に合う候補本が複数ある場合は、1冊だけに絞らず複数冊おすすめしてください。
             - 候補本データは book と community に分かれています。
             - bookは本の登録情報です。
             - communityは他のユーザーが投稿した内容です。

@@ -262,7 +262,7 @@ describe("管理画面の編集コンポーネント", () => {
     const view = render(<NoticeForm />);
     await user.type(screen.getByLabelText("タイトル"), "お知らせ");
     await user.click(screen.getByRole("button", { name: "本文を設定" }));
-    await user.click(screen.getByRole("button", { name: "お知らせを登録" }));
+    await user.click(screen.getByRole("button", { name: /^登録$/ }));
 
     await waitFor(() =>
       expect(mocks.createNotice).toHaveBeenCalledWith({
@@ -284,7 +284,7 @@ describe("管理画面の編集コンポーネント", () => {
       error: "入力エラー",
     });
     render(<NoticeForm />);
-    await user.click(screen.getByRole("button", { name: "お知らせを登録" }));
+    await user.click(screen.getByRole("button", { name: /^登録$/ }));
     await waitFor(() =>
       expect(alert).toHaveBeenCalledWith("エラー: 入力エラー")
     );

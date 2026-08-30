@@ -4,6 +4,7 @@ import {
   createMissingEmbeddings,
   rebuildAllEmbeddings,
 } from "@/lib/action/admin/book-embeddings";
+import { Spinner } from "@/components/ui/spinner";
 import { useState } from "react";
 
 export default function BookEmbeddingStatusBar({
@@ -46,17 +47,31 @@ export default function BookEmbeddingStatusBar({
         type="button"
         onClick={() => run("missing")}
         disabled={loading !== null}
-        className="mr-2 mt-2 rounded bg-white px-3 py-1.5 text-zinc-800 ring-1 ring-zinc-300 disabled:opacity-50"
+        className="mr-2 mt-2 inline-flex min-w-36 items-center justify-center gap-2 rounded bg-white px-3 py-1.5 text-zinc-800 ring-1 ring-zinc-300 disabled:cursor-not-allowed disabled:opacity-50"
       >
-        {loading === "missing" ? "作成中..." : "未作成分を作成"}
+        {loading === "missing" ? (
+          <>
+            <Spinner aria-hidden="true" />
+            作成中...
+          </>
+        ) : (
+          "未作成分を作成"
+        )}
       </button>
       <button
         type="button"
         onClick={() => run("rebuild")}
         disabled={loading !== null}
-        className="mt-2 rounded bg-zinc-900 px-3 py-1.5 text-white disabled:opacity-50"
+        className="mt-2 inline-flex min-w-32 items-center justify-center gap-2 rounded bg-zinc-900 px-3 py-1.5 text-white disabled:cursor-not-allowed disabled:opacity-50"
       >
-        {loading === "rebuild" ? "再作成中..." : "全部再作成"}
+        {loading === "rebuild" ? (
+          <>
+            <Spinner aria-hidden="true" />
+            再作成中...
+          </>
+        ) : (
+          "全部再作成"
+        )}
       </button>
       {message && <p className="mt-2">{message}</p>}
     </div>

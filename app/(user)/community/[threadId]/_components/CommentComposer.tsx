@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { Spinner } from "@/components/ui/spinner";
 import { createComment } from "@/lib/action/comment";
 import type { LinkedBook } from "../../_components/types";
 
@@ -191,9 +192,16 @@ export default function CommentComposer({ threadId }: { threadId: string }) {
           type="button"
           onClick={handleCommentSubmit}
           disabled={isSubmittingComment}
-          className="rounded-xl bg-zinc-900 px-5 py-3 text-sm font-semibold text-white"
+          className="inline-flex min-w-32 items-center justify-center gap-2 rounded-xl bg-zinc-900 px-5 py-3 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-60"
         >
-          {isSubmittingComment ? "送信中..." : "コメントする"}
+          {isSubmittingComment ? (
+            <>
+              <Spinner aria-hidden="true" />
+              送信中...
+            </>
+          ) : (
+            "コメントする"
+          )}
         </button>
       </div>
     </div>

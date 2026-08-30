@@ -154,7 +154,9 @@ export default function EventDashboard({
 
       <section className="rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm">
         <div>
-          <h2 className="text-lg font-semibold text-zinc-900">経路別</h2>
+          <h2 className="text-lg font-semibold text-zinc-900">
+            利用経路の分析
+          </h2>
           <p className="mt-1 text-sm text-zinc-600">
             行動ログから集計した閲覧・貸出までの経路です。
           </p>

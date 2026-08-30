@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { Spinner } from "@/components/ui/spinner";
 import { saveBookReview } from "@/lib/action/book-review";
 import { Rating } from "@smastrom/react-rating";
 import "@smastrom/react-rating/style.css";
@@ -62,12 +63,12 @@ export default function StarRating({
 
   async function postreview() {
     if (!bookId) {
-      alert("本が選択されていません");
+      window.alert("本が選択されていません");
       return;
     }
 
     if (draftRating < 1) {
-      alert("星を1つ以上選んでください");
+      window.alert("星を1つ以上選んでください");
       return;
     }
 
@@ -86,7 +87,7 @@ export default function StarRating({
       setOpenStarModal(false);
       router.refresh();
     } catch (error) {
-      alert(error instanceof Error ? error.message : "エラーが発生しました");
+      window.alert(error instanceof Error ? error.message : "エラーが発生しました");
     } finally {
       setIsPostingReview(false);
     }
@@ -121,9 +122,16 @@ export default function StarRating({
                   type="button"
                   onClick={postreview}
                   disabled={isPostingReview}
-                  className="rounded-md bg-zinc-800 px-4 py-2 text-sm font-semibold text-white hover:bg-zinc-700 disabled:opacity-60"
+                  className="inline-flex min-w-20 items-center justify-center gap-2 rounded-md bg-zinc-800 px-4 py-2 text-sm font-semibold text-white hover:bg-zinc-700 disabled:cursor-not-allowed disabled:opacity-60"
                 >
-                  {isPostingReview ? "送信中..." : "送信"}
+                  {isPostingReview ? (
+                    <>
+                      <Spinner aria-hidden="true" />
+                      送信中...
+                    </>
+                  ) : (
+                    "送信"
+                  )}
                 </button>
               </div>
             </div>

@@ -1,6 +1,6 @@
 "use client";
 
-import LoadingSpinner from "@/app/_components/LoadingSpinner";
+import { Spinner } from "@/components/ui/spinner";
 import {
   createTags,
   deleteTag as deleteTagAction,
@@ -31,17 +31,19 @@ export default function AdminTagsPage() {
   const [taglist, setTaglist] = useState<TagItem[]>([]);
   const [isLoadingTags, setIsLoadingTags] = useState(true);
   const [isAddingTags, setIsAddingTags] = useState(false);
-  const [isReclassifyingTags, setIsReclassifyingTags] = useState(false);
+  const [reclassifyingTarget, setReclassifyingTarget] = useState<string | null>(null);
+  const [deletingTagId, setDeletingTagId] = useState<string | null>(null);
   const [tagStatusMessage, setTagStatusMessage] = useState("");
   const [selectedTag, setSelectedTag] = useState<TagItem | null>(null);
   const [tagSubterms, setTagSubterms] = useState<TagSubterm[]>([]);
   const [isLoadingSubterms, setIsLoadingSubterms] = useState(false);
   const [subtermInputs, setSubtermInputs] = useState([""]);
   const [isSavingSubterms, setIsSavingSubterms] = useState(false);
+  const [deletingSubtermId, setDeletingSubtermId] = useState<string | null>(null);
 
   const showAlertMessage = useCallback((message: string) => {
     setTagStatusMessage("");
-    alert(message);
+    window.alert(message);
   }, []);
 
   async function fetchTagList(options?: { silent?: boolean }) {
@@ -88,9 +90,9 @@ export default function AdminTagsPage() {
     }
   }
   async function handleReclassifyTags(tagId: string) {
-    if (isReclassifyingTags) return;
+    if (reclassifyingTarget) return;
 
-    setIsReclassifyingTags(true);
+    setReclassifyingTarget(tagId);
     try {
       const result = await classifyBooksForTag(tagId);
       if (!result.ok) {
@@ -102,14 +104,14 @@ export default function AdminTagsPage() {
     } catch {
       showAlertMessage("ジャンルの付け直しに失敗しました");
     } finally {
-      setIsReclassifyingTags(false);
+      setReclassifyingTarget(null);
     }
   }
 
   async function handleReclassifyAllTags() {
-    if (isReclassifyingTags) return;
+    if (reclassifyingTarget) return;
 
-    setIsReclassifyingTags(true);
+    setReclassifyingTarget("all");
     try {
       const result = await classifyAllBooks();
       if (!result.ok) {
@@ -121,13 +123,15 @@ export default function AdminTagsPage() {
     } catch {
       showAlertMessage("全ジャンルの付け直しに失敗しました");
     } finally {
-      setIsReclassifyingTags(false);
+      setReclassifyingTarget(null);
     }
   }
 
   async function deleteTag(tag: TagItem) {
+    if (deletingTagId) return;
     if (!window.confirm(`${tag.tag}を削除しますか？`)) return;
 
+    setDeletingTagId(tag.id);
     setTagStatusMessage("ジャンルを削除中...");
     try {
       const result = await deleteTagAction(tag.id);
@@ -144,6 +148,8 @@ export default function AdminTagsPage() {
       showAlertMessage("ジャンルを削除しました");
     } catch {
       showAlertMessage("ジャンルの削除に失敗しました");
+    } finally {
+      setDeletingTagId(null);
     }
   }
 
@@ -194,8 +200,10 @@ export default function AdminTagsPage() {
 
   async function deleteSubterm(subterm: TagSubterm) {
     if (!selectedTag) return;
+    if (deletingSubtermId) return;
     if (!window.confirm(`${subterm.subterm}を削除しますか？`)) return;
 
+    setDeletingSubtermId(subterm.id);
     setTagStatusMessage("小要素を削除中...");
     try {
       const result = await deleteTagSubterm(selectedTag.id, subterm.id);
@@ -208,6 +216,8 @@ export default function AdminTagsPage() {
       showAlertMessage("小要素を削除しました");
     } catch {
       showAlertMessage("小要素の削除に失敗しました");
+    } finally {
+      setDeletingSubtermId(null);
     }
   }
 
@@ -251,15 +261,21 @@ export default function AdminTagsPage() {
         }`}
       >
       <section className="rounded-lg border border-zinc-200 bg-zinc-50 p-5">
-        <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-zinc-900">ジャンル管理</h2>
+        <div className="flex items-center justify-end gap-2">
           <button
             type="button"
             onClick={handleReclassifyAllTags}
-            disabled={isReclassifyingTags}
-            className="inline-flex min-w-[132px] items-center justify-center rounded-md border border-zinc-300 bg-white px-3 py-1 text-sm text-zinc-700 hover:bg-zinc-100 disabled:cursor-not-allowed disabled:bg-zinc-200"
+            disabled={reclassifyingTarget !== null}
+            className="inline-flex min-w-[160px] items-center justify-center gap-2 rounded-md border border-zinc-300 bg-white px-3 py-1 text-sm text-zinc-700 hover:bg-zinc-100 disabled:cursor-not-allowed disabled:bg-zinc-200"
           >
-            {isReclassifyingTags ? <LoadingSpinner /> : "全部ジャンル付け直し"}
+            {reclassifyingTarget === "all" ? (
+              <>
+                <Spinner aria-hidden="true" />
+                処理中...
+              </>
+            ) : (
+              "全部ジャンル付け直し"
+            )}
           </button>
           <button
             type="button"
@@ -307,9 +323,16 @@ export default function AdminTagsPage() {
             <button
               type="submit"
               disabled={isLoadingTags || isAddingTags}
-              className="inline-flex min-w-[104px] items-center justify-center rounded bg-zinc-900 px-3 py-2 text-sm font-medium text-white hover:bg-zinc-700 disabled:cursor-not-allowed disabled:bg-zinc-400"
+              className="inline-flex min-w-[120px] items-center justify-center gap-2 rounded bg-zinc-900 px-3 py-2 text-sm font-medium text-white hover:bg-zinc-700 disabled:cursor-not-allowed disabled:bg-zinc-400"
             >
-              {isAddingTags ? <LoadingSpinner /> : "まとめて追加"}
+              {isAddingTags ? (
+                <>
+                  <Spinner aria-hidden="true" />
+                  追加中...
+                </>
+              ) : (
+                "まとめて追加"
+              )}
             </button>
           </div>
         </form>
@@ -352,7 +375,8 @@ export default function AdminTagsPage() {
                         <button
                           type="button"
                           onClick={() => deleteTag(item)}
-                          className="ml-2 rounded-md border border-red-200 bg-white px-3 py-1 text-sm text-red-600 hover:bg-red-50"
+                          disabled={deletingTagId !== null}
+                          className="ml-2 rounded-md border border-red-200 bg-white px-3 py-1 text-sm text-red-600 hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-60"
                         >
                           削除
                         </button>
@@ -375,10 +399,17 @@ export default function AdminTagsPage() {
           <button
             type="button"
             onClick={() => handleReclassifyTags(selectedTag.id)}
-            disabled={isReclassifyingTags}
-            className="inline-flex min-w-[108px] items-center justify-center rounded-md border border-zinc-300 bg-white px-3 py-1 text-sm text-zinc-700 hover:bg-zinc-100 disabled:cursor-not-allowed disabled:bg-zinc-200"
+            disabled={reclassifyingTarget !== null}
+            className="inline-flex min-w-[132px] items-center justify-center gap-2 rounded-md border border-zinc-300 bg-white px-3 py-1 text-sm text-zinc-700 hover:bg-zinc-100 disabled:cursor-not-allowed disabled:bg-zinc-200"
           >
-            {isReclassifyingTags ? <LoadingSpinner /> : "ジャンル付け直す"}
+            {reclassifyingTarget === selectedTag.id ? (
+              <>
+                <Spinner aria-hidden="true" />
+                処理中...
+              </>
+            ) : (
+              "ジャンル付け直す"
+            )}
           </button>
           <h4 className="mt-3 text-sm font-medium text-zinc-700">小要素</h4>
 
@@ -417,9 +448,16 @@ export default function AdminTagsPage() {
               <button
                 type="submit"
                 disabled={isSavingSubterms}
-                className="rounded bg-zinc-900 px-3 py-2 text-sm font-medium text-white hover:bg-zinc-700 disabled:cursor-not-allowed disabled:bg-zinc-400"
+                className="inline-flex min-w-[120px] items-center justify-center gap-2 rounded bg-zinc-900 px-3 py-2 text-sm font-medium text-white hover:bg-zinc-700 disabled:cursor-not-allowed disabled:bg-zinc-400"
               >
-                {isSavingSubterms ? <LoadingSpinner /> : "まとめて追加"}
+                {isSavingSubterms ? (
+                  <>
+                    <Spinner aria-hidden="true" />
+                    追加中...
+                  </>
+                ) : (
+                  "まとめて追加"
+                )}
               </button>
             </div>
           </form>
@@ -439,9 +477,17 @@ export default function AdminTagsPage() {
                   <button
                     type="button"
                     onClick={() => deleteSubterm(item)}
-                    className="rounded-md border border-red-200 bg-white px-2 py-1 text-xs text-red-600 hover:bg-red-50"
+                    disabled={deletingSubtermId !== null}
+                    className="inline-flex min-w-16 items-center justify-center gap-1.5 rounded-md border border-red-200 bg-white px-2 py-1 text-xs text-red-600 hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-60"
                   >
-                    削除
+                    {deletingSubtermId === item.id ? (
+                      <>
+                        <Spinner className="size-3.5" aria-hidden="true" />
+                        削除中...
+                      </>
+                    ) : (
+                      "削除"
+                    )}
                   </button>
                 </li>
               ))}

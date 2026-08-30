@@ -4,7 +4,6 @@ import {
   Bell,
   BookOpen,
   CalendarDays,
-  Cpu,
   Folder,
   History,
   Search,
@@ -51,7 +50,7 @@ const adminMenu: {
     color: "border-pink-100 bg-pink-50 text-pink-600",
   },
   {
-    label: "統計を見る",
+    label: "貸出・利用状況",
     href: "/admin/statistics",
     icon: BarChart2,
     color: "border-emerald-100 bg-emerald-50 text-emerald-600",
@@ -61,12 +60,6 @@ const adminMenu: {
     href: "/admin/events",
     icon: TrendingUp,
     color: "border-amber-100 bg-amber-50 text-amber-600",
-  },
-  {
-    label: "ベクトル精度テスト",
-    href: "/admin/embedding-test",
-    icon: Cpu,
-    color: "border-cyan-100 bg-cyan-50 text-cyan-600",
   },
   {
     label: "貸出履歴",

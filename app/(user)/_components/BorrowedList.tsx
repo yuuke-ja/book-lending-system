@@ -32,7 +32,7 @@ export default async function BorrowedBooksList({
     }
   } catch (e) {
     console.error(e);
-    error = "貸し出し履歴の取得に失敗しました";
+    error = "貸出履歴の取得に失敗しました";
   }
 
   return (
@@ -46,7 +46,7 @@ export default async function BorrowedBooksList({
             LOAN HISTORY
           </p>
           <h3 className="mt-1 text-lg font-semibold text-zinc-900">
-            貸し出し履歴
+            貸出履歴
           </h3>
         </div>
         <span className="rounded-full bg-zinc-100 px-3 py-1 text-xs font-medium text-zinc-700">
@@ -62,7 +62,7 @@ export default async function BorrowedBooksList({
 
       {!error && borrowedList.length === 0 && (
         <div className="rounded-xl border border-zinc-200 bg-zinc-50 p-4 text-sm text-zinc-600">
-          貸し出し履歴はありません。
+          貸出履歴はありません。
         </div>
       )}
 

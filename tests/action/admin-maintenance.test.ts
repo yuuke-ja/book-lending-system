@@ -2,7 +2,6 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
   createMissingEmbeddings,
   rebuildAllEmbeddings,
-  runEmbeddingTest,
 } from "@/lib/action/admin/book-embeddings";
 import {
   classifyAllBooks,
@@ -15,7 +14,6 @@ import {
   createMissingBookEmbeddings,
   rebuildBookEmbeddings,
 } from "@/app/api/admin/book-embeddings/book-embedding";
-import { testBookEmbeddings } from "@/lib/ai/embedding-test";
 import { classifyBooks } from "@/lib/tags/classify-books";
 
 vi.mock("@/lib/auth", () => ({ auth: vi.fn() }));
@@ -28,9 +26,6 @@ vi.mock("@/app/api/admin/book-embeddings/book-embedding", () => ({
   createMissingBookEmbeddings: vi.fn(),
   rebuildBookEmbeddings: vi.fn(),
 }));
-vi.mock("@/lib/ai/embedding-test", () => ({
-  testBookEmbeddings: vi.fn(),
-}));
 vi.mock("@/lib/tags/classify-books", () => ({
   classifyBooks: vi.fn(),
 }));
@@ -41,7 +36,6 @@ const mockedQuery = db.query as unknown as ReturnType<typeof vi.fn>;
 const mockedCreateMissing =
   createMissingBookEmbeddings as unknown as ReturnType<typeof vi.fn>;
 const mockedRebuild = rebuildBookEmbeddings as unknown as ReturnType<typeof vi.fn>;
-const mockedTest = testBookEmbeddings as unknown as ReturnType<typeof vi.fn>;
 const mockedClassify = classifyBooks as unknown as ReturnType<typeof vi.fn>;
 
 describe("管理メンテナンスAction", () => {
@@ -76,24 +70,6 @@ describe("管理メンテナンスAction", () => {
 
     expect(result).toMatchObject({ ok: true, data: { count: 2 } });
     expect(mockedRebuild).toHaveBeenCalledWith(["book-1", "book-2"]);
-  });
-
-  it("Embeddingテストの表示件数を検証する", async () => {
-    const result = await runEmbeddingTest({ mode: "query", query: "web", limit: 51 });
-
-    expect(result).toMatchObject({ ok: false, status: 400 });
-    expect(mockedTest).not.toHaveBeenCalled();
-  });
-
-  it("Embeddingテスト結果を返す", async () => {
-    mockedTest.mockResolvedValue([]);
-
-    const result = await runEmbeddingTest({ mode: "query", query: "web", limit: 10 });
-
-    expect(result).toMatchObject({
-      ok: true,
-      data: { mode: "query", results: [] },
-    });
   });
 
   it("全ての本をジャンル分類する", async () => {

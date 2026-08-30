@@ -225,17 +225,19 @@ export default function Statistics() {
   return (
     <div className="space-y-3 text-sm text-zinc-700">
       <div className="grid grid-cols-2 gap-2 rounded-md border border-zinc-200 bg-white p-3 md:grid-cols-4">
-        <p>今週貸出: {summary?.thisWeekLoanCount ?? 0}冊</p>
-        <p>今週利用者: {summary?.thisWeekUserCount ?? 0}人</p>
-        <p>今月貸出: {summary?.thisMonthLoanCount ?? 0}冊</p>
-        <p>今月利用者: {summary?.thisMonthUserCount ?? 0}人</p>
+        <p>今週の貸出数: {summary?.thisWeekLoanCount ?? 0}冊</p>
+        <p>今週の貸出利用者数: {summary?.thisWeekUserCount ?? 0}人</p>
+        <p>今月の貸出数: {summary?.thisMonthLoanCount ?? 0}冊</p>
+        <p>今月の貸出利用者数: {summary?.thisMonthUserCount ?? 0}人</p>
       </div>
 
       {/* 小さい画面では縦、md以上で横並び */}
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         <div className="min-w-0 rounded-md border border-zinc-200 bg-white p-4">
           <div className="mb-3 flex items-center justify-between gap-2">
-            <h2 className="text-lg font-semibold">今週の貸出/利用者</h2>
+            <h2 className="text-lg font-semibold">
+              週別の貸出数・貸出利用者数
+            </h2>
             <div className="flex gap-2">
               <button
                 type="button"
@@ -271,7 +273,9 @@ export default function Statistics() {
 
         <div className="min-w-0 rounded-md border border-zinc-200 bg-white p-4">
           <div className="mb-3 flex items-center justify-between gap-2">
-            <h2 className="text-lg font-semibold">今月の貸出/利用者</h2>
+            <h2 className="text-lg font-semibold">
+              月別の貸出数・貸出利用者数
+            </h2>
             <div className="flex gap-2">
               <button
                 type="button"
@@ -328,8 +332,8 @@ function WeekChart({ data }: { data: WeekStat[] }) {
         <YAxis domain={[0, "dataMax + 5"]} />
         <Tooltip labelFormatter={(value) => formatWeekTickLabel(value)} />
         <Legend />
-        <Bar dataKey="loanCount" name="貸出" fill="#8884d8" radius={[6, 6, 0, 0]} label={renderBarValueLabel} />
-        <Bar dataKey="userCount" name="利用者" fill="#82ca9d" radius={[6, 6, 0, 0]} label={renderBarValueLabel} />
+        <Bar dataKey="loanCount" name="貸出数" fill="#8884d8" radius={[6, 6, 0, 0]} label={renderBarValueLabel} />
+        <Bar dataKey="userCount" name="貸出利用者数" fill="#82ca9d" radius={[6, 6, 0, 0]} label={renderBarValueLabel} />
       </BarChart>
     </ResponsiveContainer>
   );
@@ -354,8 +358,8 @@ function MonthChart({ data }: { data: MonthStat[] }) {
         <YAxis domain={[0, "dataMax + 5"]} />
         <Tooltip labelFormatter={(value) => formatMonthTickLabel(value)} />
         <Legend />
-        <Bar dataKey="loanCount" name="貸出" fill="#8884d8" radius={[6, 6, 0, 0]} label={renderBarValueLabel} />
-        <Bar dataKey="userCount" name="利用者" fill="#82ca9d" radius={[6, 6, 0, 0]} label={renderBarValueLabel} />
+        <Bar dataKey="loanCount" name="貸出数" fill="#8884d8" radius={[6, 6, 0, 0]} label={renderBarValueLabel} />
+        <Bar dataKey="userCount" name="貸出利用者数" fill="#82ca9d" radius={[6, 6, 0, 0]} label={renderBarValueLabel} />
       </BarChart>
     </ResponsiveContainer>
   );

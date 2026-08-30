@@ -3,6 +3,7 @@
 import { useEffect, useState, useRef } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { Spinner } from "@/components/ui/spinner";
 import { createComment } from "@/lib/action/comment";
 import { type LinkedBook } from "../../_components/types";
 import type { ThreadCommentNode } from "./types";
@@ -202,7 +203,7 @@ function CommentTreeItem({
       setIsReplying(false);
       router.refresh();
     } catch (err) {
-      alert(err instanceof Error ? err.message : "エラーが発生しました");
+      window.alert(err instanceof Error ? err.message : "エラーが発生しました");
     } finally {
       setIsSubmittingReply(false);
     }
@@ -367,9 +368,16 @@ function CommentTreeItem({
               type="button"
               onClick={handleReplySubmit}
               disabled={isSubmittingReply}
-              className="rounded-xl bg-zinc-900 px-4 py-2 text-sm font-semibold text-white"
+              className="inline-flex min-w-24 items-center justify-center gap-2 rounded-xl bg-zinc-900 px-4 py-2 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-60"
             >
-              {isSubmittingReply ? "送信中..." : "返信する"}
+              {isSubmittingReply ? (
+                <>
+                  <Spinner aria-hidden="true" />
+                  送信中...
+                </>
+              ) : (
+                "返信する"
+              )}
             </button>
           </div>
         </div>

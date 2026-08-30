@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { Spinner } from "@/components/ui/spinner";
 import { createThread } from "@/lib/action/thread";
 import type { LinkedBook } from "./types";
 
@@ -187,9 +188,16 @@ export default function ThreadComposer() {
           type="button"
           onClick={handleThreadSubmit}
           disabled={isSubmittingThread}
-          className="rounded-xl bg-zinc-900 px-4 py-2 text-sm font-semibold text-white"
+          className="inline-flex min-w-24 items-center justify-center gap-2 rounded-xl bg-zinc-900 px-4 py-2 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-60"
         >
-          {isSubmittingThread ? "送信中..." : "投稿する"}
+          {isSubmittingThread ? (
+            <>
+              <Spinner aria-hidden="true" />
+              送信中...
+            </>
+          ) : (
+            "投稿する"
+          )}
         </button>
       </div>
     </div>

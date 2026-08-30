@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useCallback, useState } from "react";
+import { Spinner } from "@/components/ui/spinner";
 import { createThread } from "@/lib/action/thread";
 
 export type Thread = {
@@ -103,9 +104,16 @@ export default function BookThreadSection({
               type="button"
               onClick={handleThreadSubmit}
               disabled={isSubmittingThread}
-              className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-semibold text-white"
+              className="inline-flex min-w-48 items-center justify-center gap-2 rounded-lg bg-zinc-900 px-4 py-2 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-60"
             >
-              {isSubmittingThread ? "送信中..." : "この本について投稿する"}
+              {isSubmittingThread ? (
+                <>
+                  <Spinner aria-hidden="true" />
+                  送信中...
+                </>
+              ) : (
+                "この本について投稿する"
+              )}
             </button>
           </div>
         </div>

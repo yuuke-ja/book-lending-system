@@ -78,7 +78,7 @@ export default function CommunityBookPickerPage() {
       })
       .catch((err) => {
         console.error("検索エラー:", err);
-        alert(err instanceof Error ? err.message : "エラーが発生しました");
+        window.alert(err instanceof Error ? err.message : "エラーが発生しました");
       });
   }, []);
 

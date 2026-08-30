@@ -1,6 +1,7 @@
 import Image from "next/image";
-import { Trash2 } from "lucide-react";
+import { Suspense } from "react";
 import NoticeForm from "./_components/NoticeForm";
+import DeleteNoticeSubmitButton from "./_components/DeleteNoticeSubmitButton";
 import { getNotices } from "@/lib/notices/get-notices";
 import { deleteNotice } from "@/lib/action/admin/notices";
 
@@ -46,9 +47,103 @@ function extractText(value: unknown): string {
   return [ownText, childText].filter(Boolean).join("");
 }
 
-export default async function AdminNoticesPage() {
+function NoticeListFallback() {
+  return (
+    <section className="space-y-4" aria-label="お知らせ一覧を読み込み中">
+      <div className="flex items-center justify-between gap-4">
+        <h2 className="text-lg font-semibold text-zinc-900">
+          登録済みのお知らせ
+        </h2>
+        <span className="h-5 w-10 animate-pulse rounded bg-zinc-200" />
+      </div>
+      <div className="space-y-3">
+        {[0, 1].map((item) => (
+          <div
+            key={item}
+            className="animate-pulse rounded-lg border border-zinc-200 bg-white p-4"
+          >
+            <div className="h-5 w-40 rounded bg-zinc-200" />
+            <div className="mt-4 h-4 w-full rounded bg-zinc-100" />
+            <div className="mt-2 h-4 w-2/3 rounded bg-zinc-100" />
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+async function NoticeList() {
   const notices = await getNotices();
 
+  return (
+    <section className="space-y-4">
+      <div className="flex items-center justify-between gap-4">
+        <h2 className="text-lg font-semibold text-zinc-900">
+          登録済みのお知らせ
+        </h2>
+        <span className="text-sm text-zinc-500">{notices.length}件</span>
+      </div>
+
+      {notices.length === 0 ? (
+        <div className="rounded-lg border border-zinc-200 bg-white p-6 text-sm text-zinc-600">
+          登録済みのお知らせはありません。
+        </div>
+      ) : (
+        <div className="space-y-3">
+          {notices.map((notice) => (
+            <article
+              key={notice.id}
+              className="rounded-lg border border-zinc-200 bg-white p-4"
+            >
+              <div className="flex flex-wrap items-start justify-between gap-2">
+                <h3 className="font-semibold text-zinc-900">{notice.title}</h3>
+                <div className="flex items-center gap-2">
+                  <time className="text-xs text-zinc-500">
+                    {notice.createdAt.toLocaleString("ja-JP", {
+                      timeZone: "Asia/Tokyo",
+                    })}
+                  </time>
+                  <form action={deleteNoticeFromForm}>
+                    <input type="hidden" name="noticeId" value={notice.id} />
+                    <DeleteNoticeSubmitButton label={notice.title} />
+                  </form>
+                </div>
+              </div>
+
+              <p className="mt-3 whitespace-pre-wrap text-sm text-zinc-700">
+                {extractText(notice.content) || "本文なし"}
+              </p>
+
+              {notice.linkedBook && (
+                <div className="mt-4 flex items-center gap-3 border-t border-zinc-100 pt-3">
+                  <div className="flex h-14 w-10 shrink-0 items-center justify-center overflow-hidden rounded border border-zinc-200 bg-zinc-50">
+                    {notice.linkedBook.thumbnail ? (
+                      <Image
+                        src={notice.linkedBook.thumbnail}
+                        alt={notice.linkedBook.title}
+                        width={40}
+                        height={56}
+                        sizes="40px"
+                        className="h-full w-full object-contain"
+                      />
+                    ) : (
+                      <span className="text-[9px] text-zinc-400">NO IMAGE</span>
+                    )}
+                  </div>
+                  <p className="text-sm font-medium text-zinc-800">
+                    {notice.linkedBook.title}
+                  </p>
+                </div>
+              )}
+            </article>
+          ))}
+        </div>
+      )}
+    </section>
+  );
+}
+
+export default function AdminNoticesPage() {
   return (
     <main className="min-h-screen bg-zinc-50 p-4 sm:p-6">
       <div className="mx-auto max-w-4xl space-y-8">
@@ -63,85 +158,9 @@ export default async function AdminNoticesPage() {
           <NoticeForm />
         </section>
 
-        <section className="space-y-4">
-          <div className="flex items-center justify-between gap-4">
-            <h2 className="text-lg font-semibold text-zinc-900">
-              登録済みのお知らせ
-            </h2>
-            <span className="text-sm text-zinc-500">{notices.length}件</span>
-          </div>
-
-          {notices.length === 0 ? (
-            <div className="rounded-lg border border-zinc-200 bg-white p-6 text-sm text-zinc-600">
-              登録済みのお知らせはありません。
-            </div>
-          ) : (
-            <div className="space-y-3">
-              {notices.map((notice) => (
-                <article
-                  key={notice.id}
-                  className="rounded-lg border border-zinc-200 bg-white p-4"
-                >
-                  <div className="flex flex-wrap items-start justify-between gap-2">
-                    <h3 className="font-semibold text-zinc-900">
-                      {notice.title}
-                    </h3>
-                    <div className="flex items-center gap-2">
-                      <time className="text-xs text-zinc-500">
-                        {notice.createdAt.toLocaleString("ja-JP", {
-                          timeZone: "Asia/Tokyo",
-                        })}
-                      </time>
-                      <form action={deleteNoticeFromForm}>
-                        <input
-                          type="hidden"
-                          name="noticeId"
-                          value={notice.id}
-                        />
-                        <button
-                          type="submit"
-                          aria-label={`${notice.title}を削除`}
-                          title="削除"
-                          className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-red-200 bg-white text-red-600 transition hover:bg-red-50"
-                        >
-                          <Trash2 className="h-4 w-4" aria-hidden="true" />
-                        </button>
-                      </form>
-                    </div>
-                  </div>
-
-                  <p className="mt-3 whitespace-pre-wrap text-sm text-zinc-700">
-                    {extractText(notice.content) || "本文なし"}
-                  </p>
-
-                  {notice.linkedBook && (
-                    <div className="mt-4 flex items-center gap-3 border-t border-zinc-100 pt-3">
-                      <div className="flex h-14 w-10 shrink-0 items-center justify-center overflow-hidden rounded border border-zinc-200 bg-zinc-50">
-                        {notice.linkedBook.thumbnail ? (
-                          <Image
-                            src={notice.linkedBook.thumbnail}
-                            alt={notice.linkedBook.title}
-                            width={40}
-                            height={56}
-                            sizes="40px"
-                            className="h-full w-full object-contain"
-                          />
-                        ) : (
-                          <span className="text-[9px] text-zinc-400">
-                            NO IMAGE
-                          </span>
-                        )}
-                      </div>
-                      <p className="text-sm font-medium text-zinc-800">
-                        {notice.linkedBook.title}
-                      </p>
-                    </div>
-                  )}
-                </article>
-              ))}
-            </div>
-          )}
-        </section>
+        <Suspense fallback={<NoticeListFallback />}>
+          <NoticeList />
+        </Suspense>
       </div>
     </main>
   );

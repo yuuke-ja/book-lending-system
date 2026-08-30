@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { Spinner } from "@/components/ui/spinner";
 import { deleteComment } from "@/lib/action/comment";
 
 export default function DeleteCommentButton({
@@ -47,9 +48,16 @@ export default function DeleteCommentButton({
         type="button"
         onClick={handleDelete}
         disabled={isDeleting}
-        className="shrink-0 rounded-lg border border-red-200 bg-white px-3 py-1.5 text-xs font-semibold text-red-600 transition hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-50"
+        className="inline-flex min-w-16 shrink-0 items-center justify-center gap-1.5 rounded-lg border border-red-200 bg-white px-3 py-1.5 text-xs font-semibold text-red-600 transition hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-50"
       >
-        {isDeleting ? "削除中..." : "削除"}
+        {isDeleting ? (
+          <>
+            <Spinner className="size-3.5" aria-hidden="true" />
+            削除中...
+          </>
+        ) : (
+          "削除"
+        )}
       </button>
     </>
   );

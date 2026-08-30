@@ -3,6 +3,7 @@
 import ISBNScanGuide from "@/app/_components/ISBNScanGuide";
 import ISBNImportModal from "@/app/_components/ISBNImportModal";
 import { loanBook } from "@/lib/action/loan";
+import { Spinner } from "@/components/ui/spinner";
 import { useCallback, useState } from "react";
 import Image from "next/image";
 
@@ -119,9 +120,16 @@ export default function LoanQrPage() {
                 type="button"
                 onClick={borrowBook}
                 disabled={isSubmitting}
-                className="rounded-md bg-emerald-600 px-4 py-2 text-white hover:bg-emerald-500 disabled:cursor-not-allowed disabled:bg-emerald-300"
+                className="inline-flex min-w-24 items-center justify-center gap-2 rounded-md bg-emerald-600 px-4 py-2 text-white hover:bg-emerald-500 disabled:cursor-not-allowed disabled:bg-emerald-300"
               >
-                {isSubmitting ? "貸出中..." : "借りる"}
+                {isSubmitting ? (
+                  <>
+                    <Spinner aria-hidden="true" />
+                    貸出中...
+                  </>
+                ) : (
+                  "借りる"
+                )}
               </button>
               <button
                 type="button"

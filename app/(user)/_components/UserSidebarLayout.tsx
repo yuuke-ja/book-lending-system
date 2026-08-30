@@ -80,14 +80,6 @@ export default async function UserSidebarLayout({
               >
                 要望フォーム
               </a>
-              <a
-                href="https://forms.gle/SAGxeju6tRGtzMgg8"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex w-full items-center gap-3 rounded-xl bg-orange-500 px-4 py-3 text-base font-medium text-white transition hover:bg-orange-600"
-              >
-                本の要望フォーム
-              </a>
             </nav>
             <UserProfileModal
               avatarUrl={result?.avatarUrl ?? null}
@@ -106,15 +98,6 @@ export default async function UserSidebarLayout({
             userName={userName}
             userEmail={userEmail}
           />
-
-          <a
-            href="https://forms.gle/SAGxeju6tRGtzMgg8"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="ml-auto flex w-fit rounded-full bg-orange-500 px-4 py-2 text-sm font-semibold text-white shadow-lg transition hover:bg-orange-600 lg:hidden"
-          >
-            本の要望
-          </a>
 
           <main className="min-w-0 rounded-md border border-white/70 bg-white/90 p-4 shadow-xl shadow-slate-200/50 backdrop-blur sm:rounded-lg sm:p-6 lg:h-[calc(100vh-3rem)] lg:overflow-y-auto">
             {children}

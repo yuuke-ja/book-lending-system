@@ -201,7 +201,7 @@ export default function Pointgraph({ data, predictions }: PointgraphProps) {
     <section className="rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm">
       <div>
         <h2 className="text-lg font-semibold text-zinc-900">
-          ジャンルポイント推移
+          ジャンル別人気度の推移・予測
         </h2>
         <p className="mt-1 text-sm text-zinc-600">
           月ごとのジャンル別ポイントと翌月予測です。

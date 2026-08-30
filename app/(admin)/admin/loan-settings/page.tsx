@@ -2,6 +2,7 @@
 
 import { Plus, RefreshCw, Save } from "lucide-react";
 import { useEffect, useState } from "react";
+import { Spinner } from "@/components/ui/spinner";
 import { saveLoanSettings } from "@/lib/action/admin/loan-settings";
 
 type ExceptionRule = {
@@ -36,11 +37,19 @@ export default function AdminPage() {
     exceptionRules: [],
   });
   const [isLoadingSettings, setIsLoadingSettings] = useState(true);
+  const [savingSettingsSection, setSavingSettingsSection] = useState<
+    "normal" | "exception" | null
+  >(null);
   const [statusMessage, setStatusMessage] = useState("");
   const [selectweek, setSelectweek] = useState<number>(1)
   const week = [{ value: 1, label: "月" }, { value: 2, label: "火" }, { value: 3, label: "水" },]
 
-  async function onLoanSettingsChanged(next: LoanSettings) {
+  async function onLoanSettingsChanged(
+    next: LoanSettings,
+    section: "normal" | "exception"
+  ) {
+    if (savingSettingsSection) return;
+    setSavingSettingsSection(section);
     setStatusMessage("保存中...");
     try {
       const payload = {
@@ -70,6 +79,8 @@ export default function AdminPage() {
       console.error("エラー:", error);
       setStatusMessage("");
       window.alert("保存に失敗しました");
+    } finally {
+      setSavingSettingsSection(null);
     }
   }
 
@@ -186,12 +197,21 @@ export default function AdminPage() {
               </div>
               <button
                 type="button"
-                onClick={() => onLoanSettingsChanged(settings)}
-                disabled={isLoadingSettings}
+                onClick={() => onLoanSettingsChanged(settings, "normal")}
+                disabled={isLoadingSettings || savingSettingsSection !== null}
                 className="inline-flex h-11 items-center justify-center gap-1.5 rounded-xl bg-blue-600 px-5 text-sm font-bold text-white shadow-sm transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-blue-300"
               >
-                <Save className="h-4 w-4" aria-hidden="true" />
-                保存
+                {savingSettingsSection === "normal" ? (
+                  <>
+                    <Spinner aria-hidden="true" />
+                    保存中...
+                  </>
+                ) : (
+                  <>
+                    <Save className="h-4 w-4" aria-hidden="true" />
+                    保存
+                  </>
+                )}
               </button>
             </div>
 
@@ -254,12 +274,21 @@ export default function AdminPage() {
               <div className="flex flex-wrap gap-2">
                 <button
                   type="button"
-                  onClick={() => onLoanSettingsChanged(settings)}
-                  disabled={isLoadingSettings}
+                  onClick={() => onLoanSettingsChanged(settings, "exception")}
+                  disabled={isLoadingSettings || savingSettingsSection !== null}
                   className="inline-flex h-10 items-center justify-center gap-1.5 rounded-xl bg-red-500 px-4 text-sm font-bold text-white shadow-sm transition hover:bg-red-600 disabled:cursor-not-allowed disabled:bg-red-300"
                 >
-                  <RefreshCw className="h-3.5 w-3.5" aria-hidden="true" />
-                  更新
+                  {savingSettingsSection === "exception" ? (
+                    <>
+                      <Spinner aria-hidden="true" />
+                      更新中...
+                    </>
+                  ) : (
+                    <>
+                      <RefreshCw className="h-3.5 w-3.5" aria-hidden="true" />
+                      更新
+                    </>
+                  )}
                 </button>
                 <button
                   type="button"

@@ -1,6 +1,6 @@
 "use client";
 
-import LoadingSpinner from "@/app/_components/LoadingSpinner";
+import { Spinner } from "@/components/ui/spinner";
 import { updateBookTags } from "@/lib/action/admin/book-tags";
 import { useCallback, useEffect, useState } from "react";
 
@@ -94,7 +94,7 @@ export default function BookTagEditor({
       );
     } catch (err) {
       console.error("ジャンル保存エラー:", err);
-      alert(err instanceof Error ? err.message : "エラーが発生しました");
+      window.alert(err instanceof Error ? err.message : "エラーが発生しました");
     }
   }
 
@@ -266,9 +266,16 @@ export default function BookTagEditor({
                         setIsSavingTags(false);
                       }
                     }}
-                    className="inline-flex min-w-[92px] items-center justify-center rounded-md border border-zinc-300 bg-white px-4 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50 disabled:cursor-not-allowed disabled:opacity-60"
+                    className="inline-flex min-w-[120px] items-center justify-center gap-2 rounded-md border border-zinc-300 bg-white px-4 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50 disabled:cursor-not-allowed disabled:opacity-60"
                   >
-                    {isSavingTags ? <LoadingSpinner /> : "変更を保存"}
+                    {isSavingTags ? (
+                      <>
+                        <Spinner aria-hidden="true" />
+                        処理中
+                      </>
+                    ) : (
+                      "変更を保存"
+                    )}
                   </button>
                 </div>
               </div>

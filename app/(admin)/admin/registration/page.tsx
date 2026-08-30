@@ -3,6 +3,7 @@
 import ISBNImportModal from "@/app/_components/ISBNImportModal";
 import { useCallback, useEffect, useState, type SVGProps } from "react";
 import Image from "next/image";
+import { Spinner } from "@/components/ui/spinner";
 import { registerPendingBooks } from "@/lib/action/admin/book-registration";
 import {
   createPendingBook,
@@ -66,6 +67,7 @@ export default function QRCodeReader() {
   const [isScannerOpen, setIsScannerOpen] = useState(false);
   const [isDetecting, setIsDetecting] = useState(false);
   const [isRegistering, setIsRegistering] = useState(false);
+  const [deletingPendingId, setDeletingPendingId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState<PendingBook[]>([]);
 
@@ -128,12 +130,16 @@ export default function QRCodeReader() {
   }, [isDetecting]);
 
   async function pendingdelete(id: string) {
+    if (deletingPendingId) return;
+    setDeletingPendingId(id);
     try {
       const result = await deletePendingBook(id);
       if (!result.ok) throw new Error(result.error);
       setPending((prev) => prev.filter((pb) => pb.id !== id));
     } catch (error) {
       setError(error instanceof Error ? error.message : "仮登録の削除に失敗しました");
+    } finally {
+      setDeletingPendingId(null);
     }
   }
 
@@ -188,7 +194,7 @@ export default function QRCodeReader() {
             disabled={isRegistering}
           >
             {isRegistering ? (
-              <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/40 border-t-white" />
+              <Spinner aria-hidden="true" />
             ) : (
               <CheckIcon className="h-4 w-4" />
             )}
@@ -213,11 +219,17 @@ export default function QRCodeReader() {
               className="group relative flex flex-col gap-6 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm transition-shadow hover:shadow-md sm:flex-row"
             >
               <button
-                className="absolute right-4 top-4 rounded-full p-2 text-slate-300 transition-colors hover:bg-red-50 hover:text-red-500"
+                type="button"
+                className="absolute right-4 top-4 inline-flex min-h-9 min-w-9 items-center justify-center rounded-full p-2 text-slate-300 transition-colors hover:bg-red-50 hover:text-red-500 disabled:cursor-not-allowed disabled:opacity-60"
                 onClick={() => pendingdelete(pb.id)}
+                disabled={deletingPendingId !== null}
                 aria-label={`${pb.title} を削除`}
               >
-                <TrashIcon className="h-5 w-5" />
+                {deletingPendingId === pb.id ? (
+                  <Spinner className="h-5 w-5" aria-hidden="true" />
+                ) : (
+                  <TrashIcon className="h-5 w-5" />
+                )}
               </button>
 
               <div className="mx-auto w-32 shrink-0 sm:mx-0 sm:w-40">

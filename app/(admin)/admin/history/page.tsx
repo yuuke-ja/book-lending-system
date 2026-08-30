@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { Suspense } from "react";
 import { Admin } from "@/lib/admin";
 import { auth } from "@/lib/auth";
 import {
@@ -8,7 +9,17 @@ import {
 } from "@/lib/loans/get-loan-history";
 import AdminLoanHistoryClient from "./_components/AdminLoanHistoryClient";
 
-export default async function AdminLoanHistoryPage() {
+export default function AdminLoanHistoryPage() {
+  return (
+    <Suspense
+      fallback={<p className="text-sm text-zinc-600">貸出履歴を読み込み中...</p>}
+    >
+      <AdminLoanHistoryContent />
+    </Suspense>
+  );
+}
+
+async function AdminLoanHistoryContent() {
   const session = await auth();
   const email = session?.user?.email;
   const isAdmin = email ? await Admin(email) : false;
