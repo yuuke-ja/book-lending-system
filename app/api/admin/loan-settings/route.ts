@@ -23,7 +23,7 @@ export async function GET() {
 
   try {
     const settingsResult = await db.query(
-      `SELECT id, "fridayOnly", "loanPeriodDays"
+      `SELECT id, "loanEnabled", "fridayOnly", "loanPeriodDays"
        FROM "LoanSettings"
        ORDER BY "createdAt" ASC
        LIMIT 1`
@@ -32,6 +32,7 @@ export async function GET() {
 
     if (!settings) {
       return NextResponse.json({
+        loanEnabled: true,
         fridayOnly: true,
         loanPeriodDays: DEFAULT_LOAN_PERIOD_DAYS,
         exceptionStartDate: "",
@@ -53,6 +54,7 @@ export async function GET() {
     const firstRule = openPeriods[0] ?? null;
 
     return NextResponse.json({
+      loanEnabled: settings.loanEnabled,
       fridayOnly: settings.fridayOnly,
       loanPeriodDays: settings.loanPeriodDays,
       exceptionStartDate: toDateOnly(firstRule?.startDate ?? null),

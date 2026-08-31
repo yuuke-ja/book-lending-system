@@ -19,6 +19,7 @@ type ParsedExceptionRule = {
 };
 
 type LoanSettingsInput = {
+  loanEnabled?: unknown;
   fridayOnly?: unknown;
   loanPeriodDays?: unknown;
   returnweek?: unknown;
@@ -29,6 +30,7 @@ type LoanSettingsInput = {
 };
 
 type ParsedLoanSettings = {
+  loanEnabled: boolean;
   fridayOnly: boolean;
   returnweek: number;
   exceptionRules: ParsedExceptionRule[];
@@ -100,6 +102,9 @@ function parseLoanSettings(value: unknown, now: Date): {
   }
 
   const body = value as LoanSettingsInput;
+  if (typeof body.loanEnabled !== "boolean") {
+    return { parsed: null, error: "loanEnabledが不正です" };
+  }
   if (typeof body.fridayOnly !== "boolean") {
     return { parsed: null, error: "fridayOnlyが不正です" };
   }
@@ -175,6 +180,7 @@ function parseLoanSettings(value: unknown, now: Date): {
 
   return {
     parsed: {
+      loanEnabled: body.loanEnabled,
       fridayOnly: body.fridayOnly,
       returnweek,
       exceptionRules,
@@ -210,17 +216,19 @@ export async function saveLoanSettings(
       };
     }
 
-    const { fridayOnly, returnweek, exceptionRules } = parseResult.parsed;
+    const { loanEnabled, fridayOnly, returnweek, exceptionRules } =
+      parseResult.parsed;
     const settingsId = await getOrCreateLoanSettingsId();
 
     await db.transaction(async (tx) => {
       await tx.query(
         `UPDATE "LoanSettings"
-         SET "fridayOnly" = $1,
-             "loanPeriodDays" = $2,
+         SET "loanEnabled" = $1,
+             "fridayOnly" = $2,
+             "loanPeriodDays" = $3,
              "updatedAt" = NOW()
-         WHERE id = $3`,
-        [fridayOnly, returnweek, settingsId]
+         WHERE id = $4`,
+        [loanEnabled, fridayOnly, returnweek, settingsId]
       );
 
       await tx.query(

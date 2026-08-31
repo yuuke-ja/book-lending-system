@@ -19,6 +19,7 @@ describe("ランキング取得", () => {
     const rows = [
       {
         bookId: "book-a",
+        isbn13: "9780000000001",
         title: "A本",
         thumbnail: null,
         loanCount: 3,
@@ -26,6 +27,7 @@ describe("ランキング取得", () => {
       },
       {
         bookId: "book-b",
+        isbn13: "9780000000002",
         title: "B本",
         thumbnail: "thumb",
         loanCount: 3,
@@ -37,6 +39,7 @@ describe("ランキング取得", () => {
     await expect(loanranking()).resolves.toEqual(rows);
     const sql = String(mockedQuery.mock.calls[0]?.[0]);
     expect(sql).toContain("RANK() OVER(ORDER BY COUNT(*) DESC)");
+    expect(sql).toContain("b.isbn13");
     expect(sql).toContain("ORDER BY ranking ASC, b.title ASC");
     expect(sql).toContain("LIMIT 10");
   });

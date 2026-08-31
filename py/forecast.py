@@ -164,8 +164,8 @@ SELECT
 FROM point_events point_event
 JOIN "TagList" tag
   ON tag.id = point_event.tag_id
-WHERE point_event.occurred_at
-  < date_trunc(
+WHERE point_event.occurred_at >= DATE '2026-05-01'
+  AND point_event.occurred_at < date_trunc(
       'month',
       CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Tokyo'
     )

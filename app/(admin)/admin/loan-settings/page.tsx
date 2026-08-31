@@ -13,6 +13,7 @@ type ExceptionRule = {
 };
 
 type LoanSettings = {
+  loanEnabled: boolean;
   fridayOnly: boolean;
   loanPeriodDays: number;
   exceptionRules: ExceptionRule[];
@@ -32,6 +33,7 @@ function createExceptionRule(partial: ExceptionRulePartial = {}): ExceptionRule 
 
 export default function AdminPage() {
   const [settings, setSettings] = useState<LoanSettings>({
+    loanEnabled: true,
     fridayOnly: true,
     loanPeriodDays: 2,
     exceptionRules: [],
@@ -53,6 +55,7 @@ export default function AdminPage() {
     setStatusMessage("保存中...");
     try {
       const payload = {
+        loanEnabled: next.loanEnabled,
         fridayOnly: Boolean(next.fridayOnly),
         returnweek: selectweek,
         exceptionRules: next.exceptionRules
@@ -85,8 +88,11 @@ export default function AdminPage() {
   }
 
   function updateLoanSettings(
-    key: "fridayOnly" | "loanPeriodDays",
-    value: LoanSettings["fridayOnly"] | LoanSettings["loanPeriodDays"]
+    key: "loanEnabled" | "fridayOnly" | "loanPeriodDays",
+    value:
+      | LoanSettings["loanEnabled"]
+      | LoanSettings["fridayOnly"]
+      | LoanSettings["loanPeriodDays"]
   ) {
     setSettings((prev) => {
       const next = { ...prev, [key]: value };
@@ -128,6 +134,7 @@ export default function AdminPage() {
         const res = await fetch("/api/admin/loan-settings", { cache: "no-store" });
         if (!res.ok) throw new Error();
         const data: {
+          loanEnabled?: unknown;
           fridayOnly?: unknown;
           loanPeriodDays?: unknown;
           exceptionRules?: Array<{
@@ -156,6 +163,8 @@ export default function AdminPage() {
             )
           : [];
         setSettings({
+          loanEnabled:
+            typeof data.loanEnabled === "boolean" ? data.loanEnabled : true,
           fridayOnly: Boolean(data.fridayOnly),
           loanPeriodDays: toPositiveDays(data.loanPeriodDays),
           exceptionRules,
@@ -217,12 +226,37 @@ export default function AdminPage() {
 
             <div className="space-y-6">
               <div className="flex max-w-sm items-center justify-between gap-4">
+                <div>
+                  <p className="text-sm font-medium text-slate-700">
+                    貸出機能
+                  </p>
+                  <p className="text-xs text-slate-500">
+                    {settings.loanEnabled ? "ON" : "OFF"}
+                  </p>
+                </div>
+                <label className="inline-flex cursor-pointer items-center">
+                  <input
+                    type="checkbox"
+                    aria-label="貸出機能"
+                    checked={settings.loanEnabled}
+                    onChange={(e) =>
+                      updateLoanSettings("loanEnabled", e.target.checked)
+                    }
+                    disabled={isLoadingSettings}
+                    className="peer sr-only"
+                  />
+                  <span className="relative h-6 w-11 rounded-full bg-slate-200 transition-colors after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:bg-white after:shadow after:content-[''] after:transition-transform peer-checked:bg-blue-600 peer-checked:after:translate-x-5 peer-disabled:cursor-not-allowed peer-disabled:opacity-60" />
+                </label>
+              </div>
+
+              <div className="flex max-w-sm items-center justify-between gap-4">
                 <p className="text-sm font-medium text-slate-700">
                   金曜日のみ貸出
                 </p>
                 <label className="inline-flex cursor-pointer items-center">
                   <input
                     type="checkbox"
+                    aria-label="金曜日のみ貸出"
                     checked={settings.fridayOnly}
                     onChange={(e) => updateLoanSettings("fridayOnly", e.target.checked)}
                     disabled={isLoadingSettings}

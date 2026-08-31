@@ -66,7 +66,7 @@ describe("書籍データ取得", () => {
     await expect(getBookById("book-1")).rejects.toBe(error);
   });
 
-  it("getBookListはDBの書籍一覧を返し、評価とジャンルの既定値を取得する", async () => {
+  it("getBookListは人気予測順の書籍一覧を返し、評価とジャンルの既定値を取得する", async () => {
     const books = [
       {
         id: "book-2",
@@ -93,7 +93,10 @@ describe("書籍データ取得", () => {
     const sql = String(mockedQuery.mock.calls[0]?.[0]);
     expect(sql).toContain('COALESCE(rs."averageRating", 0)');
     expect(sql).toContain(`COALESCE(ts."tags", '[]'::jsonb)`);
-    expect(sql).toContain('ORDER BY b."createdAt" DESC');
+    expect(sql).toContain('FROM "GenrePointPrediction" prediction');
+    expect(sql).toContain('MAX(prediction."predictedPoints")');
+    expect(sql).toContain('bp."predictedPoints" DESC NULLS LAST');
+    expect(sql).toContain('b."createdAt" DESC');
   });
 
   it("getBookListは0件なら空配列を返す", async () => {

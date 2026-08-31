@@ -21,6 +21,25 @@ export async function getBookList(): Promise<BookListBook[]> {
        FROM "BookTag" bt
        INNER JOIN "TagList" tl ON tl.id = bt."tagId"
        GROUP BY bt."bookId"
+     ),
+     latest_genre_prediction AS (
+       SELECT
+         prediction."tagId",
+         prediction."predictedPoints"
+       FROM "GenrePointPrediction" prediction
+       WHERE prediction."predictionMonth" = (
+         SELECT MAX("predictionMonth")
+         FROM "GenrePointPrediction"
+       )
+     ),
+     book_prediction_points AS (
+       SELECT
+         bt."bookId",
+         MAX(prediction."predictedPoints") AS "predictedPoints"
+       FROM "BookTag" bt
+       INNER JOIN latest_genre_prediction prediction
+         ON prediction."tagId" = bt."tagId"
+       GROUP BY bt."bookId"
      )
      SELECT
        b.id,
@@ -33,7 +52,10 @@ export async function getBookList(): Promise<BookListBook[]> {
      FROM "Book" b
      LEFT JOIN review_summary rs ON rs."bookId" = b.id
      LEFT JOIN tag_summary ts ON ts."bookId" = b.id
-     ORDER BY b."createdAt" DESC`
+     LEFT JOIN book_prediction_points bp ON bp."bookId" = b.id
+     ORDER BY
+       bp."predictedPoints" DESC NULLS LAST,
+       b."createdAt" DESC`
   );
 
   return books.rows;

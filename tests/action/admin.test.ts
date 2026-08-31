@@ -78,6 +78,7 @@ describe("admin Server Actions", () => {
     );
 
     const result = await saveLoanSettings({
+      loanEnabled: false,
       fridayOnly: true,
       returnweek: 2,
       exceptionRules: [
@@ -91,10 +92,32 @@ describe("admin Server Actions", () => {
 
     expect(result).toMatchObject({ ok: true, status: 200 });
     expect(txQuery).toHaveBeenCalledTimes(3);
-    expect(txQuery.mock.calls[0][1]).toEqual([true, 2, "settings-1"]);
+    expect(txQuery.mock.calls[0][1]).toEqual([
+      false,
+      true,
+      2,
+      "settings-1",
+    ]);
     expect(String(txQuery.mock.calls[2][0])).toContain(
       'INSERT INTO "LoanOpenPeriod"'
     );
+  });
+
+  it("loanEnabledがbooleanでなければ貸出設定を保存しない", async () => {
+    const result = await saveLoanSettings({
+      loanEnabled: "false",
+      fridayOnly: true,
+      returnweek: 2,
+      exceptionRules: [],
+    });
+
+    expect(result).toEqual({
+      ok: false,
+      status: 400,
+      error: "loanEnabledが不正です",
+    });
+    expect(mockedQuery).not.toHaveBeenCalled();
+    expect(mockedTransaction).not.toHaveBeenCalled();
   });
 
   it("お知らせの入力を検証する", async () => {

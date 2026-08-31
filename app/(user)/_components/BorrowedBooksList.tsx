@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import { auth } from "@/lib/auth";
 import { getCurrentLoans, type UserLoan } from "@/lib/loans/get-user-loans";
 
@@ -70,9 +71,10 @@ export default async function BorrowedBooksList({
                 : null;
 
               return (
-                <article
+                <Link
                   key={loan.id}
-                  className="flex w-[240px] shrink-0 gap-3 rounded-xl border border-zinc-200 bg-white p-3 sm:w-[280px]"
+                  href={`/book/${loan.book.id}`}
+                  className="flex w-[240px] shrink-0 gap-3 rounded-xl border border-zinc-200 bg-white p-3 transition hover:border-zinc-300 hover:shadow-sm sm:w-[280px]"
                 >
                   <div className="flex h-28 w-20 shrink-0 items-center justify-center overflow-hidden rounded-md bg-zinc-100">
                     {loan.book.thumbnail ? (
@@ -119,7 +121,7 @@ export default async function BorrowedBooksList({
                       </p>
                     )}
                   </div>
-                </article>
+                </Link>
               );
             })}
           </div>

@@ -2,8 +2,9 @@ import { db } from "@/lib/db";
 export async function Admin(email?: string) {
   if (!email) return false;
   const normalizedEmail = email.toLowerCase();
+  const adminEmailDomain = process.env.ADMIN_EMAIL_DOMAIN;
 
-  if (normalizedEmail.endsWith("@nnn.ac.jp")) {
+  if (adminEmailDomain && normalizedEmail.endsWith(`@${adminEmailDomain}`)) {
     return true;
   }
 

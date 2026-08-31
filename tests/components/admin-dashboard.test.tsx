@@ -27,6 +27,7 @@ vi.mock("next/link", () => ({
 }));
 
 const settingsResponse = {
+  loanEnabled: true,
   fridayOnly: true,
   loanPeriodDays: 2,
   exceptionRules: [
@@ -68,7 +69,12 @@ describe("LoanSettingsPage", () => {
   it("取得した貸出設定をcheckbox、曜日、例外ルールへ反映する", async () => {
     const { container } = render(<LoanSettingsPage />);
 
-    await waitFor(() => expect(screen.getByRole("checkbox")).toBeChecked());
+    await waitFor(() =>
+      expect(screen.getByRole("checkbox", { name: "貸出機能" })).toBeChecked()
+    );
+    expect(
+      screen.getByRole("checkbox", { name: "金曜日のみ貸出" })
+    ).toBeChecked();
     expect(screen.getByLabelText("火曜日")).toBeChecked();
     expect(screen.getByText("例外ルール 1")).toBeInTheDocument();
     const dateInputs = container.querySelectorAll<HTMLInputElement>(
@@ -84,9 +90,17 @@ describe("LoanSettingsPage", () => {
   it("設定変更を表示名ではなくreturnweek値と正規化済みルールで保存する", async () => {
     const user = userEvent.setup();
     const { container } = render(<LoanSettingsPage />);
-    await waitFor(() => expect(screen.getByRole("checkbox")).toBeEnabled());
+    await waitFor(() =>
+      expect(
+        screen.getByRole("checkbox", { name: "貸出機能" })
+      ).toBeEnabled()
+    );
 
-    await user.click(screen.getByRole("checkbox"));
+    await user.click(screen.getByRole("checkbox", { name: "貸出機能" }));
+    expect(screen.getByText("OFF")).toBeInTheDocument();
+    await user.click(
+      screen.getByRole("checkbox", { name: "金曜日のみ貸出" })
+    );
     await user.click(screen.getByLabelText("月曜日"));
     const dateInputs = container.querySelectorAll<HTMLInputElement>(
       'input[type="date"]'
@@ -100,6 +114,7 @@ describe("LoanSettingsPage", () => {
 
     await waitFor(() =>
       expect(actions.saveLoanSettings).toHaveBeenCalledWith({
+        loanEnabled: false,
         fridayOnly: false,
         returnweek: 1,
         exceptionRules: [

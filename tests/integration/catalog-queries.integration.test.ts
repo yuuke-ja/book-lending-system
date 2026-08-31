@@ -30,6 +30,7 @@ async function createTables(client: Client) {
     "Notice",
     "BookEmbedding",
     "Loan",
+    "GenrePointPrediction",
     "BookTag",
     "TagList",
     "BookReview",
@@ -72,6 +73,14 @@ async function createTables(client: Client) {
       "bookId" TEXT NOT NULL,
       "tagId" TEXT NOT NULL,
       UNIQUE ("bookId", "tagId")
+    )
+  `);
+  await client.query(`
+    CREATE TEMP TABLE "GenrePointPrediction" (
+      "predictionMonth" DATE NOT NULL,
+      "tagId" TEXT NOT NULL,
+      "predictedPoints" DOUBLE PRECISION NOT NULL,
+      UNIQUE ("predictionMonth", "tagId")
     )
   `);
   await client.query(`
@@ -133,12 +142,21 @@ async function seedBooks(client: Client) {
   await client.query(`
     INSERT INTO "TagList" (id, tag) VALUES
       ('tag-z', '技術'),
-      ('tag-a', 'Web')
+      ('tag-a', 'Web'),
+      ('tag-popular', '人気予測上位')
   `);
   await client.query(`
     INSERT INTO "BookTag" ("bookId", "tagId") VALUES
       ('book-new', 'tag-z'),
-      ('book-new', 'tag-a')
+      ('book-new', 'tag-a'),
+      ('book-old', 'tag-popular')
+  `);
+  await client.query(`
+    INSERT INTO "GenrePointPrediction"
+      ("predictionMonth", "tagId", "predictedPoints") VALUES
+      ('2026-09-01', 'tag-popular', 100),
+      ('2026-09-01', 'tag-a', 80),
+      ('2026-09-01', 'tag-z', 20)
   `);
 }
 
@@ -162,13 +180,13 @@ describeWithDatabase("書籍・通知・ランキング・履歴取得とPostgre
     if (client) await client.end();
   });
 
-  it("書籍一覧を新しい順で返し、平均評価・全ジャンル・空の既定値を集約する", async () => {
+  it("書籍一覧を最新のジャンル人気予測順で返し、平均評価・全ジャンル・空の既定値を集約する", async () => {
     const books = await getBookList();
 
     expect(books.map((book) => book.id)).toEqual([
-      "book-empty",
-      "book-new",
       "book-old",
+      "book-new",
+      "book-empty",
     ]);
     expect(books.find((book) => book.id === "book-new")).toMatchObject({
       averageRating: 4.5,
@@ -202,7 +220,7 @@ describeWithDatabase("書籍・通知・ランキング・履歴取得とPostgre
 
   it("ジャンルを名前順で返す", async () => {
     const tags = await getTagList();
-    expect(tags.map((tag) => tag.tag)).toEqual(["Web", "技術"]);
+    expect(tags.map((tag) => tag.tag)).toEqual(["Web", "人気予測上位", "技術"]);
   });
 
   it("未返却本のIDだけを貸出日時の新しい順で返し、返却済みは除外する", async () => {

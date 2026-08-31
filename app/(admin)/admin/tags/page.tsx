@@ -277,16 +277,6 @@ export default function AdminTagsPage() {
               "全部ジャンル付け直し"
             )}
           </button>
-          <button
-            type="button"
-            onClick={() => {
-              fetchTagList();
-            }}
-            disabled={isLoadingTags}
-            className="rounded-md border border-zinc-300 bg-white px-3 py-1 text-sm text-zinc-700 hover:bg-zinc-100 disabled:cursor-not-allowed disabled:bg-zinc-200"
-          >
-            再取得
-          </button>
         </div>
         <form
           onSubmit={(e) => {

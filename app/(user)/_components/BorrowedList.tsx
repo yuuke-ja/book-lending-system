@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import { auth } from "@/lib/auth";
 import { getBorrowedList } from "@/lib/loans/get-user-loans";
 
@@ -7,6 +8,7 @@ type Loan = {
   loanedAt: string;
   dueAt?: string | null;
   book: {
+    id: string;
     title: string;
     authors: string[];
     isbn13: string;
@@ -71,9 +73,10 @@ export default async function BorrowedBooksList({
           <div className="flex w-max gap-4">
             {borrowedList.map((borrowed) => {
               return (
-                <article
+                <Link
                   key={borrowed.id}
-                  className="flex w-[240px] shrink-0 gap-3 rounded-xl border border-zinc-200 bg-white p-3 sm:w-[280px]"
+                  href={`/book/${borrowed.book.id}`}
+                  className="flex w-[240px] shrink-0 gap-3 rounded-xl border border-zinc-200 bg-white p-3 transition hover:border-zinc-300 hover:shadow-sm sm:w-[280px]"
                 >
                   <div className="flex h-28 w-20 shrink-0 items-center justify-center overflow-hidden rounded-md bg-zinc-100">
                     {borrowed.book.thumbnail ? (
@@ -103,7 +106,7 @@ export default async function BorrowedBooksList({
 
 
                   </div>
-                </article>
+                </Link>
               );
             })}
           </div>

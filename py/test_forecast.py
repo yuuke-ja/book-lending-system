@@ -87,7 +87,7 @@ def make_genre_row(
 def run_forecast_script(
     monkeypatch,
     rows,
-    ridge_class=None,
+    ridge_cv_class=None,
     connection_log=None,
 ):
     connections = connection_log if connection_log is not None else []
@@ -100,11 +100,22 @@ def run_forecast_script(
 
     monkeypatch.setenv("DATABASE_URL", "postgresql://forecast-test")
     monkeypatch.setattr(psycopg, "connect", fake_connect)
-    if ridge_class is not None:
-        monkeypatch.setattr(linear_model, "Ridge", ridge_class)
+    if ridge_cv_class is not None:
+        monkeypatch.setattr(linear_model, "RidgeCV", ridge_cv_class)
 
     result = runpy.run_path(str(FORECAST_PATH), run_name="forecast_test")
     return result, connections
+
+
+def test_training_query_uses_data_from_may_2026(monkeypatch):
+    _result, connections = run_forecast_script(monkeypatch, [])
+    query = next(
+        statement
+        for statement, _parameters in connections[0].cursor_instance.executions
+        if "WITH point_events AS" in statement
+    )
+
+    assert "point_event.occurred_at >= DATE '2026-05-01'" in query
 
 
 def test_missing_month_is_added_with_zero_points(monkeypatch):
@@ -188,9 +199,10 @@ def test_ridge_returns_one_finite_prediction_per_latest_genre(monkeypatch):
 
 
 def test_negative_predictions_are_clipped_to_zero(monkeypatch):
-    class NegativeRidge:
-        def __init__(self, alpha):
-            assert alpha == 1.0
+    class NegativeRidgeCV:
+        def __init__(self, alphas):
+            assert 1.0 in alphas
+            self.alpha_ = 1.0
 
         def fit(self, _X, _y):
             return self
@@ -206,7 +218,7 @@ def test_negative_predictions_are_clipped_to_zero(monkeypatch):
     ]
 
     result, _connections = run_forecast_script(
-        monkeypatch, rows, ridge_class=NegativeRidge
+        monkeypatch, rows, ridge_cv_class=NegativeRidgeCV
     )
 
     assert result["next_month_predictions"].tolist() == [0.0, 2.0]
@@ -259,14 +271,14 @@ def test_save_arrays_have_matching_lengths_and_database_types(monkeypatch):
 
 
 def test_empty_database_data_skips_training_and_saving(monkeypatch):
-    class RidgeMustNotRun:
-        def __init__(self, _alpha):
+    class RidgeCVMustNotRun:
+        def __init__(self, _alphas):
             pytest.fail("空データでRidgeが作成されました")
 
     result, connections = run_forecast_script(
         monkeypatch,
         [],
-        ridge_class=RidgeMustNotRun,
+        ridge_cv_class=RidgeCVMustNotRun,
     )
 
     assert result["data"].empty
@@ -275,11 +287,11 @@ def test_empty_database_data_skips_training_and_saving(monkeypatch):
 
 
 def test_one_month_data_has_no_training_rows_and_stops_before_saving(monkeypatch):
-    real_ridge = linear_model.Ridge
+    real_ridge_cv = linear_model.RidgeCV
     captured_training_data = {}
     connections = []
 
-    class InspectingRidge(real_ridge):
+    class InspectingRidgeCV(real_ridge_cv):
         def fit(self, X, y):
             captured_training_data["X"] = X.copy()
             captured_training_data["y"] = y.copy()
@@ -294,7 +306,7 @@ def test_one_month_data_has_no_training_rows_and_stops_before_saving(monkeypatch
         run_forecast_script(
             monkeypatch,
             rows,
-            ridge_class=InspectingRidge,
+            ridge_cv_class=InspectingRidgeCV,
             connection_log=connections,
         )
 

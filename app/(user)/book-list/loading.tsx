@@ -1,5 +1,5 @@
 import BookGridSkeleton from "@/app/_components/BookGridSkeleton";
 
 export default function Loading() {
-  return <BookGridSkeleton />;
+  return <BookGridSkeleton count={30} />;
 }

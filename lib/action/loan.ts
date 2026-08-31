@@ -9,10 +9,10 @@ import { recordResearchEvent } from "@/lib/research-event.server";
 type LoanBookResult =
   | { ok: true; status: 200; message: string }
   | {
-      ok: false;
-      status: 400 | 401 | 403 | 404 | 409 | 500;
-      error: string;
-    };
+    ok: false;
+    status: 400 | 401 | 403 | 404 | 409 | 500;
+    error: string;
+  };
 
 // 本番環境では日本時間どおりに曜日が取れないことがあるので、JSTで曜日を見る。
 function getJstWeekday(date: Date): number {
@@ -66,12 +66,21 @@ export async function loanBook(bookId: unknown): Promise<LoanBookResult> {
   try {
     const now = new Date();
     const settingsResult = await db.query(
-      `SELECT id, "fridayOnly", "loanPeriodDays"
+      `SELECT id, "fridayOnly", "loanPeriodDays", "loanEnabled"
        FROM "LoanSettings"
        ORDER BY "createdAt" ASC
        LIMIT 1`,
     );
     const settings = settingsResult.rows[0] ?? null;
+
+    const loanEnabled = settings?.loanEnabled ?? true;
+    if (!loanEnabled) {
+      return {
+        ok: false,
+        status: 403,
+        error: "現在は貸出を停止しています",
+      };
+    }
 
     let openPeriod = null;
     if (settings) {

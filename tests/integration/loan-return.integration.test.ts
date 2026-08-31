@@ -40,6 +40,7 @@ async function createLoanTables(client: Client) {
   await client.query(`
     CREATE TEMP TABLE "LoanSettings" (
       id TEXT PRIMARY KEY,
+      "loanEnabled" BOOLEAN NOT NULL DEFAULT true,
       "fridayOnly" BOOLEAN NOT NULL,
       "loanPeriodDays" INTEGER NOT NULL,
       "createdAt" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP

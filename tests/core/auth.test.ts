@@ -1,4 +1,4 @@
-import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
 const state = vi.hoisted(() => ({
   config: null as null | {
@@ -34,12 +34,18 @@ describe("NextAuth signIn callback", () => {
   >;
 
   beforeAll(async () => {
+    vi.stubEnv("USER_EMAIL_DOMAIN", "users.example.test");
+    vi.stubEnv("ADMIN_EMAIL_DOMAIN", "admins.example.test");
     await import("@/lib/auth");
     const configuredSignIn = state.config?.callbacks?.signIn;
     if (!configuredSignIn) {
       throw new Error("signIn callback was not configured");
     }
     signInCallback = configuredSignIn;
+  });
+
+  afterAll(() => {
+    vi.unstubAllEnvs();
   });
 
   beforeEach(() => {
@@ -54,7 +60,7 @@ describe("NextAuth signIn callback", () => {
     expect(state.dbQuery).not.toHaveBeenCalled();
   });
 
-  it.each(["student@nnn.ed.jp", "teacher@nnn.ac.jp"])(
+  it.each(["student@users.example.test", "teacher@admins.example.test"])(
     "%s はUserを作成してログインを許可する",
     async (email) => {
       await expect(signInCallback({ user: { email } })).resolves.toBe(true);
@@ -67,8 +73,8 @@ describe("NextAuth signIn callback", () => {
 
   it.each([
     "student@example.com",
-    "student@nnn.ed.jp.evil.example",
-    "student@sub.nnn.ac.jp",
+    "student@users.example.test.evil.example",
+    "student@sub.admins.example.test",
   ])("許可対象外の %s は拒否する", async (email) => {
     await expect(signInCallback({ user: { email } })).resolves.toBe("/banpage");
     expect(state.dbQuery).not.toHaveBeenCalled();
@@ -79,7 +85,7 @@ describe("NextAuth signIn callback", () => {
     state.dbQuery.mockRejectedValueOnce(error);
 
     await expect(
-      signInCallback({ user: { email: "student@nnn.ed.jp" } })
+      signInCallback({ user: { email: "student@users.example.test" } })
     ).rejects.toBe(error);
   });
 });

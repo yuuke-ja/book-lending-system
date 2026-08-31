@@ -1,5 +1,6 @@
 import { loanranking } from "@/lib/ranking/loan";
 import Image from "next/image";
+import Link from "next/link";
 
 type LoanRankingProps = {
   sectionId?: string;
@@ -105,9 +106,10 @@ export default async function LoanRanking({
         <div className="overflow-x-auto pb-2">
           <div className="flex w-max gap-4">
             {ranking.map((item) => (
-              <article
+              <Link
                 key={item.bookId}
-                className="flex w-[240px] shrink-0 gap-3 rounded-xl border border-zinc-200 bg-white p-3 sm:w-[280px]"
+                href={`/book/${item.bookId}`}
+                className="flex w-[240px] shrink-0 gap-3 rounded-xl border border-zinc-200 bg-white p-3 transition hover:border-zinc-300 hover:shadow-sm sm:w-[280px]"
               >
                 <div className="flex h-28 w-20 shrink-0 items-center justify-center overflow-hidden rounded-md bg-zinc-100">
                   {item.thumbnail ? (
@@ -134,13 +136,13 @@ export default async function LoanRanking({
                     </p>
                   </div>
                   <p className="mt-1 text-[11px] text-zinc-500">
-                    本ID: {item.bookId}
+                    ISBN/JAN: {item.isbn13}
                   </p>
                   <p className="mt-3 text-sm font-medium text-zinc-700">
                     貸出 {item.loanCount}回
                   </p>
                 </div>
-              </article>
+              </Link>
             ))}
           </div>
         </div>

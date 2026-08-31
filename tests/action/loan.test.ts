@@ -82,6 +82,30 @@ describe("loanBook Server Action", () => {
     expect(mockedQuery).not.toHaveBeenCalled();
   });
 
+  it("貸出停止中は曜日や例外期間を確認せず貸出を拒否する", async () => {
+    mockedAuth.mockResolvedValue({ user: { email: "user@example.com" } });
+    mockedQuery.mockResolvedValueOnce({
+      rows: [
+        {
+          id: "settings-1",
+          loanEnabled: false,
+          fridayOnly: true,
+          loanPeriodDays: 2,
+        },
+      ],
+    });
+
+    const result = await loanBook("book-1");
+
+    expect(result).toEqual({
+      ok: false,
+      status: 403,
+      error: "現在は貸出を停止しています",
+    });
+    expect(mockedQuery).toHaveBeenCalledTimes(1);
+    expect(mockedTransaction).not.toHaveBeenCalled();
+  });
+
   it.each([
     {
       caseName: "例外期間の1日前（非金曜）は借りられない",

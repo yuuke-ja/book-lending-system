@@ -64,10 +64,12 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       if (e2eTestMode) {
         return isE2EUserEmail(user.email);
       }
+      const emailDomain = user.email.split("@")[1];
 
       if (
-        !user.email.endsWith("@nnn.ed.jp") &&
-        !user.email.endsWith("@nnn.ac.jp")
+        !emailDomain ||
+        (emailDomain !== process.env.USER_EMAIL_DOMAIN &&
+          emailDomain !== process.env.ADMIN_EMAIL_DOMAIN)
       ) {
         return "/banpage";
       }

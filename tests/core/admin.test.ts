@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { Admin } from "@/lib/admin";
 import { db } from "@/lib/db";
 
@@ -12,6 +12,11 @@ const mockedQuery = vi.mocked(db.query);
 describe("Admin", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.stubEnv("ADMIN_EMAIL_DOMAIN", "admins.example.test");
+  });
+
+  afterAll(() => {
+    vi.unstubAllEnvs();
   });
 
   it.each([undefined, ""])("emailが %s ならfalseを返す", async (email) => {
@@ -19,7 +24,7 @@ describe("Admin", () => {
     expect(mockedQuery).not.toHaveBeenCalled();
   });
 
-  it.each(["teacher@nnn.ac.jp", "TEACHER@NNN.AC.JP"])(
+  it.each(["teacher@admins.example.test", "TEACHER@ADMINS.EXAMPLE.TEST"])(
     "%s はDB参照なしで管理者と判定する",
     async (email) => {
       await expect(Admin(email)).resolves.toBe(true);
@@ -28,12 +33,15 @@ describe("Admin", () => {
   );
 
   it("Adminテーブルに登録済みならtrueを返す", async () => {
-    mockedQuery.mockResolvedValueOnce({ rowCount: 1, rows: [{ email: "admin@nnn.ed.jp" }] } as never);
+    mockedQuery.mockResolvedValueOnce({
+      rowCount: 1,
+      rows: [{ email: "admin@users.example.test" }],
+    } as never);
 
-    await expect(Admin("admin@nnn.ed.jp")).resolves.toBe(true);
+    await expect(Admin("admin@users.example.test")).resolves.toBe(true);
     expect(mockedQuery).toHaveBeenCalledWith(
       expect.stringContaining('FROM "Admin" WHERE email = $1'),
-      ["admin@nnn.ed.jp"]
+      ["admin@users.example.test"]
     );
   });
 
@@ -41,7 +49,7 @@ describe("Admin", () => {
     "AdminテーブルのrowCountが %s ならfalseを返す",
     async (rowCount) => {
       mockedQuery.mockResolvedValueOnce({ rowCount, rows: [] } as never);
-      await expect(Admin("user@nnn.ed.jp")).resolves.toBe(false);
+      await expect(Admin("user@users.example.test")).resolves.toBe(false);
     }
   );
 
@@ -50,7 +58,7 @@ describe("Admin", () => {
     const error = new Error("database unavailable");
     mockedQuery.mockRejectedValueOnce(error);
 
-    await expect(Admin("user@nnn.ed.jp")).resolves.toBe(false);
+    await expect(Admin("user@users.example.test")).resolves.toBe(false);
     expect(consoleError).toHaveBeenCalledWith("管理者判定に失敗:", error);
 
     consoleError.mockRestore();

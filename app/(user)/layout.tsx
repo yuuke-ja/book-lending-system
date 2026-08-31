@@ -51,7 +51,7 @@ async function UserGuard({ children }: { children: ReactNode }) {
 
   return (
     <>
-      <IdleSurveillance timeoutMinutes={isAdmin ? 30 : 60} />
+      <IdleSurveillance timeoutMinutes={isAdmin ? 30 : 180} />
       <UserSidebarLayout
         isAdmin={isAdmin}
         userName={session.user?.name ?? null}

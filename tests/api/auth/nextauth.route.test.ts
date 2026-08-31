@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { NextRequest } from "next/server";
 
 type SignInCallback = (input: {
@@ -45,6 +45,12 @@ function signInCallback() {
 describe("NextAuth API", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.stubEnv("USER_EMAIL_DOMAIN", "users.example.test");
+    vi.stubEnv("ADMIN_EMAIL_DOMAIN", "admins.example.test");
+  });
+
+  afterAll(() => {
+    vi.unstubAllEnvs();
   });
 
   it("RouteはNextAuth handlersをそのまま公開する", () => {
@@ -92,15 +98,15 @@ describe("NextAuth API", () => {
 
   it.each([
     "user@example.com",
-    "user@nnn.ed.jp.attacker.example",
-    "user@sub.nnn.ed.jp",
-    "user@NNN.ED.JP",
+    "user@users.example.test.attacker.example",
+    "user@sub.users.example.test",
+    "user@USERS.EXAMPLE.TEST",
   ])("許可対象外メール %s を拒否する", async (email) => {
     await expect(signInCallback()({ user: { email } })).resolves.toBe("/banpage");
     expect(mockedQuery).not.toHaveBeenCalled();
   });
 
-  it.each(["student@nnn.ed.jp", "staff@nnn.ac.jp"])(
+  it.each(["student@users.example.test", "staff@admins.example.test"])(
     "許可ドメイン %s はUserをupsertしてログインを許可する",
     async (email) => {
       mockedQuery.mockResolvedValueOnce({ rows: [] } as never);
@@ -117,7 +123,7 @@ describe("NextAuth API", () => {
     mockedQuery.mockRejectedValueOnce(new Error("database error"));
 
     await expect(
-      signInCallback()({ user: { email: "student@nnn.ed.jp" } })
+      signInCallback()({ user: { email: "student@users.example.test" } })
     ).rejects.toThrow("database error");
   });
 });

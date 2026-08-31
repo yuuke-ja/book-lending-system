@@ -53,6 +53,7 @@ async function createTables(client: Client) {
     CREATE TEMP TABLE "LoanSettings" (
       "settingKey" TEXT NOT NULL UNIQUE,
       id TEXT PRIMARY KEY,
+      "loanEnabled" BOOLEAN NOT NULL DEFAULT true,
       "fridayOnly" BOOLEAN NOT NULL,
       "loanPeriodDays" INTEGER NOT NULL,
       "createdAt" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -142,6 +143,7 @@ describeWithDatabase("管理設定・通知・プロフィールActionとPostgre
 
   it("貸出設定と重ならない複数例外期間を同じtransactionで保存する", async () => {
     const result = await saveLoanSettings({
+      loanEnabled: false,
       fridayOnly: true,
       returnweek: 2,
       exceptionRules: [
@@ -152,14 +154,20 @@ describeWithDatabase("管理設定・通知・プロフィールActionとPostgre
 
     expect(result).toMatchObject({ ok: true, status: 200 });
     const settings = await client.query(
-      `SELECT "settingKey", "fridayOnly", "loanPeriodDays" FROM "LoanSettings"`
+      `SELECT "settingKey", "loanEnabled", "fridayOnly", "loanPeriodDays"
+       FROM "LoanSettings"`
     );
     const periods = await client.query<{ startDate: Date; endDate: Date; loanPeriodDays: number }>(
       `SELECT "startDate", "endDate", "loanPeriodDays"
        FROM "LoanOpenPeriod" ORDER BY "startDate"`
     );
     expect(settings.rows).toEqual([
-      { settingKey: "default", fridayOnly: true, loanPeriodDays: 2 },
+      {
+        settingKey: "default",
+        loanEnabled: false,
+        fridayOnly: true,
+        loanPeriodDays: 2,
+      },
     ]);
     expect(periods.rows).toHaveLength(2);
     expect(periods.rows[0].startDate.toISOString()).toBe("2026-09-01T15:00:00.000Z");
@@ -180,6 +188,7 @@ describeWithDatabase("管理設定・通知・プロフィールActionとPostgre
     ],
   ])("%sの例外設定を400で拒否しDBへ保存しない", async (_name, exceptionRules) => {
     const result = await saveLoanSettings({
+      loanEnabled: true,
       fridayOnly: true,
       returnweek: 2,
       exceptionRules,
@@ -192,6 +201,7 @@ describeWithDatabase("管理設定・通知・プロフィールActionとPostgre
 
   it("過去の例外期間は履歴として保存できる", async () => {
     const result = await saveLoanSettings({
+      loanEnabled: true,
       fridayOnly: true,
       returnweek: 2,
       exceptionRules: [
