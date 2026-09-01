@@ -3,7 +3,7 @@ name: Genre Point Forecast
 on:
   workflow_dispatch:
   schedule:
-    - cron: "5 14 1 * *"
+    - cron: "0 15 1 * *"
       timezone: "Asia/Tokyo"
 
 permissions:
