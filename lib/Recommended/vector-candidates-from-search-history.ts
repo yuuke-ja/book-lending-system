@@ -1,6 +1,8 @@
 import "server-only";
 
+
 import { db } from "@/lib/db";
+
 
 import { createEmbedding } from "@/app/api/admin/book-embeddings/embedding";
 
@@ -38,10 +40,10 @@ export async function findCandidatesFromSearchHistory(
   if (historysearchResult.rows.length === 0) {
     return [];
   }
+
   const historysearchVectors = await Promise.all(
     historysearchResult.rows.map(async (history) => {
       const embedding = await createEmbedding(history.query, "query")
-
       return {
         ...history,
         embedding: `[${embedding.join(",")}]`,
@@ -80,7 +82,6 @@ export async function findCandidatesFromSearchHistory(
       ORDER BY embedding.embedding <=> history.embedding::vector
       LIMIT 5
     ) candidate
-
     `,
 
     [

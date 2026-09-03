@@ -363,7 +363,7 @@ export default function AdminPage() {
                   </div>
 
                   <p className="mb-2 text-sm font-medium text-slate-700">
-                    長期休みの貸出期間
+                    例外貸出開始日 〜 返却日
                   </p>
                   <div className="flex flex-wrap items-center gap-2 text-sm">
                     <input

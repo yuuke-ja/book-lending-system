@@ -212,6 +212,43 @@ describeWithDatabase("貸出・返却とPostgreSQLの結合", () => {
     );
   });
 
+  it("例外の返却日が金曜日なら通常ルールで貸し出す", async () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-08-21T03:00:00.000Z"));
+    await client.query(`UPDATE "LoanSettings" SET "fridayOnly" = true`);
+    await client.query(
+      `INSERT INTO "LoanOpenPeriod"
+         (id, "loanSettingsId", "loanPeriodDays", "startDate", "endDate", enabled)
+       VALUES
+         ('period', 'settings', 2, '2026-08-16T15:00:00.000Z',
+          '2026-08-21T14:59:59.999Z', true)`
+    );
+
+    await expect(loanBook("book-1")).resolves.toMatchObject({ ok: true });
+    const loan = await client.query<{ dueAt: Date }>(
+      `SELECT "dueAt" FROM "Loan" WHERE "bookId" = 'book-1'`
+    );
+    expect(loan.rows[0].dueAt.toISOString()).toBe("2026-08-25T14:59:59.999Z");
+  });
+
+  it("金曜限定がOFFなら例外の返却日も通常ルールで貸し出す", async () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-08-19T03:00:00.000Z"));
+    await client.query(
+      `INSERT INTO "LoanOpenPeriod"
+         (id, "loanSettingsId", "loanPeriodDays", "startDate", "endDate", enabled)
+       VALUES
+         ('period', 'settings', 2, '2026-08-16T15:00:00.000Z',
+          '2026-08-19T14:59:59.999Z', true)`
+    );
+
+    await expect(loanBook("book-1")).resolves.toMatchObject({ ok: true });
+    const loan = await client.query<{ dueAt: Date }>(
+      `SELECT "dueAt" FROM "Loan" WHERE "bookId" = 'book-1'`
+    );
+    expect(loan.rows[0].dueAt.toISOString()).toBe("2026-08-25T14:59:59.999Z");
+  });
+
   it("金曜限定設定で例外期間外の曜日なら403で保存しない", async () => {
     vi.useFakeTimers();
     vi.setSystemTime(new Date("2026-08-17T03:00:00.000Z"));

@@ -132,12 +132,12 @@ describe("loanBook Server Action", () => {
       expectedInPeriod: true,
     },
     {
-      caseName: "例外期間の終了日（非金曜）は借りられる",
+      caseName: "例外の返却日（非金曜）は例外扱いせず借りられない",
       now: "2026-03-11T12:00:00.000+09:00",
-      expectedOk: true,
-      expectedStatus: 200,
-      expectedQueryCount: 6,
-      expectedInPeriod: true,
+      expectedOk: false,
+      expectedStatus: 403,
+      expectedQueryCount: 2,
+      expectedInPeriod: false,
     },
     {
       caseName: "例外期間の1日後（非金曜）は借りられない",
@@ -175,6 +175,47 @@ describe("loanBook Server Action", () => {
       expect(dueAt).toBeInstanceOf(Date);
       expect((dueAt as Date).toISOString()).toBe(exceptionEnd.toISOString());
     }
+  });
+
+  it("例外の返却日が金曜日なら通常ルールで貸し出す", async () => {
+    const exceptionStart = new Date("2026-03-04T00:00:00.000+09:00");
+    const exceptionEnd = new Date("2026-03-06T23:59:59.999+09:00");
+
+    vi.setSystemTime(new Date("2026-03-06T12:00:00.000+09:00"));
+    mockedAuth.mockResolvedValue({ user: { email: "user@example.com" } });
+
+    mockSettingsQuery();
+    mockOpenPeriodByNowRange(exceptionStart, exceptionEnd);
+    mockBorrowSuccessTail();
+
+    const result = await loanBook("book-1");
+
+    expect(result).toMatchObject({ ok: true, status: 200 });
+    const insertParams = mockedQuery.mock.calls[4]?.[1] as unknown[] | undefined;
+    const dueAt = insertParams?.[3];
+    expect(dueAt).toBeInstanceOf(Date);
+    expect((dueAt as Date).toISOString()).toBe("2026-03-10T14:59:59.999Z");
+  });
+
+  it("金曜限定がOFFなら例外の返却日も通常ルールで貸し出す", async () => {
+    const exceptionStart = new Date("2026-03-09T00:00:00.000+09:00");
+    const exceptionEnd = new Date("2026-03-11T23:59:59.999+09:00");
+
+    vi.setSystemTime(new Date("2026-03-11T12:00:00.000+09:00"));
+    mockedAuth.mockResolvedValue({ user: { email: "user@example.com" } });
+    mockedQuery.mockResolvedValueOnce({
+      rows: [{ id: "settings-1", fridayOnly: false, loanPeriodDays: 2 }],
+    });
+    mockOpenPeriodByNowRange(exceptionStart, exceptionEnd);
+    mockBorrowSuccessTail();
+
+    const result = await loanBook("book-1");
+
+    expect(result).toMatchObject({ ok: true, status: 200 });
+    const insertParams = mockedQuery.mock.calls[4]?.[1] as unknown[] | undefined;
+    const dueAt = insertParams?.[3];
+    expect(dueAt).toBeInstanceOf(Date);
+    expect((dueAt as Date).toISOString()).toBe("2026-03-17T14:59:59.999Z");
   });
 
   it("金曜日は例外期間外でも借りられる", async () => {

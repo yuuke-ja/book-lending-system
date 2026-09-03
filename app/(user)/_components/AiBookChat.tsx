@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { DefaultChatTransport, type UIMessage } from "ai";
 import { useChat } from "@ai-sdk/react";
 import Image from "next/image";
@@ -82,6 +82,17 @@ function AiBookChatInner({
   className?: string;
 }) {
   const [input, setInput] = useState("");
+  const hasSentBookLinkClickRef = useRef(false);
+
+  function handleBookLinkClick(
+    bookId: string | undefined,
+    sourceId: string | undefined
+  ) {
+    if (!bookId || !sourceId || hasSentBookLinkClickRef.current) return;
+
+    hasSentBookLinkClickRef.current = true;
+    aiBookLinkClick(bookId, sourceId);
+  }
 
   const { messages, sendMessage, setMessages, status } = useChat({
     messages: initialMessages,
@@ -142,7 +153,12 @@ function AiBookChatInner({
                           {book.imageUrl ? (
                             <a
                               href={`/book/${book.bookId}`}
-                              onClick={() => aiBookLinkClick(book.bookId, book.recommendationId)}
+                              onClick={() =>
+                                handleBookLinkClick(
+                                  book.bookId,
+                                  book.recommendationId
+                                )
+                              }
                             >
                               <Image
                                 src={book.imageUrl}

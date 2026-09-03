@@ -250,7 +250,7 @@ export default function AdminTagsPage() {
   }, [selectedTag, fetchSubterms]);
 
   return (
-    <main className="min-h-screen bg-white p-6">
+    <main className="min-h-screen bg-[#f0f4f8] p-6">
       <h1 className="text-2xl font-semibold text-zinc-900">ジャンル管理</h1>
 
       <div

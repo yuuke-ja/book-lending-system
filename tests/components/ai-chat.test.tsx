@@ -182,7 +182,7 @@ describe("AI chat components", () => {
     expect(screen.getByRole("button", { name: "送信" })).toBeDisabled();
   });
 
-  it("推薦metadataを表示し、本clickログを送る", async () => {
+  it("推薦metadataを表示し、本clickログは連打しても1回だけ送る", async () => {
     const user = userEvent.setup();
     mocks.messagesOverride = [
       {
@@ -218,6 +218,7 @@ describe("AI chat components", () => {
     expect(link).toHaveAttribute("href", "/book/book-1");
     link.addEventListener("click", (event) => event.preventDefault());
     await user.click(link);
+    await user.click(link);
 
     expect(fetchMock).toHaveBeenCalledWith(
       "/api/ai/book-link-click",
@@ -232,6 +233,11 @@ describe("AI chat components", () => {
         }),
       })
     );
+    expect(
+      fetchMock.mock.calls.filter(
+        ([input]) => String(input) === "/api/ai/book-link-click"
+      )
+    ).toHaveLength(1);
   });
 
   it("useChat errorをJSON/plain textからassistant messageへ変換する", async () => {

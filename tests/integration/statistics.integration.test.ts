@@ -101,8 +101,8 @@ describeWithDatabase("月次・週次・サマリー統計とPostgreSQLの結合
   it("今週・今月・貸出中・蔵書数を数値で返す", async () => {
     await client.query(`
       INSERT INTO "Loan" (id, "userEmail", "bookId", "loanedAt", "returnedAt") VALUES
-        ('this-week-active', 'one@example.com', 'book-1', date_trunc('week', now()), NULL),
-        ('this-week-returned', 'two@example.com', 'book-2', date_trunc('week', now()), now()),
+        ('this-week-active', 'one@example.com', 'book-1', now(), NULL),
+        ('this-week-returned', 'two@example.com', 'book-2', now(), now()),
         ('old-active', 'old@example.com', 'book-3', date_trunc('month', now()) - interval '1 month', NULL)
     `);
 

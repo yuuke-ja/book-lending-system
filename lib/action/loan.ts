@@ -14,6 +14,23 @@ type LoanBookResult =
     error: string;
   };
 
+type LoanOpenPeriod = {
+  id: string;
+  loanPeriodDays: number;
+  endDate: Date;
+};
+
+const jstDateFormatter = new Intl.DateTimeFormat("en-CA", {
+  timeZone: "Asia/Tokyo",
+  year: "numeric",
+  month: "2-digit",
+  day: "2-digit",
+});
+
+function getJstDateKey(date: Date): string {
+  return jstDateFormatter.format(date);
+}
+
 // 本番環境では日本時間どおりに曜日が取れないことがあるので、JSTで曜日を見る。
 function getJstWeekday(date: Date): number {
   const weekday = new Intl.DateTimeFormat("en-US", {
@@ -82,9 +99,9 @@ export async function loanBook(bookId: unknown): Promise<LoanBookResult> {
       };
     }
 
-    let openPeriod = null;
+    let openPeriod: LoanOpenPeriod | null = null;
     if (settings) {
-      const openPeriodResult = await db.query(
+      const openPeriodResult = await db.query<LoanOpenPeriod>(
         `SELECT id, "loanPeriodDays","endDate"
          FROM "LoanOpenPeriod"
          WHERE "loanSettingsId" = $1
@@ -94,7 +111,11 @@ export async function loanBook(bookId: unknown): Promise<LoanBookResult> {
          LIMIT 1`,
         [settings.id, now],
       );
-      openPeriod = openPeriodResult.rows[0] ?? null;
+      const candidate = openPeriodResult.rows[0] ?? null;
+      openPeriod =
+        candidate && getJstDateKey(candidate.endDate) !== getJstDateKey(now)
+          ? candidate
+          : null;
     }
 
     const fridayOnly = settings?.fridayOnly ?? true;

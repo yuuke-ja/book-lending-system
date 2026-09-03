@@ -187,6 +187,19 @@ function parseLoanSettings(value: unknown, now: Date): {
     },
   };
 }
+function hasOverlappingExceptionRules(rules: ParsedExceptionRule[]): boolean {
+  const sortedrules = [...rules].sort((a, b) => a.startDate.getTime() - b.startDate.getTime()
+  );
+
+  for (let x = 1; x < sortedrules.length; x++) {
+    const prevRule = sortedrules[x - 1];
+    const currentRule = sortedrules[x];
+    if (prevRule.endDate >= currentRule.startDate) {
+      return true;
+    }
+  }
+  return false;
+}
 
 async function getOrCreateLoanSettingsId(): Promise<string> {
   const result = await db.query(
@@ -218,7 +231,19 @@ export async function saveLoanSettings(
 
     const { loanEnabled, fridayOnly, returnweek, exceptionRules } =
       parseResult.parsed;
+
+    if (hasOverlappingExceptionRules(exceptionRules)) {
+      return {
+        ok: false,
+        status: 400,
+        error: "重複があります",
+      }
+    }
+
+
     const settingsId = await getOrCreateLoanSettingsId();
+
+
 
     await db.transaction(async (tx) => {
       await tx.query(
