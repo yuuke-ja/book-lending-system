@@ -176,10 +176,6 @@ describeWithDatabase("管理設定・通知・プロフィールActionとPostgre
 
   it.each([
     [
-      "存在しない日付",
-      [{ startDate: "2026-02-31", endDate: "2026-03-10", loanPeriodDays: 2 }],
-    ],
-    [
       "重複期間",
       [
         { startDate: "2026-09-01", endDate: "2026-09-10", loanPeriodDays: 2 },

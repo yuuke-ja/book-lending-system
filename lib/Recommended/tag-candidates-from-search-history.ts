@@ -3,10 +3,10 @@ import "server-only";
 import { db } from "@/lib/db";
 
 export type RecommendBookFromSearchTagCandidate = {
+  searchEventId: string;
   sourceQuery: string;
   occurredAt: Date;
   tagId: string;
-  matchedTerm: string;
   bookId: string;
 };
 
@@ -54,10 +54,10 @@ export async function findTagCandidatesFromSearchHistory(
         ON search_events."sourceQuery" &@~ pgroonga_query_escape(subterm.subterm)
     )
     SELECT DISTINCT
+      matches_tags."searchEventId",
       matches_tags."sourceQuery",
       matches_tags."occurredAt",
       matches_tags."tagId",
-      matches_tags."matchedTerm",
       book_tag."bookId"
     FROM matches_tags
     JOIN "BookTag" book_tag
