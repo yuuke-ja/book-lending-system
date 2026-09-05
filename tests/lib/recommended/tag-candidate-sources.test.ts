@@ -50,7 +50,7 @@ describe("ジャンル由来の推薦候補", () => {
     ).rejects.toThrow("database error");
   });
 
-  it("検索履歴をジャンル名と小要素の両方へ照合する", async () => {
+  it("検索履歴をジャンル名と子要素の両方へ照合する", async () => {
     const rows = [
       {
         sourceQuery: "React",

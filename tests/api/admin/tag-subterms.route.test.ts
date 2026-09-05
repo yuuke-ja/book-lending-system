@@ -29,7 +29,7 @@ describe("createTagSubterms Server Action", () => {
     mockedAdmin.mockResolvedValue(true);
   });
 
-  it("複数小要素をembeddingなしで保存する", async () => {
+  it("複数子要素をembeddingなしで保存する", async () => {
     mockedQuery
       .mockResolvedValueOnce({ rows: [] })
       .mockResolvedValueOnce({

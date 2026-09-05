@@ -216,7 +216,7 @@ describe("admin Server Actions", () => {
     expect(mockedQuery.mock.calls[0][1]).toEqual(["tag-1"]);
   });
 
-  it("小要素をジャンルとの組み合わせで削除する", async () => {
+  it("子要素をジャンルとの組み合わせで削除する", async () => {
     mockedQuery.mockResolvedValueOnce({ rowCount: 1, rows: [] });
 
     const result = await deleteTagSubterm("tag-1", "subterm-1");
@@ -224,7 +224,7 @@ describe("admin Server Actions", () => {
     expect(result).toEqual({
       ok: true,
       status: 200,
-      message: "小要素を削除しました",
+      message: "子要素を削除しました",
     });
     expect(mockedQuery.mock.calls[0][1]).toEqual(["subterm-1", "tag-1"]);
   });

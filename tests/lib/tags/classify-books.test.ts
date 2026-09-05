@@ -17,7 +17,7 @@ describe("単語による自動ジャンル付け", () => {
     vi.clearAllMocks();
   });
 
-  it("親ジャンルまたは小要素の単語列が一致した本だけを返す", async () => {
+  it("親ジャンルまたは子要素の単語列が一致した本だけを返す", async () => {
     mockedQuery.mockResolvedValueOnce({
       rows: [
         {

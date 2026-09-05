@@ -163,7 +163,7 @@ export default function AdminTagsPage() {
       const data = await res.json();
       setTagSubterms(Array.isArray(data) ? data : []);
     } catch {
-      showAlertMessage("小要素の取得に失敗しました");
+      showAlertMessage("子要素の取得に失敗しました");
     } finally {
       setIsLoadingSubterms(false);
     }
@@ -175,12 +175,12 @@ export default function AdminTagsPage() {
     const subterms = subtermInputs.filter((value) => value.trim() !== "");
 
     if (subterms.length === 0) {
-      showAlertMessage("小要素を入力してください");
+      showAlertMessage("子要素を入力してください");
       return;
     }
 
     setIsSavingSubterms(true);
-    setTagStatusMessage("小要素を保存中...");
+    setTagStatusMessage("子要素を保存中...");
     try {
       const result = await createTagSubterms(selectedTag.id, subterms);
       if (!result.ok) {
@@ -190,9 +190,9 @@ export default function AdminTagsPage() {
 
       setSubtermInputs([""]);
       await fetchSubterms(selectedTag.id);
-      showAlertMessage("小要素を保存しました");
+      showAlertMessage("子要素を保存しました");
     } catch {
-      showAlertMessage("小要素の保存に失敗しました");
+      showAlertMessage("子要素の保存に失敗しました");
     } finally {
       setIsSavingSubterms(false);
     }
@@ -204,7 +204,7 @@ export default function AdminTagsPage() {
     if (!window.confirm(`${subterm.subterm}を削除しますか？`)) return;
 
     setDeletingSubtermId(subterm.id);
-    setTagStatusMessage("小要素を削除中...");
+    setTagStatusMessage("子要素を削除中...");
     try {
       const result = await deleteTagSubterm(selectedTag.id, subterm.id);
       if (!result.ok) {
@@ -213,9 +213,9 @@ export default function AdminTagsPage() {
       }
 
       await fetchSubterms(selectedTag.id);
-      showAlertMessage("小要素を削除しました");
+      showAlertMessage("子要素を削除しました");
     } catch {
-      showAlertMessage("小要素の削除に失敗しました");
+      showAlertMessage("子要素の削除に失敗しました");
     } finally {
       setDeletingSubtermId(null);
     }
@@ -401,7 +401,7 @@ export default function AdminTagsPage() {
               "ジャンル付け直す"
             )}
           </button>
-          <h4 className="mt-3 text-sm font-medium text-zinc-700">小要素</h4>
+          <h4 className="mt-3 text-sm font-medium text-zinc-700">子要素</h4>
 
           <form
             onSubmit={(e) => {
@@ -453,9 +453,9 @@ export default function AdminTagsPage() {
           </form>
 
           {isLoadingSubterms ? (
-            <p className="mt-2 text-sm text-zinc-600">小要素を読み込み中...</p>
+            <p className="mt-2 text-sm text-zinc-600">子要素を読み込み中...</p>
           ) : tagSubterms.length === 0 ? (
-            <p className="mt-2 text-sm text-zinc-600">小要素はまだありません。</p>
+            <p className="mt-2 text-sm text-zinc-600">子要素はまだありません。</p>
           ) : (
             <ul className="mt-2 space-y-1">
               {tagSubterms.map((item) => (

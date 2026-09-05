@@ -145,7 +145,7 @@ describeWithDatabase("推薦候補ソースとpgvector・PGroongaの結合", () 
     expect(candidates.every((candidate) => typeof candidate.distance === "number")).toBe(true);
   });
 
-  it("ジャンル名と小要素の両方に一致しても同じ本を1候補にまとめる", async () => {
+  it("ジャンル名と子要素の両方に一致しても同じ本を1候補にまとめる", async () => {
     await client.query(`INSERT INTO "TagList" (id, tag) VALUES ('tag-web', 'Web')`);
     await client.query(`
       INSERT INTO "TagSubterm" (id, "tagId", subterm)

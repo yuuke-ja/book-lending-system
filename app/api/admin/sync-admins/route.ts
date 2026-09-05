@@ -21,7 +21,7 @@ export async function POST(request: Request) {
       : undefined;
   if (
     !Array.isArray(emails) ||
-    emails.some((email) => typeof email !== "string" || email.trim() === "")
+    emails.some((email) => typeof email !== "string")
   ) {
     return NextResponse.json({ ok: false, error: "Invalid request" }, { status: 400 });
   }

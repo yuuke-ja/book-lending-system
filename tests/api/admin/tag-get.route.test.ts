@@ -27,7 +27,7 @@ describe("管理者ジャンルGET API", () => {
   it.each([
     ["ジャンル", () => getTags()],
     [
-      "小要素",
+      "子要素",
       () =>
         getSubterms(new Request("http://localhost/api/admin/tags/tag-1/subterms"), {
           params: Promise.resolve({ tagId: "tag-1" }),
@@ -45,7 +45,7 @@ describe("管理者ジャンルGET API", () => {
   it.each([
     ["ジャンル", () => getTags()],
     [
-      "小要素",
+      "子要素",
       () =>
         getSubterms(new Request("http://localhost/api/admin/tags/tag-1/subterms"), {
           params: Promise.resolve({ tagId: "tag-1" }),
@@ -71,7 +71,7 @@ describe("管理者ジャンルGET API", () => {
     expect(mockedQuery).toHaveBeenCalledWith(expect.stringContaining("ORDER BY tag ASC"));
   });
 
-  it("指定ジャンルの小要素を名前順で返す", async () => {
+  it("指定ジャンルの子要素を名前順で返す", async () => {
     const rows = [{ id: "subterm-1", tagId: "tag-1", subterm: "React" }];
     mockedQuery.mockResolvedValueOnce({ rows } as never);
 
@@ -87,7 +87,7 @@ describe("管理者ジャンルGET API", () => {
     ]);
   });
 
-  it("ジャンルと小要素が0件なら空配列を返す", async () => {
+  it("ジャンルと子要素が0件なら空配列を返す", async () => {
     mockedQuery.mockResolvedValue({ rows: [] } as never);
 
     const tagsResponse = await getTags();
@@ -113,7 +113,7 @@ describe("管理者ジャンルGET API", () => {
   it.each([
     ["ジャンル", () => getTags()],
     [
-      "小要素",
+      "子要素",
       () =>
         getSubterms(new Request("http://localhost/api/admin/tags/tag-1/subterms"), {
           params: Promise.resolve({ tagId: "tag-1" }),

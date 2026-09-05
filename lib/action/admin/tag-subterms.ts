@@ -24,11 +24,11 @@ export async function createTagSubterms(
     !Array.isArray(input) ||
     !input.every((subterm) => typeof subterm === "string")
   ) {
-    return { ok: false, status: 400, error: "小要素の形式が不正です" };
+    return { ok: false, status: 400, error: "子要素の形式が不正です" };
   }
   const subterms = input.map((subterm) => subterm.trim()).filter(Boolean);
   if (subterms.length === 0) {
-    return { ok: false, status: 400, error: "小要素の形式が不正です" };
+    return { ok: false, status: 400, error: "子要素の形式が不正です" };
   }
 
   try {
@@ -52,12 +52,12 @@ export async function createTagSubterms(
     return {
       ok: true,
       status: 201,
-      message: "小要素を保存しました",
+      message: "子要素を保存しました",
       data: result.rows,
     };
   } catch (error) {
     console.error(error);
-    return { ok: false, status: 500, error: "小要素の保存に失敗しました" };
+    return { ok: false, status: 500, error: "子要素の保存に失敗しました" };
   }
 }
 
@@ -83,13 +83,13 @@ export async function deleteTagSubterm(
       return {
         ok: false,
         status: 404,
-        error: "小要素が見つかりません",
+        error: "子要素が見つかりません",
       };
     }
     revalidatePath("/admin/tags");
-    return { ok: true, status: 200, message: "小要素を削除しました" };
+    return { ok: true, status: 200, message: "子要素を削除しました" };
   } catch (error) {
     console.error(error);
-    return { ok: false, status: 500, error: "小要素の削除に失敗しました" };
+    return { ok: false, status: 500, error: "子要素の削除に失敗しました" };
   }
 }

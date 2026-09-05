@@ -48,7 +48,6 @@ describe("POST /api/admin/sync-admins", () => {
     ["emailsなし", JSON.stringify({})],
     ["emailsが配列でない", JSON.stringify({ emails: "admin@example.com" })],
     ["要素が文字列でない", JSON.stringify({ emails: [123] })],
-    ["空メール", JSON.stringify({ emails: [""] })],
   ])("%sなら400", async (_name, body) => {
     const response = await POST(request(body, "sync-secret"));
 

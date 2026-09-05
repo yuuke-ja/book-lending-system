@@ -20,7 +20,7 @@ async function clickAndAcceptAlert(
 
 test.use({ storageState: e2eConfig.authState.admin });
 
-test('管理者がジャンルと小要素を追加して削除できる', async ({
+test('管理者がジャンルと子要素を追加して削除できる', async ({
   page,
   browserName,
 }) => {
@@ -56,7 +56,7 @@ test('管理者がジャンルと小要素を追加して削除できる', async
   await clickAndAcceptAlert(
     page,
     tagDetails.getByRole('button', { name: 'まとめて追加' }),
-    '小要素を保存しました'
+    '子要素を保存しました'
   );
   await expect(tagDetails.getByText(subterm, { exact: true })).toBeVisible();
 

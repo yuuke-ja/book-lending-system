@@ -40,6 +40,6 @@ export async function GET(_request: Request, context: RouteContext) {
     return NextResponse.json(result.rows, { status: 200 });
   } catch (error) {
     console.error(error);
-    return NextResponse.json({ error: "小要素の取得に失敗しました" }, { status: 500 });
+    return NextResponse.json({ error: "子要素の取得に失敗しました" }, { status: 500 });
   }
 }
