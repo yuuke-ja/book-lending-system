@@ -421,7 +421,6 @@ export default function AdminTagsPage() {
                     )
                   )
                 }
-                placeholder="SQL"
                 disabled={isSavingSubterms}
                 className="min-h-12 w-full rounded border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-800 outline-none focus:border-zinc-400"
               />
