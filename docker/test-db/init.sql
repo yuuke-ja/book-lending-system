@@ -29,3 +29,4 @@ SET ROLE postgres;
 \ir '/app-migrations/024_genre_point_predictions.sql'
 \ir '/app-migrations/025_seach_event_count.sql'
 \ir '/app-migrations/026_sync_production_rls.sql'
+\ir '/app-migrations/027_thread_delete.sql'

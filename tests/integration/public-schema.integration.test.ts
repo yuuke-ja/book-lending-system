@@ -125,6 +125,41 @@ describeWithLocalDatabase("migrationで作成したpublicスキーマとの結�
     await client.query("ROLLBACK TO SAVEPOINT before_duplicate_loan");
   });
 
+  it("投稿とコメントにソフトデリート用のdeletedAt列が存在する", async () => {
+    const result = await client.query<{
+      tableName: string;
+      columnName: string;
+      dataType: string;
+      isNullable: string;
+    }>(`
+      SELECT
+        table_name AS "tableName",
+        column_name AS "columnName",
+        data_type AS "dataType",
+        is_nullable AS "isNullable"
+      FROM information_schema.columns
+      WHERE table_schema = 'public'
+        AND column_name = 'deletedAt'
+        AND table_name = ANY($1::text[])
+      ORDER BY table_name
+    `, [["Thread", "ThreadComment"]]);
+
+    expect(result.rows).toEqual([
+      {
+        tableName: "Thread",
+        columnName: "deletedAt",
+        dataType: "timestamp without time zone",
+        isNullable: "YES",
+      },
+      {
+        tableName: "ThreadComment",
+        columnName: "deletedAt",
+        dataType: "timestamp without time zone",
+        isNullable: "YES",
+      },
+    ]);
+  });
+
   it("ローカルmigration適用後は指定した9テーブルだけRLSが有効でLoanは無効", async () => {
     const result = await client.query<{ tablename: string; rls: boolean }>(`
       SELECT c.relname AS tablename, c.relrowsecurity AS rls

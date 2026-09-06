@@ -93,6 +93,7 @@ export default defineConfig({
       AUTH_SECRET: 'local-e2e-auth-secret-at-least-32-characters',
       AUTH_GOOGLE_ID: 'e2e-google-client-id',
       AUTH_GOOGLE_SECRET: 'e2e-google-client-secret',
+      GROQ_API_KEY: 'e2e-dummy-groq-api-key',
       AUTH_URL: baseURL,
       PORT: e2ePort,
       TZ: 'Asia/Tokyo',

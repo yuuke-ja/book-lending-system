@@ -38,6 +38,6 @@ test('本一覧から本詳細を開き、登録情報を確認できる', async
     })
   ).toBeVisible();
   await expect(
-    detailContent.getByText(`#${e2eConfig.books.detail.tag}`, { exact: true })
+    detailContent.getByText(e2eConfig.books.detail.tag, { exact: true })
   ).toBeVisible();
 });

@@ -52,7 +52,7 @@ test('管理者がジャンルと子要素を追加して削除できる', async
   const tagDetails = page
     .getByRole('heading', { name: `ジャンル詳細: ${tagName}` })
     .locator('..');
-  await tagDetails.getByRole('textbox', { name: 'SQL' }).fill(subterm);
+  await tagDetails.getByRole('textbox').fill(subterm);
   await clickAndAcceptAlert(
     page,
     tagDetails.getByRole('button', { name: 'まとめて追加' }),
